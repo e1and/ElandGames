@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     public GameObject DayTime;
     public int Health = 100;
     public int Cold = 100;
+    public int Sticks = 0;
     public float deltaCold = 0;
     public Text HealthIndicator;
     public Text ColdIndicator;

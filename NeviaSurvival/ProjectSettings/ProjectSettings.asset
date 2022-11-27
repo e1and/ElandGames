@@ -14,7 +14,7 @@ PlayerSettings:
   accelerometerFrequency: 60
   companyName: DefaultCompany
   productName: ElandSurvival
-  defaultCursor: {fileID: 2800000, guid: bbc85eac2881ada4cb557254d52c239a, type: 3}
+  defaultCursor: {fileID: 2800000, guid: b8ad21623e0f62e4ca883e07ad4d8fdc, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
   m_ShowUnitySplashScreen: 1
