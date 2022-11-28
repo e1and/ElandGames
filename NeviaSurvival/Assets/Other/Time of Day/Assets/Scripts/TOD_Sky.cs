@@ -83,6 +83,13 @@ public partial class TOD_Sky : MonoBehaviour
 		kScale.w = kCameraHeight;
 	}
 
+	public float hour;
+
+    private void Update()
+    {
+		hour  = Cycle.Hour - World.UTC;
+	}
+
 	private void UpdateCelestials()
 	{
 		// Celestial computations
@@ -100,9 +107,9 @@ public partial class TOD_Sky : MonoBehaviour
 			float horizon_rad = 90f * Mathf.Deg2Rad;
 
 			// Date
-			int   year  = Cycle.Year;
-			int   month = Cycle.Month;
-			int   day   = Cycle.Day;
+			int year  = Cycle.Year;
+			int month = Cycle.Month;
+			int day   = Cycle.Day;
 			float hour  = Cycle.Hour - World.UTC;
 
 			// Time scale
