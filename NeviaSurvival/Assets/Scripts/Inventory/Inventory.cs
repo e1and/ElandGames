@@ -3,20 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Items { Stick, Axe, Torch, Key, Cauldron }
+
 public class Inventory : MonoBehaviour
 {
     public Action<Item> onItemAdded;
 
     [SerializeField] List<Item> StartItems = new List<Item>();
-    [SerializeField] Item PlaceHolder;
     
     public List<Item> inventoryItems = new List<Item>(9);
 
     public Item LeftHand;
-    public Item RightHand;
-
-    public GameObject ItemInRightHand;
     public GameObject ItemInLeftHand;
+    public Item RightHand;
+    public GameObject ItemInRightHand;  
 
     public int size = 9;
     public int filledSlots;
@@ -52,10 +52,5 @@ public class Inventory : MonoBehaviour
                 filledSlots++;
             }
         }
-    }
-
-    public void AddPlaceHolder()
-    {
-        AddItem(PlaceHolder);
     }
 }

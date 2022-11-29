@@ -10,5 +10,7 @@ public class ItemInfo : MonoBehaviour
     public bool isUsable;
     public bool isCollectible;
 
+    public Items type;
+
 
 }

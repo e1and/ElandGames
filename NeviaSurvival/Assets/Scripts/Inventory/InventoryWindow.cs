@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class InventoryWindow : MonoBehaviour
 {
     [SerializeField] Inventory targetInventory;
-    [SerializeField] RectTransform[] slots;
+    public RectTransform[] slots;
     [SerializeField] GameObject inventoryCellTemplate;
     [SerializeField] private Transform _draggingParent;
     public Transform _rightHandParent;

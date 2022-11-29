@@ -73,6 +73,7 @@ MonoBehaviour:
     \u043C\u0430\u043B\u043E \u0447\u0442\u043E \u0443\u0432\u0438\u0434\u0438\u0448\u044C!"
   isUsable: 0
   isCollectible: 1
+  type: 2
 --- !u!65 &916013009796654311
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -19395,7 +19396,7 @@ Light:
   m_Cookie: {fileID: 0}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295

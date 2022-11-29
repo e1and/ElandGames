@@ -20,6 +20,10 @@ public class MousePoint : MonoBehaviour
     [SerializeField] TMP_Text itemComment;
     Coroutine commentCoroutine;
     [SerializeField] Item Stick;
+    [SerializeField] Item Axe;
+    [SerializeField] Item Torch;
+    [SerializeField] Item Key;
+    [SerializeField] Item Cauldron;
     Inventory inventory;
     [SerializeField] InventoryWindow inventoryWindow;
 
@@ -51,9 +55,17 @@ public class MousePoint : MonoBehaviour
                     {
                         if (inventory.filledSlots < inventory.size)
                         {
-                            GetComponent<Inventory>().AddItem(Stick);
+                            if (item.type == Items.Stick)
+                            {
+                                GetComponent<Inventory>().AddItem(Stick);
+                                Player.GetComponent<Player>().Sticks += 1;
+                            }
+                            if (item.type == Items.Axe) GetComponent<Inventory>().AddItem(Axe);
+                            if (item.type == Items.Torch) GetComponent<Inventory>().AddItem(Torch);
+                            if (item.type == Items.Key) GetComponent<Inventory>().AddItem(Key);
+                            if (item.type == Items.Cauldron) GetComponent<Inventory>().AddItem(Cauldron);
+
                             Animator.SetTrigger("Grab");
-                            Player.GetComponent<Player>().Sticks += 1;
                             Destroy(hit.collider.gameObject, 1);
                             inventory.Recount();
                             inventoryWindow.Redraw();
