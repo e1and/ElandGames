@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class InventoryWindow : MonoBehaviour
 {
     [SerializeField] Inventory targetInventory;
+    [SerializeField] StorageWindow storageWindow;
+    Storage storage;
     public RectTransform[] slots;
     [SerializeField] GameObject inventoryCellTemplate;
     [SerializeField] private Transform _draggingParent;
@@ -56,9 +58,11 @@ public class InventoryWindow : MonoBehaviour
                 icon.GetComponent<InventoryCell>().Init(_draggingParent);
                 icon.GetComponent<InventoryCell>().inventory = targetInventory;
                 icon.GetComponent<InventoryCell>().inventoryWindow = this;
+                icon.GetComponent<InventoryCell>().storageWindow = storageWindow;
 
                 icon.GetComponent<InventoryCell>()._rightHandParent = _rightHandParent;
                 icon.GetComponent<InventoryCell>()._leftHandParent = _leftHandParent;
+                icon.GetComponent<InventoryCell>().isInInventory = true; ;
 
 
                 //icon.GetComponent<InventoryCell>().DropItem += () => Destroy(icon); 
@@ -69,11 +73,6 @@ public class InventoryWindow : MonoBehaviour
         }
 
         targetInventory.Recount();
-    }
-
-    void Drop()
-    {
-
     }
 
     void ClearDrawn()

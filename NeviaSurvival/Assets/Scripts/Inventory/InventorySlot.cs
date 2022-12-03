@@ -6,4 +6,5 @@ public class InventorySlot : MonoBehaviour
 {
     public bool isFull;
     public int indexSlot;
+    public bool isStorage;
 }
