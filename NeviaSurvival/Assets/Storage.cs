@@ -7,9 +7,10 @@ public class Storage : MonoBehaviour
 {
     public Action<Item> onStorageItemAdded;
     public Action onOpenStorage;
+    public Action onAutoClose;
     [SerializeField] StorageWindow storageWindow;
     [SerializeField] List<Item> StartRandomItems = new List<Item>();
-
+    public bool isOpen;
     public List<Item> storageItems = new List<Item>(9);
 
     public int size = 6;
@@ -21,6 +22,8 @@ public class Storage : MonoBehaviour
         {
             storageItems[i] = StartRandomItems[i];
         }
+
+        onOpenStorage += AutoClose;
     }
 
     public void OpenStorage()
@@ -28,11 +31,29 @@ public class Storage : MonoBehaviour
         onOpenStorage.Invoke();
         storageWindow.targetStorage = this;
         storageWindow.gameObject.SetActive(true);
+        isOpen = true;
+        storageWindow.RedrawStorage();
     }
 
     public void CloseStorage()
     {
         storageWindow.gameObject.SetActive(false);
+        isOpen = false;
+    }
+
+    void AutoClose()
+    {
+        StartCoroutine(AutoCloseCoroutine());
+    }
+
+    IEnumerator AutoCloseCoroutine()
+    {
+        while (Vector3.Distance(storageWindow.Player.gameObject.transform.position, transform.position) < 3)
+        {
+            yield return null;
+        }
+        CloseStorage();
+        onAutoClose.Invoke();
     }
 
     public void AddItem(Item item)

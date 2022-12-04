@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class StorageWindow : MonoBehaviour
 {
     public Storage targetStorage;
+    public Player Player;
     public RectTransform[] slots;
     [SerializeField] Inventory inventory;
     [SerializeField] InventoryWindow inventoryWindow;
@@ -15,6 +17,7 @@ public class StorageWindow : MonoBehaviour
     [SerializeField] private Transform _draggingParent;
     [SerializeField] private Transform _dropParent;
     [SerializeField] Sprite emptySlotImage;
+    [SerializeField] TMP_Text storageTitle;
 
     [SerializeField] Item itemToAdd;
 
@@ -38,6 +41,7 @@ public class StorageWindow : MonoBehaviour
     public void RedrawStorage()
     {
         ClearDrawn();
+        storageTitle.text = targetStorage.gameObject.GetComponent<ItemInfo>().itemName;
 
         for (int i = targetStorage.size; i < 9; i++)
         {

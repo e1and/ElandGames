@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Chest : MonoBehaviour, IPointerClickHandler
+public class Barrel : MonoBehaviour, IPointerClickHandler
 {
     public Animator Animator;
     public bool isOpen;
@@ -20,7 +20,7 @@ public class Chest : MonoBehaviour, IPointerClickHandler
     }
 
     public void OnPointerClick(PointerEventData eventData)
-    { 
+    {
         OpenClose();
         if (isOpen) Storage.OpenStorage();
         if (!isOpen) Storage.CloseStorage();
@@ -30,5 +30,6 @@ public class Chest : MonoBehaviour, IPointerClickHandler
     {
         Animator.SetTrigger("Open");
         isOpen = !isOpen;
-    }  
+        Debug.Log(isOpen);
+    }
 }
