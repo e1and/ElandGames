@@ -7660,6 +7660,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Animator: {fileID: 1089174203}
   isOpen: 0
+  Player: {fileID: 6982812147932997652}
 --- !u!4 &1089174206 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4022517634823458, guid: 68a19aab44d9d544ca4fd9f30e006f22, type: 3}
@@ -7691,6 +7692,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storageWindow: {fileID: 1753274497}
+  inventoryWindow: {fileID: 158612789}
   StartRandomItems:
   - {fileID: 11400000, guid: 9f26ce76575c01b4c8e8bc0fc3c19215, type: 2}
   - {fileID: 11400000, guid: 7fad84f075b857b4a8ff2e9df06b9d46, type: 2}
@@ -13038,7 +13040,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 389, y: -329}
+  m_AnchoredPosition: {x: 386, y: -119}
   m_SizeDelta: {x: -1582.4039, y: -693.9796}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1753274495
@@ -13109,7 +13111,7 @@ MonoBehaviour:
   _rightHandParent: {fileID: 977645129}
   _leftHandParent: {fileID: 1504718185}
   _draggingParent: {fileID: 1527130762}
-  _dropParent: {fileID: 3893294199640552042}
+  _dropParent: {fileID: 2142978851}
   emptySlotImage: {fileID: 21300000, guid: d6f86ad6e47b64740b2e277743c6c9c3, type: 3}
   storageTitle: {fileID: 669315820}
   itemToAdd: {fileID: 11400000, guid: dc35edd116a927441bae8c64af75e423, type: 2}
@@ -19388,7 +19390,7 @@ GameObject:
   - component: {fileID: 4416926083347753180}
   - component: {fileID: 6982812147932997649}
   - component: {fileID: 6982812147932997650}
-  m_Layer: 8
+  m_Layer: 3
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -21186,6 +21188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storageWindow: {fileID: 1753274497}
+  inventoryWindow: {fileID: 158612789}
   StartRandomItems:
   - {fileID: 11400000, guid: dc35edd116a927441bae8c64af75e423, type: 2}
   isOpen: 0
@@ -21215,6 +21218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Animator: {fileID: 8175927958095201875}
   isOpen: 0
+  Player: {fileID: 6982812147932997652}
 --- !u!65 &8306276252957816057
 BoxCollider:
   m_ObjectHideFlags: 0

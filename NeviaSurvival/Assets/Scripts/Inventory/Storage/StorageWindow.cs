@@ -43,9 +43,10 @@ public class StorageWindow : MonoBehaviour
         ClearDrawn();
         storageTitle.text = targetStorage.gameObject.GetComponent<ItemInfo>().itemName;
 
-        for (int i = targetStorage.size; i < 9; i++)
+        for (int i = 0; i < 9; i++)
         {
-            slots[i].gameObject.SetActive(false);
+            if (i < targetStorage.size) { slots[i].gameObject.SetActive(true); }
+            else slots[i].gameObject.SetActive(false);
         }
 
         for (int i = 0; i < targetStorage.storageItems.Count; i++)

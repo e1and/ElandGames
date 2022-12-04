@@ -189,28 +189,24 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             if (isToStorage && isFromStorage)
             {
-                Debug.Log("Swap " + firstItem + " to " + secondItem + " from index " + itemIndex + " to " + targetIndex);
                 storage.storageItems[targetIndex] = firstItem;
                 storage.storageItems[itemIndex] = secondItem;
                 firstCell.isInInventory = false;
             }
             else if (isToStorage && !isFromStorage)
             {
-                Debug.Log("Swap " + firstItem + " to " + secondItem + " from index " + itemIndex + " to " + targetIndex);
                 storage.storageItems[targetIndex] = firstItem;
                 inventory.inventoryItems[itemIndex] = secondItem;
                 firstCell.isInInventory = false;
             }
             else if (!isToStorage && isFromStorage)
             {
-                Debug.Log("Swap " + firstItem + " to " + secondItem + " from index " + itemIndex + " to " + targetIndex);
                 inventory.inventoryItems[targetIndex] = firstItem;
                 storage.storageItems[itemIndex] = secondItem;
                 firstCell.isInInventory = true;
             }
             else if (!isToStorage && !isFromStorage && firstItem != null)
             {
-                Debug.Log("Swap " + firstItem + " to " + secondItem + " from index " + itemIndex + " to " + targetIndex);
                 inventory.inventoryItems[targetIndex] = firstItem;
                 inventory.inventoryItems[itemIndex] = secondItem;
                 firstCell.isInInventory = true;
@@ -467,17 +463,35 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         else if (isInLeftHand) { Destroy(inventory.ItemInLeftHand); inventory.LeftHand = null; isInLeftHand = false; }
         else
         {
-            for (int i = 0; i < inventory.inventoryItems.Count; i++)
+            if (storage == null)
             {
-                
-                if (inventory.inventoryItems[i] != null)
+                for (int i = 0; i < inventory.size; i++)
                 {
-                    if (inventory.inventoryItems[i].Prefab.Equals(Prefab))
+                    if (inventory.inventoryItems[i] != null)
                     {
-                        Debug.Log("Remove");
-                        inventory.inventoryItems[i] = null;
-                        inventory.Recount();
-                        return;
+                        if (inventory.inventoryItems[i].Prefab.Equals(Prefab))
+                        {
+                            Debug.Log("Remove");
+                            inventory.inventoryItems[i] = null;
+                            inventory.Recount();
+                            return;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < storage.size; i++)
+                {
+                    if (storage.storageItems[i] != null)
+                    {
+                        if (storage.storageItems[i].Prefab.Equals(Prefab))
+                        {
+                            Debug.Log("Remove");
+                            storage.storageItems[i] = null;
+                            storage.Recount();
+                            return;
+                        }
                     }
                 }
             }

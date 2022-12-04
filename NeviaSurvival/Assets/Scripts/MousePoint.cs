@@ -39,7 +39,7 @@ public class MousePoint : MonoBehaviour
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out hit, raycastLength))
+        if (Physics.Raycast(ray, out hit, raycastLength, 3))
         {
             _distanceToTarget = Vector3.Distance(Player.transform.position, hit.transform.position);
 
@@ -86,6 +86,14 @@ public class MousePoint : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
+                if (hit.collider.TryGetComponent<DoorTrigger>(out DoorTrigger trigger))
+                {
+                    if (_distanceToTarget <= 3 && !trigger.doorScript.isMoving)
+                    {
+                        Animator.SetTrigger("Use");
+                        trigger.OpenDoor();
+                    }
+                }
                 //if (hit.collider.CompareTag("Ground"))
                 //{
                 //    Debug.Log("New hit " + hit.collider.tag);

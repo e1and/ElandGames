@@ -35,7 +35,7 @@ public class InventoryWindow : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I)) targetInventory.AddItem(itemToAdd);
+        if (Input.GetKeyDown(KeyCode.I)) Redraw();
     }
 
     public void Redraw()

@@ -9,6 +9,7 @@ public class Storage : MonoBehaviour
     public Action onOpenStorage;
     public Action onAutoClose;
     [SerializeField] StorageWindow storageWindow;
+    [SerializeField] InventoryWindow inventoryWindow;
     [SerializeField] List<Item> StartRandomItems = new List<Item>();
     public bool isOpen;
     public List<Item> storageItems = new List<Item>(9);
@@ -26,19 +27,24 @@ public class Storage : MonoBehaviour
         onOpenStorage += AutoClose;
     }
 
+    public void SelectStorage()
+    {
+        storageWindow.targetStorage = this;
+    }
+    
     public void OpenStorage()
     {
+        Debug.Log("Open");
         onOpenStorage.Invoke();
-        storageWindow.targetStorage = this;
         storageWindow.gameObject.SetActive(true);
-        isOpen = true;
         storageWindow.RedrawStorage();
+        inventoryWindow.Redraw();
     }
 
     public void CloseStorage()
     {
+        Debug.Log("Close");
         storageWindow.gameObject.SetActive(false);
-        isOpen = false;
     }
 
     void AutoClose()
