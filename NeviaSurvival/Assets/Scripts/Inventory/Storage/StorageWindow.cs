@@ -77,7 +77,7 @@ public class StorageWindow : MonoBehaviour
     }
 
     void ClearDrawn()
-    {
+    {      
         for (var i = 0; i < drawnIcons.Count; i++)
         {
             if (drawnIcons[i] != null) Destroy(drawnIcons[i]);

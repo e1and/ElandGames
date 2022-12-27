@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public GameObject DayTime;
+    public float Speed = 4f;
+    public Vector3 moveVector;
     public int Health = 100;
     public int Cold = 100;
     public int Sticks = 0;
@@ -20,6 +22,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        moveVector = Vector3.zero;
+        moveVector = new Vector3(0, 0, Input.GetAxis("Vertical"));
+        moveVector = transform.TransformDirection(moveVector.normalized) * Speed;
+
         if (Health <= 0) {
             Debug.Log("1"); 
         }

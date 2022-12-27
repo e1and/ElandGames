@@ -23,7 +23,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     public Transform dropParent;
 
     private Transform _draggingParent;
-    private Transform _originalParent;
+    public Transform _originalParent;
 
     public Transform _rightHandParent;
     public Transform _leftHandParent;
@@ -163,6 +163,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
                 targetSlot.GetChild(0).parent = _originalParent;
             }                                                                               // то переместить иконку предмета в слот перемещаемого предмета
         }
+        if (targetSlot.GetComponent<InventorySlot>().isStorage == false) storageWindow.drawnIcons.Remove(gameObject);
         transform.parent = targetSlot;
 
         Item firstItem;
@@ -179,7 +180,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         else if (firstCell.isInInventory && !firstCell.isInLeftHand && !firstCell.isInRightHand) { firstItem = inventory.inventoryItems[firstCell.index]; Debug.Log(firstItem); }
         else { firstItem = storage.storageItems[firstCell.index]; Debug.Log(firstItem); }
 
-            if (targetSlot.childCount > 0 && secondCell != null)
+        if (targetSlot.childCount > 0 && secondCell != null)
         {
             if (secondCell.isInInventory) { secondItem = inventory.inventoryItems[secondCell.index]; }
             else secondItem = storage.storageItems[secondCell.index];
@@ -204,6 +205,10 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
                 inventory.inventoryItems[targetIndex] = firstItem;
                 storage.storageItems[itemIndex] = secondItem;
                 firstCell.isInInventory = true;
+                
+                firstCell.storage = null; //////////////////////////////////////////
+
+                inventoryWindow.drawnIcons.Add(firstCell.gameObject);
             }
             else if (!isToStorage && !isFromStorage && firstItem != null)
             {
@@ -321,12 +326,16 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             inventoryWindow.rightHandSlot.GetChild(0).GetComponent<InventoryCell>().isInRightHand = false;
             inventoryWindow.rightHandSlot.GetChild(0).GetComponent<InventoryCell>().isInLeftHand = true;
             inventoryWindow.rightHandSlot.GetChild(0).SetParent(_originalParent);
+
             SwapHands();
         }
         else if (inventory.RightHand != null)
         {
             inventoryWindow.rightHandSlot.GetChild(0).GetComponent<InventoryCell>().index = index;
             inventoryWindow.rightHandSlot.GetChild(0).GetComponent<InventoryCell>().isInRightHand = false;
+            inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>()._originalParent = _originalParent;
+            inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().storage = storage;
+            
             inventoryWindow.rightHandSlot.GetChild(0).SetParent(_originalParent);
             Destroy(inventory.ItemInRightHand);
         }
@@ -349,30 +358,40 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             Item temp;
             temp = inventory.RightHand;
-            inventory.RightHand = inventory.inventoryItems[index];
-            inventory.inventoryItems[index] = temp;
+            if (_originalParent.GetComponent<InventorySlot>().isStorage)
+            {
+                inventory.RightHand = storage.storageItems[index];
+                storage.storageItems[index] = temp;
+            }
+            else
+            {
+                inventory.RightHand = inventory.inventoryItems[index];
+                inventory.inventoryItems[index] = temp;
+            }
         }
 
-
+        if (_originalParent.GetComponent<InventorySlot>().isStorage) storageWindow.drawnIcons.Remove(gameObject);
         transform.parent = inventoryWindow.rightHandSlot;
         _originalParent = transform.parent;
-
+        storage = null;
 
 
         isInRightHand = true;
         isEquiped = true;
         index = 101;
-        //inventoryWindow.Redraw();
+        
+        inventoryWindow.Redraw();
     }
 
     private void DragInLeftHand()
-    {
+    {        
         if (inventory.LeftHand != null && isInRightHand)
         {
             inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().index = index;
             inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().isInRightHand = true;
             inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().isInLeftHand = false;
             inventoryWindow.leftHandSlot.GetChild(0).SetParent(_originalParent);
+           
             SwapHands();
         }
         else if (inventory.LeftHand != null && isInLeftHand)
@@ -382,8 +401,12 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         }
         else if (inventory.LeftHand != null)
         {
+            
             inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().index = index;
             inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().isInLeftHand = false;
+            inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().storage = storage;
+            
+            inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>()._originalParent = _originalParent;
             inventoryWindow.leftHandSlot.GetChild(0).SetParent(_originalParent);
             Destroy(inventory.ItemInLeftHand);
         }
@@ -406,18 +429,28 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             Item temp;
             temp = inventory.LeftHand;
-            inventory.LeftHand = inventory.inventoryItems[index];
-            inventory.inventoryItems[index] = temp;
+            if (_originalParent.GetComponent<InventorySlot>().isStorage)
+            {
+                inventory.LeftHand = storage.storageItems[index];
+                storage.storageItems[index] = temp;
+            }
+            else
+            {
+                inventory.LeftHand = inventory.inventoryItems[index];
+                inventory.inventoryItems[index] = temp;
+            }
         }
 
+        if (_originalParent.GetComponent<InventorySlot>().isStorage) storageWindow.drawnIcons.Remove(gameObject);
         transform.parent = inventoryWindow.leftHandSlot;
         _originalParent = transform.parent;
-
+        storage = null;
 
         isInLeftHand = true;
         isEquiped = true;
         index = 100;
-        //inventoryWindow.Redraw();
+
+        inventoryWindow.Redraw();
     }
 
     void SpawnItem(GameObject prefab, Transform spawnPlace)

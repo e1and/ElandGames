@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DescribeUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
+public class DescribeUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    
+    public MousePoint mousePoint;
     
     void Start()
     {
@@ -16,13 +16,14 @@ public class DescribeUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHand
     { Debug.Log("Function UI");}
 
     public void OnPointerEnter(PointerEventData eventData)
-    { Debug.Log("Describe UI"); }
-
-
-
-    void Update()
     {
-
+        mousePoint.isPointUI = true;
+        Debug.Log("Describe UI"); 
     }
-    
+
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        mousePoint.isPointUI = false;
+    }
 }

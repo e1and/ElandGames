@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class MousePoint : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class MousePoint : MonoBehaviour
     [SerializeField] Collider useTrigger;
     
     public float raycastLength = 500;
+    public bool isPointUI;
     public GameObject Player;
     public int stickLimit;
     public GameObject Target;
@@ -39,7 +41,7 @@ public class MousePoint : MonoBehaviour
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out hit, raycastLength, 3))
+        if (!isPointUI && Physics.Raycast(ray, out hit, raycastLength, 3))
         {
             _distanceToTarget = Vector3.Distance(Player.transform.position, hit.transform.position);
 
@@ -70,7 +72,7 @@ public class MousePoint : MonoBehaviour
                             inventory.Recount();
                             inventoryWindow.Redraw();
                         }
-                        else 
+                        else
                         {
                             Comment("Больше не унесу");
                         }
@@ -103,10 +105,25 @@ public class MousePoint : MonoBehaviour
                 //}
             }
 
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (hit.collider.TryGetComponent(out Container container))
+                {
+                    if (_distanceToTarget <= 3)
+                    {
+                        Animator.SetTrigger("Use");
+                        container.Click();
+                    }
+                }
+            }
+
             Debug.DrawRay(ray.origin, ray.direction * raycastLength, Color.yellow);
 
 
         }
+        
+        if (isPointUI) itemNameText.text = "";
+
 
         if (Target.GetComponent<MeshRenderer>().enabled == true)
         {
@@ -150,5 +167,6 @@ public class MousePoint : MonoBehaviour
             }
         }
     }
+
 
 }

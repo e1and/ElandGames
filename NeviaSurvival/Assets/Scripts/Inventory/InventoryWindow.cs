@@ -46,33 +46,33 @@ public class InventoryWindow : MonoBehaviour
         {
             if (targetInventory.inventoryItems[i] != null)
             {
-                Debug.Log("Redraw");
                 Item item = targetInventory.inventoryItems[i];
-                var icon = Instantiate(inventoryCellTemplate, slots[i]);
-                icon.name = item.Name + " Icon";
-                icon.GetComponent<InventoryCell>().Name.text = item.Name;
-                icon.GetComponent<InventoryCell>().index = i;
-                icon.GetComponent<InventoryCell>().Prefab = item.Prefab;
-                icon.GetComponent<InventoryCell>().dropParent = _dropParent;
-                icon.GetComponent<Image>().sprite = item.Icon;
-                icon.GetComponent<InventoryCell>().Init(_draggingParent);
-                icon.GetComponent<InventoryCell>().inventory = targetInventory;
-                icon.GetComponent<InventoryCell>().inventoryWindow = this;
-                icon.GetComponent<InventoryCell>().storageWindow = storageWindow;
-
-                icon.GetComponent<InventoryCell>()._rightHandParent = _rightHandParent;
-                icon.GetComponent<InventoryCell>()._leftHandParent = _leftHandParent;
-                icon.GetComponent<InventoryCell>().isInInventory = true; ;
-
-
-                //icon.GetComponent<InventoryCell>().DropItem += () => Destroy(icon); 
-                //icon.gameObject.transform.SetParent(itemsPanel);
-                icon.GetComponent<InventoryCell>().Equip();
-                drawnIcons.Add(icon);
+                DrawIcon(item, i);
             }
         }
 
         targetInventory.Recount();
+    }
+
+    void DrawIcon(Item item, int i)
+    {
+        var icon = Instantiate(inventoryCellTemplate, slots[i]);
+        icon.name = item.Name + " Icon";
+        icon.GetComponent<InventoryCell>().Name.text = item.Name;
+        icon.GetComponent<InventoryCell>().index = i;
+        icon.GetComponent<InventoryCell>().Prefab = item.Prefab;
+        icon.GetComponent<InventoryCell>().dropParent = _dropParent;
+        icon.GetComponent<Image>().sprite = item.Icon;
+        icon.GetComponent<InventoryCell>().Init(_draggingParent);
+        icon.GetComponent<InventoryCell>().inventory = targetInventory;
+        icon.GetComponent<InventoryCell>().inventoryWindow = this;
+        icon.GetComponent<InventoryCell>().storageWindow = storageWindow;
+
+        icon.GetComponent<InventoryCell>()._rightHandParent = _rightHandParent;
+        icon.GetComponent<InventoryCell>()._leftHandParent = _leftHandParent;
+        icon.GetComponent<InventoryCell>().isInInventory = true; ;
+        icon.GetComponent<InventoryCell>().Equip();
+        drawnIcons.Add(icon);
     }
 
     void ClearDrawn()
