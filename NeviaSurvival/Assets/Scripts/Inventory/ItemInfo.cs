@@ -5,6 +5,7 @@ using UnityEngine;
 public class ItemInfo : MonoBehaviour
 {
     public string itemName;
+    public string itemDescription;
     public string itemComment;
 
     public bool isUsable;

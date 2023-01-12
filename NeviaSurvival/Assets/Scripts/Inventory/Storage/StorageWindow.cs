@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class StorageWindow : MonoBehaviour
 {
     public Storage targetStorage;
+    [SerializeField] MousePoint mousePoint;
     public Player Player;
     public RectTransform[] slots;
     [SerializeField] Inventory inventory;
@@ -70,6 +71,11 @@ public class StorageWindow : MonoBehaviour
                 icon.GetComponent<InventoryCell>()._rightHandParent = _rightHandParent;
                 icon.GetComponent<InventoryCell>()._leftHandParent = _leftHandParent;
                 drawnIcons.Add(icon);
+
+                icon.GetComponent<InventoryCell>().item = item;
+                icon.GetComponent<DescribeUI>().mousePoint = mousePoint;
+                icon.GetComponent<ItemInfo>().itemName = item.Name;
+                icon.GetComponent<ItemInfo>().itemDescription = item.Description;
             }
         }
 

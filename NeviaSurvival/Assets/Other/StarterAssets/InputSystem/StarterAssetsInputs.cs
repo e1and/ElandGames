@@ -21,15 +21,15 @@ namespace StarterAssets
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 
-		public bool v2m;
+		public bool isPlayerMove;
 #endif
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 		public void OnMove(InputValue value)
 		{
 			MoveInput(value.Get<Vector2>());
-			if (value.Get<Vector2>().magnitude != 0) { v2m = true; }
-			else { v2m = false; }
+			if (value.Get<Vector2>().magnitude != 0) { isPlayerMove = true; }
+			else { isPlayerMove = false; }
 		}
 
 		public void OnLook(InputValue value)

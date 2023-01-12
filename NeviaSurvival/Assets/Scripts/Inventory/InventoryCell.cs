@@ -8,6 +8,8 @@ using System;
 public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     public event Action DropItem;
+
+    public Item item;
     
     public Inventory inventory;
     public InventoryWindow inventoryWindow;
@@ -43,13 +45,19 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        _originalParent = transform.parent;
-        transform.parent = _draggingParent;
+        if (Input.GetMouseButton(0))
+        {
+            _originalParent = transform.parent;
+            transform.parent = _draggingParent;
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition;
+        if (Input.GetMouseButton(0))
+        {
+            transform.position = Input.mousePosition;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -85,10 +93,12 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         if (isInRightHand)
         {
             Destroy(inventory.ItemInRightHand);
+            isEquiped = false;
         }
         else if (isInLeftHand) 
         {
             Destroy(inventory.ItemInLeftHand);
+            isEquiped = false;
         }
 
         if (slot.childCount > 0)
@@ -128,10 +138,12 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         if (isInRightHand)
         {
             Destroy(inventory.ItemInRightHand);
+            isEquiped = false;
         }
         else if (isInLeftHand)
         {
             Destroy(inventory.ItemInLeftHand);
+            isEquiped = false;
         }
 
         if (slot.childCount > 0)
@@ -222,10 +234,12 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             if (isToStorage)
             {
                 storage.storageItems[targetIndex] = inventory.LeftHand;
+                storageWindow.drawnIcons.Add(firstCell.gameObject);
             }
             else
             {
                 inventory.inventoryItems[targetIndex] = inventory.LeftHand;
+                inventoryWindow.drawnIcons.Add(firstCell.gameObject);
             }
             inventory.LeftHand = null;
             firstCell.isInLeftHand = false;
@@ -235,10 +249,12 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             if (isToStorage)
             {
                 storage.storageItems[targetIndex] = inventory.RightHand;
+                storageWindow.drawnIcons.Add(firstCell.gameObject);
             }
             else
             {
                 inventory.inventoryItems[targetIndex] = inventory.RightHand;
+                inventoryWindow.drawnIcons.Add(firstCell.gameObject);
             }
             inventory.RightHand = null;
             firstCell.isInRightHand = false;
@@ -316,6 +332,8 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             isInLeftHand = false;
         }
 
+        storageWindow.RedrawStorage();
+        inventoryWindow.Redraw();
     }
 
     private void DragInRightHand()
@@ -457,8 +475,9 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     {
         var item = Instantiate(prefab, spawnPlace);
         item.GetComponent<BoxCollider>().enabled = false;
+        if (item.TryGetComponent(out MeshCollider mesh)) mesh.enabled = false;
         item.GetComponent<Rigidbody>().isKinematic = true;
-
+ 
         if (spawnPlace == _leftHandParent) inventory.ItemInLeftHand = item;
         else inventory.ItemInRightHand = item;
     }
@@ -492,8 +511,20 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     {
         Destroy(gameObject);
 
-        if (isInRightHand) { Destroy(inventory.ItemInRightHand); inventory.RightHand = null; isInRightHand = false; }
-        else if (isInLeftHand) { Destroy(inventory.ItemInLeftHand); inventory.LeftHand = null; isInLeftHand = false; }
+        if (isInRightHand) 
+        { 
+            Destroy(inventory.ItemInRightHand); 
+            inventory.RightHand = null; 
+            isInRightHand = false;
+            isEquiped = false;
+        }
+        else if (isInLeftHand) 
+        { 
+            Destroy(inventory.ItemInLeftHand); 
+            inventory.LeftHand = null; 
+            isInLeftHand = false;
+            isEquiped = false;
+        }
         else
         {
             if (storage == null)

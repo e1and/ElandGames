@@ -92,6 +92,9 @@ GameObject:
   - component: {fileID: 6542453544577919480}
   - component: {fileID: 306399705257382905}
   - component: {fileID: -6594059819933535534}
+  - component: {fileID: 268642290026605883}
+  - component: {fileID: 707889352251201785}
+  - component: {fileID: 9133164061388964927}
   m_Layer: 5
   m_Name: InventoryCellTemplate
   m_TagString: Untagged
@@ -170,4 +173,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0d1b906dfe49ee4796845258d8031ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventory: {fileID: 0}
+  inventoryWindow: {fileID: 0}
+  storage: {fileID: 0}
+  storageWindow: {fileID: 0}
   Name: {fileID: 7961585471577495084}
+  index: 0
+  Prefab: {fileID: 0}
+  isInRightHand: 0
+  isInLeftHand: 0
+  isEquiped: 0
+  isInInventory: 0
+  dropParent: {fileID: 0}
+  _originalParent: {fileID: 0}
+  _rightHandParent: {fileID: 0}
+  _leftHandParent: {fileID: 0}
+--- !u!114 &268642290026605883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3642585116422162082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8ed0b11850145c4995dd76170bb2500, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &707889352251201785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3642585116422162082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d8fa262facc23d4eb93478bd6362284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: 
+  itemComment: 
+  isUsable: 0
+  isCollectible: 0
+  type: 0
+--- !u!114 &9133164061388964927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3642585116422162082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4e5798e49df7b247a3ca622280464ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mousePoint: {fileID: 0}

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class InventoryWindow : MonoBehaviour
 {
+    [SerializeField] MousePoint mousePoint;
     [SerializeField] Inventory targetInventory;
     [SerializeField] StorageWindow storageWindow;
     Storage storage;
@@ -73,6 +74,11 @@ public class InventoryWindow : MonoBehaviour
         icon.GetComponent<InventoryCell>().isInInventory = true; ;
         icon.GetComponent<InventoryCell>().Equip();
         drawnIcons.Add(icon);
+
+        icon.GetComponent<InventoryCell>().item = item;
+        icon.GetComponent<DescribeUI>().mousePoint = mousePoint;
+        icon.GetComponent<ItemInfo>().itemName = item.Name;
+        icon.GetComponent<ItemInfo>().itemDescription = item.Description;
     }
 
     void ClearDrawn()

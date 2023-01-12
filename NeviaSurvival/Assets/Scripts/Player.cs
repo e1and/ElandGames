@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
     public float deltaCold = 0;
     public Text HealthIndicator;
     public Text ColdIndicator;
+    public GameObject spawnPoint;
+    public GameObject PlayerFollowCamera;
 
     void Start()
     {
@@ -26,19 +28,49 @@ public class Player : MonoBehaviour
         moveVector = new Vector3(0, 0, Input.GetAxis("Vertical"));
         moveVector = transform.TransformDirection(moveVector.normalized) * Speed;
 
-        if (Health <= 0) {
-            Debug.Log("1"); 
+        if (Health <= 0) 
+        {
+            Death(); 
         }
 
         deltaCold = deltaCold + 0.01f;
         if (deltaCold >= 1) 
-        { if (Cold > 0) { Cold -= 1; deltaCold = 0f; }
-            else Health -= 1; deltaCold = 0f;
+        { 
+            if (Cold > 0) Cold -= 1; 
+            else Health -= 1; 
+            
+            deltaCold = 0f;
         }
+
         HealthIndicator.text = "" + Health;
         ColdIndicator.text = "" + Cold;
         //DayTime.GetComponent<StickInvent>().stick
 
-
+        if (Input.GetKeyDown(KeyCode.E)) Death();
     }
+
+    void Death()
+    {
+        GetComponent<CharacterController>().enabled = false;
+        transform.position = spawnPoint.transform.position;
+        Health = 100;
+        Cold = 100;
+        GetComponent<CharacterController>().enabled = true;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.TryGetComponent(out Damage damage))
+        {
+            Health -= damage.damage;
+        }
+    }
+
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.collider.TryGetComponent(out Damage damage))
+    //    {
+    //        Health -= damage.damage;
+    //    }
+    //}
 }

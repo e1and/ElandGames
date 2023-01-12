@@ -11,13 +11,19 @@ public class NPC_Move : MonoBehaviour
     [SerializeField] Vector3 Displacement;
     [SerializeField] Vector3 SpawnPoint;
     Vector3 Steering;
+    Coroutine Targeting;
+    Coroutine Staying;
     [SerializeField] bool _isDrawLines;
     [SerializeField] bool _isSeek = true;
     [SerializeField] bool _isWander = false;
+    [SerializeField] bool _isStay = false;
+    public bool _isAttack = false;
     [SerializeField] bool _isPursuit;
     [SerializeField] bool _isKeepDistance;
     [SerializeField] float _speed = 4f;
+    [SerializeField] float _followSpeed = 15f;
     [SerializeField] float _distanceToTarget;
+    [SerializeField] bool _isTargeting;
     [SerializeField] float _minFollowDistance = 2f;
     [SerializeField] float _maxFollowDistance = 5f;
     [SerializeField] float _minFleeDistance = 2f;
@@ -58,11 +64,11 @@ public class NPC_Move : MonoBehaviour
 
         if (!isNavMesh)
         {
-            if (_isPursuit && _isSeek && !_isWander) { Pursuit(); _speed = _speed * 1f; }
-            else if (_isPursuit && !_isSeek && !_isWander) { Evade(); _speed = _speed * 1f; }
+            if (_isPursuit && _isSeek && !_isWander) { Pursuit(); _speed = _speed * 1.5f; }
+            else if (_isPursuit && !_isSeek && !_isWander) { Evade(); _speed = _speed * 1.5f; }
             else if (_isWander == false)
             {
-                _speed = 4;
+                _speed = _followSpeed;
                 if (_isSeek) Seek(Player.transform.position);
                 else Flee(Player.transform.position);
             }
@@ -75,10 +81,36 @@ public class NPC_Move : MonoBehaviour
         }
         
         if (_isDrawLines) DrawLines();
-        _distanceToTarget = Vector3.Distance(transform.position, Player.transform.position);
-        if (_isWander == false && _distanceToTarget > _maxFollowDistance && !isNavMesh) { _isWander = true;  StartCoroutine(Wander()); }
 
-        if (_distanceToTarget < _minFollowDistance + 0.5f && Animator.) Animator.SetTrigger("Attack");
+        _distanceToTarget = Vector3.Distance(transform.position, Player.transform.position);
+
+        if (_distanceToTarget < _maxFollowDistance)
+        {
+            _isSeek = true;
+            isNavMesh = false;
+            _isStay = false;
+            if (Staying != null)
+            {
+                StopCoroutine(Staying);   
+            }
+        }
+
+        if (_isWander == false && _distanceToTarget > _maxFollowDistance && !isNavMesh && !_isStay) 
+        { 
+            _isWander = true;  
+            StartCoroutine(Wander()); 
+        }
+
+        if (_distanceToTarget < _minFollowDistance + 0.5f && !_isAttack)
+        {
+            Animator.SetTrigger("Attack");
+            //TargetingInBattle();
+        }
+
+        if (_distanceToTarget < _minFollowDistance + 0.5f && Targeting == null)
+        {
+            //Targeting = StartCoroutine(RotateToTarget());
+        }
     }
 
     void Move(Vector3 velocity, Vector3 targetVelocity)
@@ -90,18 +122,61 @@ public class NPC_Move : MonoBehaviour
         Velocity = Vector3.ClampMagnitude(Velocity + Steering, _speed);
         if (_distanceToTarget > _minFollowDistance + 0.2 && !isObstacle || !_isSeek && _distanceToTarget < _minFleeDistance)
         {
-            var rbY = rb.velocity.y;
-            rb.velocity = new Vector3(Velocity.x * Time.fixedDeltaTime * 20, rbY, Velocity.z * Time.fixedDeltaTime * 20);  /////////////////////////////////
-            //rb.velocity += new Vector3(0, -200f * Time.fixedDeltaTime, 0);
-            Animator.SetInteger("Move", 1);
+            if (!_isAttack)
+            {
+                var rbY = rb.velocity.y;
+                rb.velocity = new Vector3(Velocity.x * Time.fixedDeltaTime * 20, rbY, Velocity.z * Time.fixedDeltaTime * 20);  /////////////////////////////////
+                Animator.SetInteger("Move", 1);
+            }
         }
         else Animator.SetInteger("Move", 0);
 
-        float singleStep = _speed * Time.deltaTime;
+        float singleStep = _followSpeed * Time.deltaTime * 10f;
         Vector3 newDirection = Vector3.RotateTowards(transform.forward, velocity, singleStep, 0.0f);
 
         if (velocity != Vector3.zero)
-        transform.rotation = Quaternion.LookRotation(newDirection, Vector3.up) ;
+        {
+            if (_distanceToTarget > _minFollowDistance + 2)
+            {
+                transform.rotation = Quaternion.LookRotation(newDirection, Vector3.up);
+            }
+            else
+            {
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Player.transform.position - transform.position), 10 * Time.deltaTime);
+            }
+        }
+    }
+    public void MoveTrigger(int b)
+    {
+        if (b == 1) { _isAttack = true; }
+        else _isAttack = false;
+    }
+
+
+    IEnumerator RotateToTarget()
+    {
+        _isTargeting = true;
+        while (_distanceToTarget < 4)
+        {
+            float singleStep = _followSpeed * Time.deltaTime * 10000f;
+            Vector3 newDirection = Vector3.RotateTowards(transform.forward, Velocity, singleStep, 0.0f);
+
+            if (Velocity != Vector3.zero)
+                transform.rotation = Quaternion.LookRotation(newDirection, Vector3.up);
+
+            yield return null;
+        }
+        _isTargeting = false;
+        Targeting = null;
+    }
+    void TargetingInBattle()
+    {
+        if (Quaternion.LookRotation(Player.transform.position - transform.position) != transform.rotation) // Проверка нужен ли поворот
+        {
+            Vector3 newDirection = Player.transform.position - transform.position; // Направление к новой цели
+            Quaternion rotation = Quaternion.LookRotation(newDirection); // Угол поворота к новой цели
+            transform.rotation = Quaternion.Lerp(transform.rotation, rotation, 10 * Time.deltaTime); // Плавный поворот
+        }
     }
 
     void Seek(Vector3 target)
@@ -170,54 +245,63 @@ public class NPC_Move : MonoBehaviour
     
     IEnumerator Wander()
     {
+        _isWander = false;
+        _isSeek = false;
         _speed = 3;
-
-        NewWanderPoint();
-
-        if (Vector3.Distance(WanderPoint, SpawnPoint) > _wanderMaxRadius)
-            WanderPoint = transform.position - WanderCenter - Displacement;
 
         if (Random.Range(0, 5) > 2) 
         { 
-            NewWayPoint(); 
+            NewWayPoint();
+            agent.enabled = true;
             isNavMesh = true;
-            Debug.Log("New Way Point");
-        }
+            Debug.Log("Go");
 
-        while (Vector3.Distance(transform.position, WanderPoint) > 1)
+            agent.SetDestination(WanderPoint);
+            
+            StartCoroutine(NavMeshWay());
+        }
+        else
         {
-            TargetVelocity = (WanderPoint - transform.position).normalized * _speed;
-              
-            if (_distanceToTarget > _maxFollowDistance)
-                Move(Velocity, TargetVelocity);
-                
-            else break;
-
-            if (isObstacle || isNavMesh)
-            {
-                isNavMesh = true;
-                agent.enabled = true;
-                agent.SetDestination(WanderPoint);
-                Animator.SetInteger("Move", 1);
-                StartCoroutine(NavMeshWay());
-                break; 
-            }
-
-            yield return null;
+            StartCoroutine(Stay());
         }
-        _isWander = false;
+
+        yield return null;
     }
 
     IEnumerator NavMeshWay()
     {
+        Animator.SetInteger("Move", 1);
         while (Vector3.Distance(transform.position, WanderPoint) > 1)
         {
-            Debug.Log(Vector3.Distance(transform.position, WanderPoint));
+            //Debug.Log(Vector3.Distance(transform.position, WanderPoint));
             yield return null;
+
+            if (_distanceToTarget < _maxFollowDistance)
+            {
+                _isSeek = true;
+                break;
+            }
+
+            if (isObstacle)
+            {
+                Debug.Log("Obstacle");
+                Stay();
+                break;
+            }
         }
-        Animator.SetInteger("Move", 0);
         isNavMesh = false;
         agent.enabled = false;
+        _isWander = false;
+    }
+
+    IEnumerator Stay()
+    {
+        Debug.Log("Stay");
+        _isStay = true;
+        agent.enabled = false;
+        Animator.SetInteger("Move", 0);
+        yield return new WaitForSeconds(Random.Range(1, 3));
+        _isStay = false;
     }
 
     void DrawLines()

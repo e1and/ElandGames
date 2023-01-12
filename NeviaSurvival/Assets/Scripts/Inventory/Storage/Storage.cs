@@ -10,6 +10,7 @@ public class Storage : MonoBehaviour
     public Action onAutoClose;
     [SerializeField] StorageWindow storageWindow;
     [SerializeField] InventoryWindow inventoryWindow;
+    [SerializeField] MousePoint mousePoint;
     [SerializeField] List<Item> StartRandomItems = new List<Item>();
     public bool isOpen;
     public List<Item> storageItems = new List<Item>(9);
@@ -45,6 +46,8 @@ public class Storage : MonoBehaviour
     {
         Debug.Log("Close");
         storageWindow.gameObject.SetActive(false);
+        mousePoint.isPointUI = false;
+        mousePoint.itemInfoPanel.SetActive(false);
     }
 
     void AutoClose()
