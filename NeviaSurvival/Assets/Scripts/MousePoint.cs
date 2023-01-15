@@ -40,6 +40,7 @@ public class MousePoint : MonoBehaviour
     [SerializeField] Item Axe;
     [SerializeField] Item Torch;
     [SerializeField] Item Key;
+    [SerializeField] Item BlueKey;
     [SerializeField] Item Cauldron;
     Inventory inventory;
     [SerializeField] InventoryWindow inventoryWindow;
@@ -50,7 +51,7 @@ public class MousePoint : MonoBehaviour
 
     private void Start()
     {
-        Animator = Player.GetComponent<Animator>();
+        Animator = Player.GetComponent<StarterAssets.ThirdPersonController>()._animator;
         inventory = Player.GetComponent<Inventory>();
         agent = GetComponent<NavMeshAgent>();
         controller = GetComponent<CharacterController>();
@@ -58,6 +59,11 @@ public class MousePoint : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Animator.SetTrigger("Attack");
+        }
+
         mousePosition = Input.mousePosition;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -238,6 +244,7 @@ public class MousePoint : MonoBehaviour
             if (item.type == Items.Axe) GetComponent<Inventory>().AddItem(Axe);
             if (item.type == Items.Torch) GetComponent<Inventory>().AddItem(Torch);
             if (item.type == Items.Key) GetComponent<Inventory>().AddItem(Key);
+            if (item.type == Items.BlueKey) GetComponent<Inventory>().AddItem(BlueKey);
             if (item.type == Items.Cauldron) GetComponent<Inventory>().AddItem(Cauldron);
 
             //Animator.SetTrigger("Grab");

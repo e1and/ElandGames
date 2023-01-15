@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class DayNight : MonoBehaviour
@@ -9,6 +11,8 @@ public class DayNight : MonoBehaviour
     [SerializeField] GameObject sunLight;
     [SerializeField] GameObject moonLight;
     bool isDay;
+    [SerializeField] TMP_Text timeIndicator;
+    TimeSpan time;
 
 
     void Start()
@@ -16,7 +20,7 @@ public class DayNight : MonoBehaviour
         if (hour > 4 && hour < 20)
         {
             isDay = true;
-            sunLight.GetComponent<Light>().intensity = 1;
+            sunLight.GetComponent<Light>().intensity = 1.5f;
             moonLight.GetComponent<Light>().intensity = 0;
         }
         else
@@ -30,23 +34,25 @@ public class DayNight : MonoBehaviour
     void Update()
     {
         hour = skyScript.hour;
-        if (hour > 4 && hour < 20 && !isDay) StartCoroutine(StartDay());
-        if (hour > 20 && isDay) StartCoroutine(StartNight());
+        time = TimeSpan.FromHours(hour);
+        timeIndicator.text = time.Hours.ToString("00") + ":" + time.Minutes.ToString("00");
+
+        if (hour > 4 && hour < 18 && !isDay) StartCoroutine(StartDay());
+        if (hour > 18 && isDay) StartCoroutine(StartNight());
     }
 
     IEnumerator StartDay()
     {
         isDay = true;
         moonLight.SetActive(true);
-        moonLight.GetComponent<Light>().intensity = 1;
-        while (hour < 20 && hour > 4 && moonLight.GetComponent<Light>().intensity > 0)
+        while (hour < 18 && hour > 4 && moonLight.GetComponent<Light>().intensity > 0)
         {
             moonLight.GetComponent<Light>().intensity -= 0.001f;
             yield return null;
         }
         moonLight.SetActive(false);
         sunLight.SetActive(true);
-        while (hour < 20 && hour > 4 && sunLight.GetComponent<Light>().intensity < 1)
+        while (hour < 18 && hour > 4 && sunLight.GetComponent<Light>().intensity < 1.5f)
         {
             sunLight.GetComponent<Light>().intensity += 0.001f;
             yield return null;
@@ -57,15 +63,14 @@ public class DayNight : MonoBehaviour
     {
         isDay = false;
         sunLight.SetActive(true);
-        sunLight.GetComponent<Light>().intensity = 1;
-        while (hour > 20 && sunLight.GetComponent<Light>().intensity > 0)
+        while (hour > 18 && sunLight.GetComponent<Light>().intensity > 0)
         {
             sunLight.GetComponent<Light>().intensity -= 0.001f;
             yield return null;
         }
         sunLight.SetActive(false);
         moonLight.SetActive(true);
-        while (hour > 20 && moonLight.GetComponent<Light>().intensity < 1)
+        while (hour > 18 && moonLight.GetComponent<Light>().intensity < 1)
         {
             moonLight.GetComponent<Light>().intensity += 0.001f;
             yield return null;

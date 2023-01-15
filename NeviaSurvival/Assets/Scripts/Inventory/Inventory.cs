@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Items { Stick, Axe, Torch, Key, Cauldron }
+public enum Items { Stick, Axe, Torch, Key, BlueKey, Cauldron }
 
 public class Inventory : MonoBehaviour
 {
