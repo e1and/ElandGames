@@ -9,6 +9,7 @@ public class Container : MonoBehaviour, IPointerClickHandler
     public bool isOpen;
     Storage Storage;
     public Player Player;
+    public float openingTime;
 
     void Start()
     {

@@ -10,6 +10,7 @@ public class Door : MonoBehaviour
     public Inventory inventory;
     public Item key;
     public MousePoint mousePoint;
+    public float openingTime;
 
     private void Start()
     {
@@ -18,23 +19,33 @@ public class Door : MonoBehaviour
 
     public void OpenClose()
     {
-        if (key != null)
-        {
-            for (int i = 0; i < inventory.inventoryItems.Count; i++)
-            {
-                if (inventory.inventoryItems[i] != null && inventory.inventoryItems[i] == key)
-                {
-                    isLocked = false;
-                    mousePoint.Comment("Ключ подошёл!");
-                }
-            }
-        }
         if (!isLocked)
         {
             isOpen = !isOpen;
 
             animator.SetBool("Open", !animator.GetBool("Open"));
         }
+    }
 
+    public bool SearchingKey()
+    {
+        if (key != null)
+        {
+            for (int i = 0; i < inventory.inventoryItems.Count; i++)
+            {
+                if (inventory.inventoryItems[i] != null && inventory.inventoryItems[i] == key)
+                {
+                    if (isLocked) mousePoint.Comment("Ключ подошёл!");
+                    return true;
+                }
+            }
+            if (isLocked)
+            {
+                mousePoint.Comment("Дверь заперта!");
+                return false;
+            }
+            else return false;
+        }
+        else return false;
     }
 }

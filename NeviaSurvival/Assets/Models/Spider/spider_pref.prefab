@@ -1084,6 +1084,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4251409082942358}
+  - component: {fileID: 3818168828738082165}
   - component: {fileID: 95681433750800818}
   m_Layer: 0
   m_Name: spider_pref
@@ -1109,9 +1110,56 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3818168828738082165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715103906888602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba6e71c2061de0045a8a346f3cc8445d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Velocity: {x: 0, y: 0, z: 0}
+  TargetVelocity: {x: 0, y: 0, z: 0}
+  WanderCenter: {x: 0, y: 0, z: 0}
+  Displacement: {x: 0, y: 0, z: 0}
+  SpawnPoint: {x: 0, y: 0, z: 0}
+  _isDrawLines: 0
+  _isSeek: 1
+  _isWander: 0
+  _isStay: 0
+  _isAttack: 0
+  _isPursuit: 0
+  _isKeepDistance: 0
+  _speed: 4
+  _followSpeed: 15
+  _distanceToTarget: 0
+  _isTargeting: 0
+  _minFollowDistance: 2
+  _maxFollowDistance: 5
+  _minFleeDistance: 2
+  _maxFleeDistance: 5
+  _slowingRadius: 3
+  _mass: 70
+  _wanderRadius: 2
+  _wanderCenter: 5
+  _wanderAngle: 0
+  _wanderAngleRange: 30
+  _wanderMaxRadius: 20
+  Player: {fileID: 0}
+  moveLine: {fileID: 0}
+  targetLine: {fileID: 0}
+  isObstacle: 0
+  obstacleHits: 0
+  isNavMesh: 0
+  Waypoints: []
+  WanderPoint: {x: 0, y: 0, z: 0}
 --- !u!95 &95681433750800818
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1128,7 +1176,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &1719841372004032
 GameObject:
   m_ObjectHideFlags: 0

@@ -573,24 +573,24 @@ public partial class TOD_Sky : MonoBehaviour
 		{
 			case TOD_AmbientType.Color:
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientMode != AmbientMode.Flat)
+				//if (RenderSettings.ambientMode != AmbientMode.Flat)
 				#endif
 				{
-					RenderSettings.ambientMode = AmbientMode.Flat;
+					//RenderSettings.ambientMode = AmbientMode.Flat;
 				}
 
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientLight != AmbientColor)
+				//if (RenderSettings.ambientLight != AmbientColor)
 				#endif
 				{
-					RenderSettings.ambientLight = AmbientColor;
+					//RenderSettings.ambientLight = AmbientColor;
 				}
 
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientIntensity != intensity)
+				//if (RenderSettings.ambientIntensity != intensity)
 				#endif
 				{
-					RenderSettings.ambientIntensity = intensity;
+					//RenderSettings.ambientIntensity = intensity;
 				}
 				break;
 
@@ -600,68 +600,68 @@ public partial class TOD_Sky : MonoBehaviour
 				var skyColor     = SampleSkyColor();
 
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientMode != AmbientMode.Trilight)
+				//if (RenderSettings.ambientMode != AmbientMode.Trilight)
 				#endif
 				{
-					RenderSettings.ambientMode = AmbientMode.Trilight;
+					//RenderSettings.ambientMode = AmbientMode.Trilight;
 				}
 
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientSkyColor != skyColor)
+				//if (RenderSettings.ambientSkyColor != skyColor)
 				#endif
 				{
-					RenderSettings.ambientSkyColor = skyColor;
+					//RenderSettings.ambientSkyColor = skyColor;
 				}
 
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientEquatorColor != equatorColor)
+				//if (RenderSettings.ambientEquatorColor != equatorColor)
 				#endif
 				{
-					RenderSettings.ambientEquatorColor = equatorColor;
+					//RenderSettings.ambientEquatorColor = equatorColor;
 				}
 
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientGroundColor != groundColor)
+				//if (RenderSettings.ambientGroundColor != groundColor)
 				#endif
 				{
-					RenderSettings.ambientGroundColor = groundColor;
+					//RenderSettings.ambientGroundColor = groundColor;
 				}
 
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientIntensity != intensity)
+				//if (RenderSettings.ambientIntensity != intensity)
 				#endif
 				{
-					RenderSettings.ambientIntensity = intensity;
+					//RenderSettings.ambientIntensity = intensity;
 				}
 				break;
 
 			case TOD_AmbientType.Spherical:
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientMode != AmbientMode.Skybox)
+				//if (RenderSettings.ambientMode != AmbientMode.Skybox)
 				#endif
 				{
-					RenderSettings.ambientMode = AmbientMode.Skybox;
+					//RenderSettings.ambientMode = AmbientMode.Skybox;
 				}
 
 				#if UNITY_EDITOR
-				if (RenderSettings.skybox != Resources.SkyboxMaterial)
+				//if (RenderSettings.skybox != Resources.SkyboxMaterial)
 				#endif
 				{
-					RenderSettings.skybox = Resources.SkyboxMaterial;
+					//RenderSettings.skybox = Resources.SkyboxMaterial;
 				}
 
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientLight != AmbientColor)
+				//if (RenderSettings.ambientLight != AmbientColor)
 				#endif
 				{
-					RenderSettings.ambientLight = AmbientColor;
+					//RenderSettings.ambientLight = AmbientColor;
 				}
 
 				#if UNITY_EDITOR
-				if (RenderSettings.ambientIntensity != intensity)
+				//if (RenderSettings.ambientIntensity != intensity)
 				#endif
 				{
-					RenderSettings.ambientIntensity = intensity;
+					//RenderSettings.ambientIntensity = intensity;
 				}
 
 				RenderSettings.ambientProbe = RenderToSphericalHarmonics();

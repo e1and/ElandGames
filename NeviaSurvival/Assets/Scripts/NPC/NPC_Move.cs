@@ -15,6 +15,7 @@ public class NPC_Move : MonoBehaviour
     Coroutine Staying;
     [SerializeField] bool _isDrawLines;
     [SerializeField] bool _isSeek = true;
+    [SerializeField] bool _isFlee = false;
     [SerializeField] bool _isWander = false;
     [SerializeField] bool _isStay = false;
     public bool _isAttack = false;
@@ -44,6 +45,7 @@ public class NPC_Move : MonoBehaviour
     public int obstacleHits = 0;
     public bool isNavMesh;
     private NavMeshAgent agent;
+    Coroutine WanderCoroutine;
 
     [SerializeField] GameObject[] Waypoints;    
 
@@ -60,7 +62,7 @@ public class NPC_Move : MonoBehaviour
     {
         if (_isKeepDistance)
         if (_distanceToTarget < _minFleeDistance) _isSeek = false;
-        else _isSeek = true;
+        else if (!_isFlee)_isSeek = true;
 
         if (!isNavMesh)
         {
@@ -84,21 +86,27 @@ public class NPC_Move : MonoBehaviour
 
         _distanceToTarget = Vector3.Distance(transform.position, Player.transform.position);
 
-        if (_distanceToTarget < _maxFollowDistance)
+        if (_distanceToTarget < _maxFollowDistance && !_isFlee)
         {
             _isSeek = true;
             isNavMesh = false;
             _isStay = false;
-            if (Staying != null)
-            {
-                StopCoroutine(Staying);   
-            }
+            StopAllCoroutines();
+            //if (WanderCoroutine != null)
+            //{
+            //    StopCoroutine(WanderCoroutine);
+            //}
+
+            //if (Staying != null)
+            //{
+            //    StopCoroutine(Staying);   
+            //}
         }
 
         if (_isWander == false && _distanceToTarget > _maxFollowDistance && !isNavMesh && !_isStay) 
         { 
             _isWander = true;  
-            StartCoroutine(Wander()); 
+            WanderCoroutine = StartCoroutine(Wander()); 
         }
 
         if (_distanceToTarget < _minFollowDistance + 0.5f && !_isAttack)
@@ -107,14 +115,16 @@ public class NPC_Move : MonoBehaviour
             //TargetingInBattle();
         }
 
-        if (_distanceToTarget < _minFollowDistance + 0.5f && Targeting == null)
+        if (_distanceToTarget < _minFollowDistance + 0.5f)
         {
-            //Targeting = StartCoroutine(RotateToTarget());
+            TargetingInBattle();
         }
     }
 
     void Move(Vector3 velocity, Vector3 targetVelocity)
     {
+        isNavMesh = false;
+        
         if (isObstacle) Animator.SetInteger("Move", 0);
 
         velocity.y = 0;
@@ -131,7 +141,7 @@ public class NPC_Move : MonoBehaviour
         }
         else Animator.SetInteger("Move", 0);
 
-        float singleStep = _followSpeed * Time.deltaTime * 10f;
+        float singleStep = _followSpeed * Time.deltaTime * 1f;
         Vector3 newDirection = Vector3.RotateTowards(transform.forward, velocity, singleStep, 0.0f);
 
         if (velocity != Vector3.zero)
@@ -142,7 +152,7 @@ public class NPC_Move : MonoBehaviour
             }
             else
             {
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Player.transform.position - transform.position), 10 * Time.deltaTime);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Player.transform.position - transform.position), 1 * Time.deltaTime);
             }
         }
     }
@@ -257,12 +267,12 @@ public class NPC_Move : MonoBehaviour
             Debug.Log("Go");
 
             agent.SetDestination(WanderPoint);
-            
+
             StartCoroutine(NavMeshWay());
         }
         else
         {
-            StartCoroutine(Stay());
+            Staying = StartCoroutine(Stay());
         }
 
         yield return null;

@@ -32,7 +32,7 @@ public class Storage : MonoBehaviour
     {
         storageWindow.targetStorage = this;
     }
-    
+
     public void OpenStorage()
     {
         Debug.Log("Open");
@@ -51,7 +51,7 @@ public class Storage : MonoBehaviour
     }
 
     void AutoClose()
-    {
+    { 
         StartCoroutine(AutoCloseCoroutine());
     }
 
@@ -59,6 +59,7 @@ public class Storage : MonoBehaviour
     {
         while (Vector3.Distance(storageWindow.Player.gameObject.transform.position, transform.position) < 3)
         {
+            if (mousePoint.inputs.isPlayerMove || mousePoint.inputs.jump) break;
             yield return null;
         }
         CloseStorage();

@@ -3,8 +3,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 
-namespace StarterAssets
-{
 	public class StarterAssetsInputs : MonoBehaviour
 	{
 		[Header("Character Input Values")]
@@ -12,6 +10,8 @@ namespace StarterAssets
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
+
+		public bool isPlayerMove;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -21,7 +21,7 @@ namespace StarterAssets
 		public bool cursorLocked = true;
 		public bool cursorInputForLook = true;
 
-		public bool isPlayerMove;
+		
 #endif
 
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
@@ -90,4 +90,3 @@ namespace StarterAssets
 
 	}
 	
-}
