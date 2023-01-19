@@ -49647,7 +49647,7 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.16666667
+  - time: 0
     functionName: MoveTrigger
     data: 
     objectReferenceParameter: {fileID: 11500000, guid: ba6e71c2061de0045a8a346f3cc8445d, type: 3}
@@ -49668,7 +49668,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.7
+  - time: 0.73333335
     functionName: MoveTrigger
     data: 
     objectReferenceParameter: {fileID: 11500000, guid: ba6e71c2061de0045a8a346f3cc8445d, type: 3}

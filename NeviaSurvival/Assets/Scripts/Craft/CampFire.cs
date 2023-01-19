@@ -1,38 +1,55 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CampFire : MonoBehaviour {
+public class CampFire : MonoBehaviour 
+{
 	public GameObject Maket;
-	public GameObject campFire;
+	public GameObject campFirePrefab;
+	GameObject campfire;
 	public GameObject parentObject;
+	public Transform playerBuildings;
+	public Vector3 buildingPlace;
+	Inventory inventory;
 	
 	private bool maket;
 	public int sticksTotal;
 
-	// Use this for initialization
-	void Start () {
-	
+
+	void Start () 
+	{
+		inventory = GetComponent<Inventory>();
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		if (Input.GetKeyDown (KeyCode.B)) {
+	void Update () 
+	{
+		parentObject.transform.position = buildingPlace;
+
+		if (Input.GetKeyDown (KeyCode.B)) 
+		{
 			Maket.SetActive (true);
+			Maket.transform.SetParent(parentObject.transform);
 			maket = true;
 		}
-		if (maket == true) {
+
+		if (maket == true) 
+		{
+			Maket.transform.position = buildingPlace;
+
 			if (gameObject.GetComponent<Player>().Sticks >= sticksTotal)
 			{
 				if (Input.GetMouseButton(0))
 				{
 					Maket.SetActive(false);
-					campFire.SetActive(true);
-					campFire.transform.SetParent(parentObject.transform, true);
+					campfire = Instantiate(campFirePrefab);
+					campfire.transform.position = buildingPlace;
+					campfire.transform.SetParent(playerBuildings, true);
 					gameObject.GetComponent<Player>().Sticks -= sticksTotal;
-					gameObject.GetComponent<CampFire>().enabled = false;
+					maket = false;
 				}
 			}
-			if (Input.GetKeyDown (KeyCode.Escape)) {
+
+			if (Input.GetKeyDown (KeyCode.Escape)) 
+			{
 				Maket.SetActive (false);
 				maket = false;
 			}

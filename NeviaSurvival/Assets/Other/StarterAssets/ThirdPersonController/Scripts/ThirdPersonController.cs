@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
 #endif
@@ -66,7 +67,7 @@ using UnityEngine.InputSystem;
 		private float _animationBlend;
 		private float _targetRotation = 0.0f;
 		private float _rotationVelocity;
-		private float _verticalVelocity;
+		[SerializeField] private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
 
 		// timeout deltatime
@@ -88,7 +89,14 @@ using UnityEngine.InputSystem;
 		private const float _threshold = 0.01f;
 
 		public bool _hasAnimator;
-		private bool isLook = false; 
+		[SerializeField] bool isLook;
+		[SerializeField] bool isLookLocked;
+
+	Vector3 lastDirection;
+	Vector3 targetDirection;
+	float lastSpeed;
+
+		float targetSpeed = 0;
 
 		private void Awake()
 		{
@@ -123,7 +131,15 @@ using UnityEngine.InputSystem;
 			GroundedCheck();
 			Move();
 
-			if(Input.GetMouseButton(1)) { Cursor.visible = false; isLook = true; } else { Cursor.visible = true; isLook = false; }
+			if (Input.GetMouseButton(1))
+			{
+				Cursor.visible = false;
+
+					isLook = true;
+
+			}
+			else 
+			{ Cursor.visible = true; isLook = false; }
 		}
 
 		private void LateUpdate()
@@ -157,32 +173,53 @@ using UnityEngine.InputSystem;
 		{
 			// if there is an input and camera position is not fixed
 			if (isLook)
-			{
-				
-					 
+			{ 
 					if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
 					{
 						_cinemachineTargetYaw += _input.look.x * Time.deltaTime;
 						_cinemachineTargetPitch += _input.look.y * Time.deltaTime;
 					}
-				
-				
 			}
 			
 
 			// clamp our rotations so our values are limited 360 degrees
 			_cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-				_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+			_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
-				// Cinemachine will follow this target
-				CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);
-			
+			// Cinemachine will follow this target
+			CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride, _cinemachineTargetYaw, 0.0f);	
 		}
 
+	IEnumerator JumpSpeed(bool isSprint)
+		{
+		lastDirection = targetDirection;
+		if (isSprint) targetSpeed = SprintSpeed;
+		else targetSpeed = MoveSpeed;
+		lastSpeed = targetSpeed;
+		isLookLocked = true;
+
+		isLook = false;
+
+		while (_input.jump || !Grounded)
+		{
+			
+			Debug.Log("jump: isLookLocked");
+			yield return null;
+        }
+
+		isLookLocked = false;
+		Debug.Log("isLookLocked OFF");
+		}	
+		
 		private void Move()
 		{
-			// set target speed based on move speed, sprint speed and if sprint is pressed
-			float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+		// set target speed based on move speed, sprint speed and if sprint is pressed
+		 //targetSpeed = MoveSpeed;
+			if (Grounded)
+			{
+				targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+			}
+
 
 			// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -222,15 +259,17 @@ using UnityEngine.InputSystem;
 				_targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
 				float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
 
-				// rotate to face input direction relative to camera position
-				transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+			// rotate to face input direction relative to camera position
+			transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 			}
 
 
-			Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+			targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+			if (isLookLocked) targetDirection = lastDirection;
 
-			// move the player
-			_controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+		// move the player
+		if (!isLookLocked) lastSpeed = _speed;
+		_controller.Move(targetDirection.normalized * (lastSpeed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
 			// update animator if using character
 			if (_hasAnimator)
@@ -265,6 +304,8 @@ using UnityEngine.InputSystem;
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+
+					StartCoroutine(JumpSpeed(_input.sprint));
 
 					// update animator if using character
 					if (_hasAnimator)

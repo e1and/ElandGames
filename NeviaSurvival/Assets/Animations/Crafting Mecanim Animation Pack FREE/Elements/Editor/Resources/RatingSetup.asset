@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b84ee850199abbc4d92cd6a0d0c4a1ca, type: 3}
   m_Name: RatingSetup
   m_EditorClassIdentifier: 
-  active: 1
-  counter: 7
-  lastCheck: 464985.54635153996
+  active: 0
+  counter: 0
+  lastCheck: 465009.3257120098

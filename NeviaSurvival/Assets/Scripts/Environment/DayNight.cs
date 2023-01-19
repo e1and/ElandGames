@@ -17,19 +17,26 @@ public class DayNight : MonoBehaviour
 
     void Start()
     {
+        hour = skyScript.hour;
+
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
         if (hour > 4 && hour < 20)
         {
             isDay = true;
+            sunLight.SetActive(true);
+            moonLight.SetActive(false);
             sunLight.GetComponent<Light>().intensity = 1.5f;
             moonLight.GetComponent<Light>().intensity = 0;
             RenderSettings.ambientSkyColor = Color.white;
             RenderSettings.ambientEquatorColor = Color.white;
-            RenderSettings.ambientGroundColor = new Color(150, 150, 150, 1);
+            RenderSettings.ambientGroundColor = new Color(0.8f, 0.8f, 0.8f, 1);
             //RenderSettings.ambientIntensity = 0;
         }
         else
         {
+            isDay = false;
+            sunLight.SetActive(false);
+            moonLight.SetActive(true);
             moonLight.GetComponent<Light>().intensity = 1.5f;
             sunLight.GetComponent<Light>().intensity = 0;
             RenderSettings.ambientSkyColor = Color.black;
@@ -45,8 +52,8 @@ public class DayNight : MonoBehaviour
         time = TimeSpan.FromHours(hour);
         timeIndicator.text = time.Hours.ToString("00") + ":" + time.Minutes.ToString("00");
 
-        if (hour > 4 && hour < 18 && !isDay) StartCoroutine(StartDay());
-        if (hour > 18 && isDay) StartCoroutine(StartNight());
+        if (hour > 4 && hour < 18 && !isDay) { StartCoroutine(StartDay()); Debug.Log("Start Day"); }
+        if (hour > 18 && isDay) { StartCoroutine(StartNight()); Debug.Log("Start Day"); }
     }
 
     IEnumerator StartDay()
@@ -69,7 +76,7 @@ public class DayNight : MonoBehaviour
             RenderSettings.ambientSkyColor = Color.Lerp(Color.black, Color.white, time);
             RenderSettings.ambientEquatorColor = Color.Lerp(Color.black, Color.white, time);
             RenderSettings.ambientGroundColor = Color.Lerp(Color.black, Color.white, time);
-            time += 0.0001f;
+            time += 0.0003f;
             yield return null;
         }
     }
@@ -93,7 +100,7 @@ public class DayNight : MonoBehaviour
             RenderSettings.ambientSkyColor = Color.Lerp(Color.white, Color.black, time);
             RenderSettings.ambientEquatorColor = Color.Lerp(Color.white, Color.black, time);
             RenderSettings.ambientGroundColor = Color.Lerp(Color.white, Color.black, time);
-            time += 0.0001f;
+            time += 0.0003f;
             yield return null;
         }
     }

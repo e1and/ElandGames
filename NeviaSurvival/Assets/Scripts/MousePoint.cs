@@ -48,6 +48,9 @@ using UnityEngine.AI;
         [SerializeField] Image openingIndicator;
         Coroutine openingCoroutine;
         public StarterAssetsInputs inputs;
+        CampFire campFire;
+
+        [SerializeField] GameObject buildPlaceParent;
 
         private NavMeshAgent agent;
         private CharacterController controller;
@@ -59,6 +62,8 @@ using UnityEngine.AI;
             agent = GetComponent<NavMeshAgent>();
             controller = GetComponent<CharacterController>();
             inputs = GetComponent<StarterAssetsInputs>();
+            campFire = GetComponent<CampFire>();
+            
         }
 
         void Update()
@@ -74,6 +79,8 @@ using UnityEngine.AI;
 
             if (!isPointUI && Physics.Raycast(ray, out hit, raycastLength, 3))
             {
+                campFire.buildingPlace = hit.point;
+            
                 //itemInfoPanel.SetActive(false);
 
                 _distanceToTarget = Vector3.Distance(Player.transform.position, hit.transform.position);
