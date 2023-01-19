@@ -22,6 +22,10 @@ public class NPC_Move : MonoBehaviour
     [SerializeField] bool _isWander = false;
     [SerializeField] bool _isStay = false;
     [SerializeField] bool _isFollowing = false;
+    [SerializeField] int activeNavMeshCoroutines;
+    [SerializeField] int activeFollowCoroutines;
+    [SerializeField] int activeWanderCoroutines;
+    [SerializeField] int activeStayCoroutines;
     public bool _isAttack = false;
     [SerializeField] bool _isPursuit;
     [SerializeField] bool _isKeepDistance;
@@ -141,17 +145,16 @@ public class NPC_Move : MonoBehaviour
             isNavMesh = true;
             _isStay = false;
 
-            if (AttackCoroutine == null)
+            if (!_isFollowing)
             {
                 Debug.Log("START FOLLOWING");
                 agent.enabled = true;
                 agent.SetDestination(Player.transform.position);
-                AttackCoroutine = StartCoroutine(NavMeshWay(Player.transform.position));
+                AttackCoroutine = StartCoroutine(NavMeshFollow(Player.transform.position));
                 _isFollowing = true;
             }
             else
             {
-                
                 newTargetPoint = Player.transform.position;
                 Debug.Log("TARGETING TO PLAYER");
             }
@@ -179,38 +182,38 @@ public class NPC_Move : MonoBehaviour
 
     void Move(Vector3 velocity, Vector3 targetVelocity)
     {
-        isNavMesh = false;
+        //isNavMesh = false;
 
-        if (isObstacle) Animator.SetInteger("Move", 0);
+        //if (isObstacle) Animator.SetInteger("Move", 0);
 
-        velocity.y = 0;
-        Steering = Vector3.ClampMagnitude(targetVelocity - Velocity, _speed) / _mass;
-        Velocity = Vector3.ClampMagnitude(Velocity + Steering, _speed);
-        if (_distanceToTarget > _minFollowDistance + 0.2 && !isObstacle || !_isSeek && _distanceToTarget < _minFleeDistance)
-        {
-            if (!_isAttack || rb.velocity != null)
-            {
-                var rbY = rb.velocity.y;
-                rb.velocity = new Vector3(Velocity.x * Time.fixedDeltaTime * 20, rbY, Velocity.z * Time.fixedDeltaTime * 20);  /////////////////////////////////
-                Animator.SetInteger("Move", 1);
-            }
-        }
-        else Animator.SetInteger("Move", 0);
+        //velocity.y = 0;
+        //Steering = Vector3.ClampMagnitude(targetVelocity - Velocity, _speed) / _mass;
+        //Velocity = Vector3.ClampMagnitude(Velocity + Steering, _speed);
+        //if (_distanceToTarget > _minFollowDistance + 0.2 && !isObstacle || !_isSeek && _distanceToTarget < _minFleeDistance)
+        //{
+        //    if (!_isAttack || rb.velocity != null)
+        //    {
+        //        var rbY = rb.velocity.y;
+        //        rb.velocity = new Vector3(Velocity.x * Time.fixedDeltaTime * 20, rbY, Velocity.z * Time.fixedDeltaTime * 20);  /////////////////////////////////
+        //        Animator.SetInteger("Move", 1);
+        //    }
+        //}
+        //else Animator.SetInteger("Move", 0);
 
-        float singleStep = _followSpeed * Time.deltaTime * 1f;
-        Vector3 newDirection = Vector3.RotateTowards(transform.forward, velocity, singleStep, 0.0f);
+        //float singleStep = _followSpeed * Time.deltaTime * 1f;
+        //Vector3 newDirection = Vector3.RotateTowards(transform.forward, velocity, singleStep, 0.0f);
 
-        if (velocity != Vector3.zero)
-        {
-            if (_distanceToTarget > _minFollowDistance + 2)
-            {
-                transform.rotation = Quaternion.LookRotation(newDirection, Vector3.up);
-            }
-            else
-            {
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Player.transform.position - transform.position), 1 * Time.deltaTime);
-            }
-        }
+        //if (velocity != Vector3.zero)
+        //{
+        //    if (_distanceToTarget > _minFollowDistance + 2)
+        //    {
+        //        transform.rotation = Quaternion.LookRotation(newDirection, Vector3.up);
+        //    }
+        //    else
+        //    {
+        //        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Player.transform.position - transform.position), 1 * Time.deltaTime);
+        //    }
+        //}
     }
 
     public void MoveTrigger(int b)
@@ -248,19 +251,19 @@ public class NPC_Move : MonoBehaviour
 
     void Seek(Vector3 target)
     {
-        if (_distanceToTarget > _minFollowDistance && _distanceToTarget < _maxFollowDistance)
-        {
-            isNavMesh = false;
-            agent.enabled = false;
-            TargetVelocity = (target - transform.position).normalized * _speed;
-            if (_distanceToTarget < _slowingRadius && _slowingRadius > _minFollowDistance)
-            {
-                TargetVelocity = TargetVelocity.normalized * _distanceToTarget / _slowingRadius;
-            }
+        //if (_distanceToTarget > _minFollowDistance && _distanceToTarget < _maxFollowDistance)
+        //{
+        //    isNavMesh = false;
+        //    agent.enabled = false;
+        //    TargetVelocity = (target - transform.position).normalized * _speed;
+        //    if (_distanceToTarget < _slowingRadius && _slowingRadius > _minFollowDistance)
+        //    {
+        //        TargetVelocity = TargetVelocity.normalized * _distanceToTarget / _slowingRadius;
+        //    }
 
-                Move(Velocity, TargetVelocity);
+        //        Move(Velocity, TargetVelocity);
 
-        }
+        //}
     }
 
     void Pursuit()
@@ -317,8 +320,9 @@ public class NPC_Move : MonoBehaviour
 
     IEnumerator Wander()
     {
+        activeWanderCoroutines++;
         _isWander = false;
-        //_isSeek = false;
+        _isSeek = false;
         agent.enabled = true;
         isNavMesh = true;
         _speed = 3;
@@ -338,18 +342,42 @@ public class NPC_Move : MonoBehaviour
             Staying = StartCoroutine(Stay());
         }
 
+        activeWanderCoroutines--;
         yield return null;
+        
     }
 
-    IEnumerator NavMeshWay(Vector3 targetPoint)
+    IEnumerator NavMeshFollow(Vector3 targetPoint)
     {
+        Debug.Log("NavMeshFollow");
+        activeFollowCoroutines++;
         Animator.SetInteger("Move", 1);
         newTargetPoint = targetPoint;
 
         while (Vector3.Distance(transform.position, targetPoint) > 1)
         {
             if (AttackCoroutine != null)
-            targetPoint = newTargetPoint;
+                targetPoint = newTargetPoint;
+
+            yield return null;
+
+            //if (_distanceToTarget < _maxFollowDistance && _heightToTarget > 1)
+            //{ break; }    
+        }
+        AttackCoroutine = null;
+        _isFollowing = false;
+        activeFollowCoroutines--;
+    }
+
+    IEnumerator NavMeshWay(Vector3 target)
+    {
+        Debug.Log("NavMeshWay");
+        activeNavMeshCoroutines++;
+        Animator.SetInteger("Move", 1);
+
+        while (Vector3.Distance(transform.position, target) > 1)
+        {
+            if (AttackCoroutine != null)
 
             yield return null;
 
@@ -357,10 +385,7 @@ public class NPC_Move : MonoBehaviour
             {
                 _isSeek = true;
                 break;
-            }
-
-            if (_distanceToTarget < _maxFollowDistance && _heightToTarget > 1)
-            { break; }    
+            }  
 
             if (isObstacle)
             {
@@ -369,17 +394,13 @@ public class NPC_Move : MonoBehaviour
                 break;
             }
         }
-        StopAllCoroutines();
-        AttackCoroutine = null;
         _isEscape = false;
-        isNavMesh = false;
-        agent.enabled = false;
-        _isWander = false;
-        _isFollowing = false;
+        activeNavMeshCoroutines--;
     }
 
     IEnumerator Stay()
     {
+        activeStayCoroutines++;
         Debug.Log("Stay");
         _isStay = true;
         agent.enabled = false;
@@ -387,6 +408,7 @@ public class NPC_Move : MonoBehaviour
         yield return new WaitForSeconds(Random.Range(1, 3));
         _isStay = false;
         isNavMesh = false;
+        activeStayCoroutines--;
     }
 
     void DrawLines()
