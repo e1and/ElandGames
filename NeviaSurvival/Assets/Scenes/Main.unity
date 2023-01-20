@@ -5286,10 +5286,15 @@ MonoBehaviour:
   itemTorch: {fileID: 0}
   _isSeek: 0
   _isFlee: 0
+  _isWalk: 0
   _isEscape: 0
   _isWander: 0
   _isStay: 0
   _isFollowing: 0
+  activeNavMeshCoroutines: 0
+  activeFollowCoroutines: 0
+  activeWanderCoroutines: 0
+  activeStayCoroutines: 0
   _isAttack: 0
   _isPursuit: 0
   _isKeepDistance: 0
@@ -5300,6 +5305,7 @@ MonoBehaviour:
   _isTargeting: 0
   _fearDistance: 3
   _minFollowDistance: 2
+  _attackDistance: 0
   _maxFollowDistance: 10
   _minFleeDistance: 12
   _maxFleeDistance: 5
@@ -6488,10 +6494,15 @@ MonoBehaviour:
   itemTorch: {fileID: 11400000, guid: e60b0685d27a3f5409060463b5e6b9e8, type: 2}
   _isSeek: 0
   _isFlee: 0
+  _isWalk: 0
   _isEscape: 0
   _isWander: 0
   _isStay: 0
   _isFollowing: 0
+  activeNavMeshCoroutines: 0
+  activeFollowCoroutines: 0
+  activeWanderCoroutines: 0
+  activeStayCoroutines: 0
   _isAttack: 0
   _isPursuit: 0
   _isKeepDistance: 0
@@ -6502,6 +6513,7 @@ MonoBehaviour:
   _isTargeting: 0
   _fearDistance: 5
   _minFollowDistance: 1
+  _attackDistance: 0
   _maxFollowDistance: 7
   _minFleeDistance: 5
   _maxFleeDistance: 7
@@ -12783,10 +12795,15 @@ MonoBehaviour:
   itemTorch: {fileID: 11400000, guid: e60b0685d27a3f5409060463b5e6b9e8, type: 2}
   _isSeek: 0
   _isFlee: 0
+  _isWalk: 0
   _isEscape: 0
   _isWander: 0
   _isStay: 0
   _isFollowing: 0
+  activeNavMeshCoroutines: 0
+  activeFollowCoroutines: 0
+  activeWanderCoroutines: 0
+  activeStayCoroutines: 0
   _isAttack: 0
   _isPursuit: 0
   _isKeepDistance: 0
@@ -12797,6 +12814,7 @@ MonoBehaviour:
   _isTargeting: 0
   _fearDistance: 5
   _minFollowDistance: 1
+  _attackDistance: 0
   _maxFollowDistance: 7
   _minFleeDistance: 5
   _maxFleeDistance: 7
@@ -16489,6 +16507,7 @@ GameObject:
   - component: {fileID: 1427469782}
   - component: {fileID: 1427469781}
   - component: {fileID: 1427469780}
+  - component: {fileID: 1427469784}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -16574,6 +16593,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!208 &1427469784
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427469779}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &1430351392
 GameObject:
   m_ObjectHideFlags: 0
@@ -49984,10 +50019,15 @@ MonoBehaviour:
   itemTorch: {fileID: 11400000, guid: e60b0685d27a3f5409060463b5e6b9e8, type: 2}
   _isSeek: 0
   _isFlee: 0
+  _isWalk: 0
   _isEscape: 0
   _isWander: 0
   _isStay: 0
   _isFollowing: 0
+  activeNavMeshCoroutines: 0
+  activeFollowCoroutines: 0
+  activeWanderCoroutines: 0
+  activeStayCoroutines: 0
   _isAttack: 0
   _isPursuit: 0
   _isKeepDistance: 0
@@ -49998,6 +50038,7 @@ MonoBehaviour:
   _isTargeting: 0
   _fearDistance: 5
   _minFollowDistance: 1
+  _attackDistance: 0
   _maxFollowDistance: 7
   _minFleeDistance: 5
   _maxFleeDistance: 7
