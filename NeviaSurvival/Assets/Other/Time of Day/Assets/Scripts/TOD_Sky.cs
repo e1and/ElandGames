@@ -11,6 +11,7 @@ public partial class TOD_Sky : MonoBehaviour
 {
 	private const float pi  = Mathf.PI;
 	private const float tau = Mathf.PI * 2.0f;
+	public TOD_Time time;
 
 	private void UpdateScattering()
 	{

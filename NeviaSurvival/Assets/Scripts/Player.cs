@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public GameObject DayTime;
+    public bool isCold = true;
     public float Speed = 4f;
     public Vector3 moveVector;
     public int Health = 100;
@@ -33,13 +34,16 @@ public class Player : MonoBehaviour
             Death(); 
         }
 
-        deltaCold = deltaCold + 0.01f;
-        if (deltaCold >= 1) 
-        { 
-            if (Cold > 0) Cold -= 1; 
-            else Health -= 1; 
-            
-            deltaCold = 0f;
+        if (isCold)
+        {
+            deltaCold = deltaCold + 0.01f;
+            if (deltaCold >= 1)
+            {
+                if (Cold > 0) Cold -= 1;
+                else Health -= 1;
+
+                deltaCold = 0f;
+            }
         }
 
         HealthIndicator.text = "" + Health;

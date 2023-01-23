@@ -48,7 +48,7 @@ using UnityEngine.AI;
         [SerializeField] Image openingIndicator;
         Coroutine openingCoroutine;
         public StarterAssetsInputs inputs;
-        CampFire campFire;
+        BuildCampFire campFire;
 
         [SerializeField] GameObject buildPlaceParent;
 
@@ -62,7 +62,7 @@ using UnityEngine.AI;
             agent = GetComponent<NavMeshAgent>();
             controller = GetComponent<CharacterController>();
             inputs = GetComponent<StarterAssetsInputs>();
-            campFire = GetComponent<CampFire>();
+            campFire = GetComponent<BuildCampFire>();
             
         }
 

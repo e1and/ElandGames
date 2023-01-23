@@ -183,11 +183,12 @@ public class TOD_Time : MonoBehaviour
 		RefreshTimeCurve();
 	}
 
+	public float timeFactor;
 	protected void FixedUpdate()
 	{
 		const float oneDayInMinutes = 60 * 24;
 
-		float timeFactor = oneDayInMinutes / DayLengthInMinutes;
+		timeFactor = oneDayInMinutes / DayLengthInMinutes;
 
 		AddSeconds(Time.deltaTime * timeFactor);
 	}

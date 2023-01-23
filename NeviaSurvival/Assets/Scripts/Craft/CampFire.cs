@@ -1,59 +1,105 @@
-п»їusing UnityEngine;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class CampFire : MonoBehaviour 
+public class Campfire : MonoBehaviour
 {
-	public GameObject Maket;
-	public GameObject campFirePrefab;
-	GameObject campfire;
-	public GameObject parentObject;
-	public Transform playerBuildings;
-	public Vector3 buildingPlace;
-	Inventory inventory;
-	
-	private bool maket;
-	public int sticksTotal;
+    [SerializeField] float burningTime = 2;
+    [SerializeField] TOD_Time time;
+    [SerializeField] string burningTimeText;
+    TimeSpan timeHours;
+    [SerializeField] ParticleSystem fire;
+    [SerializeField] GameObject warmTrigger;
+    [SerializeField] int warmAmount = 1;
+    [SerializeField] float warm;
+    [SerializeField] float distance;
+
+    [SerializeField] Vector3 campfirePos;
+    [SerializeField] Vector3 spiderPos;
+    [SerializeField] Vector3 newPos;
+
+    void Start()
+    {
+        time = FindObjectOfType<TOD_Time>();
+        fire = GetComponentInChildren<ParticleSystem>();
+    }
 
 
-	void Start () 
-	{
-		inventory = GetComponent<Inventory>();
-	}
-	
-	void Update () 
-	{
-		parentObject.transform.position = buildingPlace;
+    void Update()
+    {
+        campfirePos = transform.position;
+        
+        if (burningTime > 0) burningTime -= Time.deltaTime * time.timeFactor / 3600f;
+        else burningTime = 0;
+        timeHours = TimeSpan.FromHours(burningTime);
 
-		if (Input.GetKeyDown (KeyCode.B)) 
-		{
-			Maket.SetActive (true);
-			Maket.transform.SetParent(parentObject.transform);
-			maket = true;
-		}
 
-		if (maket == true) 
-		{
-			Maket.transform.position = buildingPlace;
+        fire.startSize = 0.1f * burningTime;
+        if (burningTime > 8)
+        {
+            fire.gameObject.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+            fire.startSize = 0.8f;
+        }
+        else
+            fire.gameObject.transform.localScale = new Vector3(0.1f * burningTime + 0.4f, 0.1f * burningTime + 0.4f, 0.1f * burningTime + 0.4f);
+        if (burningTime < 1)
+        {
+            fire.startSize += 0.2f;
+        }
 
-			if (gameObject.GetComponent<Player>().Sticks >= sticksTotal)
-			{
-				if (Input.GetMouseButton(0))
-				{
-					Maket.SetActive(false);
-					campfire = Instantiate(campFirePrefab);
-					campfire.transform.position = buildingPlace;
-					campfire.transform.SetParent(playerBuildings, true);
-					gameObject.GetComponent<Player>().Sticks -= sticksTotal;
-					maket = false;
-				}
-			}
 
-			if (Input.GetKeyDown (KeyCode.Escape)) 
-			{
-				Maket.SetActive (false);
-				maket = false;
-			}
-		}
 
-	}
+        if (burningTime <= 0)
+        {
+            burningTimeText = $"Костёр полностью догорел";
+            fire.gameObject.SetActive(false);
+        }
+        else if (burningTime < 0.5f) burningTimeText = $"Костёр догорает";
+        else if (burningTime < 1.5f && burningTime > 0.5f)
+            burningTimeText = $"Гореть будет примерно {Mathf.Round(burningTime)} час";
+        else if (burningTime > 1.5f && burningTime < 4.5f)
+            burningTimeText = $"Гореть будет примерно {Mathf.Round(burningTime)} часа";
+        else if (burningTime > 4.5f) burningTimeText = $"Гореть будет примерно {Mathf.Round(burningTime)} часов";
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.TryGetComponent(out NPC_Move npc) && npc._isFearOfFire)
+        {
+            Debug.Log("Enter Campfire Radius");
+            //npc.StopMove();
+            npc._isEscape = true;
+            spiderPos = npc.gameObject.transform.position;
+            newPos = ((npc.gameObject.transform.position - transform.position) + npc.gameObject.transform.position);
+            npc.Escape(newPos);
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.TryGetComponent(out Player player))
+        {
+            if (burningTime > 0)
+                player.isCold = false;
+
+            distance = Vector3.Distance(player.gameObject.transform.position, transform.position);
+            if (distance != 0 && player.Cold < 100 && burningTime > 0)
+            {
+                warm += burningTime * warmAmount * Time.deltaTime / distance;
+                if (warm > 1)
+                { player.Cold++; warm = 0; }
+            }
+            if (burningTime <= 0) player.isCold = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.TryGetComponent(out Player player))
+        {
+            player.isCold = true;
+        }
+    }
+
 }

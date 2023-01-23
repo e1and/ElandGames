@@ -92,6 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4250025533847729025}
+  - component: {fileID: 5964502704792807117}
   - component: {fileID: 4427503293100508618}
   - component: {fileID: -6465667398575608831}
   - component: {fileID: -6808686143367599762}
@@ -119,6 +120,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5964502704792807117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3580589405978831163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5de0ec33089c2ec4cbdc4264557f3cb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  burningTime: 2
+  time: {fileID: 0}
+  burningTimeText: 
+  fire: {fileID: 0}
 --- !u!95 &4427503293100508618
 Animator:
   serializedVersion: 5
@@ -284,7 +301,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.7e-44, y: 5.71138e-40, z: 6e-44, w: 2.524355e-29}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -302,7 +319,7 @@ GameObject:
   - component: {fileID: 4427503293541516814}
   - component: {fileID: 4427503293541516813}
   m_Layer: 0
-  m_Name: Particle System
+  m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

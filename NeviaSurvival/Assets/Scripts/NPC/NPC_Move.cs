@@ -13,17 +13,19 @@ public class NPC_Move : MonoBehaviour
     Vector3 Steering;
 
     [SerializeField] bool _isDrawLines;
-    [SerializeField] bool _isFearOfFire;
+    public bool _isFearOfFire;
     [SerializeField] Item itemTorch;
     [SerializeField] bool _isSeek = true;
     [SerializeField] bool _isFlee = false;
     [SerializeField] bool _isWalk = false;
-    [SerializeField] bool _isEscape = false;
+    public bool _isEscape = false;
+    public bool isFire;
     [SerializeField] bool _isWander = false;
     [SerializeField] bool _isStay = false;
     [SerializeField] bool _isFollowing = false;
     [SerializeField] int activeNavMeshCoroutines;
     [SerializeField] int activeFollowCoroutines;
+    [SerializeField] int activeEscapeCoroutines;
     [SerializeField] int activeWanderCoroutines;
     [SerializeField] int activeStayCoroutines;
     public bool _isAttack = false;
@@ -55,21 +57,25 @@ public class NPC_Move : MonoBehaviour
     public bool isObstacle;
     public int obstacleHits = 0;
     public bool isNavMesh;
-    private NavMeshAgent agent;
+    public NavMeshAgent agent;
+
+    bool isStopWalk;
 
     Coroutine WanderCoroutine;
+    Coroutine WalkCoroutine;
     Coroutine EscapeCoroutine;
     Coroutine StayCoroutine;
     Coroutine FollowCoroutine;
 
-    Vector3 newTargetPoint = Vector3.zero;
+    public Vector3 newTargetPoint = Vector3.zero;
     Inventory inventory;
 
     [SerializeField] GameObject[] Waypoints;
     [SerializeField] GameObject[] EscapePoints;
 
-    [SerializeField] Vector3 WanderPoint = Vector3.zero;
+    public Vector3 WanderPoint = Vector3.zero;
     [SerializeField] Vector3 EscapePoint = Vector3.zero;
+    [SerializeField] GameObject escapePointNew;
 
 
 
@@ -83,47 +89,47 @@ public class NPC_Move : MonoBehaviour
 
         _attackDistance = _minFollowDistance + 0.2f;
     }
+
+    public void MoveTrigger(int b)
+    {
+        if (b == 1) { _isAttack = true; }
+        else _isAttack = false;
+    }
+
+    public void StopMove()
+    {
+        if (FollowCoroutine != null) StopCoroutine(FollowCoroutine);
+        if (WalkCoroutine != null) StopCoroutine(WalkCoroutine);
+        if (WanderCoroutine != null) StopCoroutine(WanderCoroutine);
+        isStopWalk = true;
+    }
     void FixedUpdate()
     {
         if (Input.GetKey(KeyCode.Q))
         { 
             StopCoroutine(FollowCoroutine);
-            StopCoroutine(WanderCoroutine);
+            StopCoroutine(WalkCoroutine);
             StopCoroutine(EscapeCoroutine);
             StopCoroutine(StayCoroutine);
         }
         
-        if (_isDrawLines) DrawLines();
-
         if (_isKeepDistance)
         {
             if (_distanceToTarget < _minFleeDistance) _isSeek = false;
             else if (!_isFlee) _isSeek = true;
         }
 
-        //if (!isNavMesh && AttackCoroutine == null)
+        //if (obstacleHits > 100)
         //{
-        //    if (_isPursuit && _isSeek && !_isWander) { Pursuit(); _speed = _speed * 1.5f; }
-        //    else if (_isPursuit && !_isSeek && !_isWander) { Evade(); _speed = _speed * 1.5f; }
-        //    else if (_isWander == false)
-        //    {
-        //        _speed = _followSpeed;
-        //        if (_isSeek) Seek(Player.transform.position);
-        //        else Flee(Player.transform.position);
-        //    }
+        //    isNavMesh = false;
+        //    obstacleHits = 0;
         //}
-
-        if (obstacleHits > 100)
-        {
-            isNavMesh = false;
-            obstacleHits = 0;
-        }
 
         _distanceToTarget = Vector3.Distance(transform.position, Player.transform.position);
         _heightToTarget = Mathf.Abs(transform.position.y - Player.transform.position.y);
 
         // Страх огня
-        if (_isFearOfFire && !_isEscape)
+        if (_isFearOfFire && !_isEscape && !isFire)
         {
             if (_distanceToTarget < _fearDistance)
             {
@@ -142,20 +148,20 @@ public class NPC_Move : MonoBehaviour
 
                     agent.SetDestination(EscapePoint);
 
-                    EscapeCoroutine = StartCoroutine(NavMeshWay(EscapePoint));
+                    EscapeCoroutine = StartCoroutine(NavMeshWalk(EscapePoint));
                 }
             }
         }
 
         // Переход от убегания к блужданию
-        if (_distanceToTarget > _minFleeDistance - 0.5f && _isWander)   
-        { _isFlee = false; _isWander = true; }
+        //if (_distanceToTarget > _minFleeDistance - 0.5f && _isWander)   
+        //{ _isFlee = false; _isWander = true; }
 
         // Преследование
-        if (_distanceToTarget < _maxFollowDistance && _heightToTarget < 1 && !_isFlee && !_isEscape) 
+        if (_distanceToTarget < _maxFollowDistance && _heightToTarget < 1 && !_isFlee && !_isEscape && !isFire) 
         {
             if (StayCoroutine != null) StopCoroutine(StayCoroutine);
-            if (WanderCoroutine != null) StopCoroutine(WanderCoroutine);
+            if (WalkCoroutine != null) StopCoroutine(WalkCoroutine);
 
             //_isSeek = true;
             _isStay = false;
@@ -168,156 +174,41 @@ public class NPC_Move : MonoBehaviour
                 _isFollowing = true;
             }
             
-            if (FollowCoroutine == null) _isFollowing = false;
+            //if (FollowCoroutine == null) _isFollowing = false;
         }
         else { _isFollowing = false; }
         
         // Переход к блужданию
-        if (_isWander == false && !_isWalk && !_isStay && !_isEscape) 
-        { 
+        if (_isWander == false && !_isWalk && !_isStay && !_isEscape && !_isFollowing && !isFire) 
+        {
             if (_distanceToTarget > _maxFollowDistance || _heightToTarget > 1)
-            _isWander = true;  
-            WanderCoroutine = StartCoroutine(Wander()); 
+            {
+                _isWander = true;
+                WanderCoroutine = StartCoroutine(Wander());
+            }
         }
         
         // Атака
-        if (_distanceToTarget < _attackDistance && !_isAttack && _heightToTarget < 1)
+        if (_distanceToTarget < _attackDistance && !_isAttack && _heightToTarget < 1 && !isFire)
         {
             Animator.SetTrigger("Attack");
         }
         
         // Ускоренный поворот к цели на ближней дистанции
-        if (_distanceToTarget < _minFollowDistance + 0.5f && _heightToTarget < 1)
+        if (_distanceToTarget < _minFollowDistance + 0.5f && _heightToTarget < 1 && !isFire)
         {
-            TargetingInBattle();
+            RotateToTarget(Player);
         }
     }
 
-    void Move(Vector3 velocity, Vector3 targetVelocity)
+    void RotateToTarget(GameObject target)
     {
-        //isNavMesh = false;
-
-        //if (isObstacle) Animator.SetInteger("Move", 0);
-
-        //velocity.y = 0;
-        //Steering = Vector3.ClampMagnitude(targetVelocity - Velocity, _speed) / _mass;
-        //Velocity = Vector3.ClampMagnitude(Velocity + Steering, _speed);
-        //if (_distanceToTarget > _minFollowDistance + 0.2 && !isObstacle || !_isSeek && _distanceToTarget < _minFleeDistance)
-        //{
-        //    if (!_isAttack || rb.velocity != null)
-        //    {
-        //        var rbY = rb.velocity.y;
-        //        rb.velocity = new Vector3(Velocity.x * Time.fixedDeltaTime * 20, rbY, Velocity.z * Time.fixedDeltaTime * 20);  /////////////////////////////////
-        //        Animator.SetInteger("Move", 1);
-        //    }
-        //}
-        //else Animator.SetInteger("Move", 0);
-
-        //float singleStep = _followSpeed * Time.deltaTime * 1f;
-        //Vector3 newDirection = Vector3.RotateTowards(transform.forward, velocity, singleStep, 0.0f);
-
-        //if (velocity != Vector3.zero)
-        //{
-        //    if (_distanceToTarget > _minFollowDistance + 2)
-        //    {
-        //        transform.rotation = Quaternion.LookRotation(newDirection, Vector3.up);
-        //    }
-        //    else
-        //    {
-        //        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Player.transform.position - transform.position), 1 * Time.deltaTime);
-        //    }
-        //}
-    }
-
-    public void MoveTrigger(int b)
-    {
-        if (b == 1) { _isAttack = true; }
-        else _isAttack = false;
-    }
-
-
-    IEnumerator RotateToTarget()
-    {
-        _isTargeting = true;
-        while (_distanceToTarget < 4)
+        if (Quaternion.LookRotation(target.transform.position - transform.position) != transform.rotation) // Проверка нужен ли поворот
         {
-            float singleStep = _followSpeed * Time.deltaTime * 10000f;
-            Vector3 newDirection = Vector3.RotateTowards(transform.forward, Velocity, singleStep, 0.0f);
-
-            if (Velocity != Vector3.zero)
-                transform.rotation = Quaternion.LookRotation(newDirection, Vector3.up);
-
-            yield return null;
-        }
-        _isTargeting = false;
-    }
-    void TargetingInBattle()
-    {
-        if (Quaternion.LookRotation(Player.transform.position - transform.position) != transform.rotation) // Проверка нужен ли поворот
-        {
-            Vector3 newDirection = Player.transform.position - transform.position; // Направление к новой цели
+            Vector3 newDirection = target.transform.position - transform.position; // Направление к новой цели
             Quaternion rotation = Quaternion.LookRotation(newDirection); // Угол поворота к новой цели
             transform.rotation = Quaternion.Lerp(transform.rotation, rotation, 10 * Time.deltaTime); // Плавный поворот
         }
-    }
-
-    void Seek(Vector3 target)
-    {
-        //if (_distanceToTarget > _minFollowDistance && _distanceToTarget < _maxFollowDistance)
-        //{
-        //    isNavMesh = false;
-        //    agent.enabled = false;
-        //    TargetVelocity = (target - transform.position).normalized * _speed;
-        //    if (_distanceToTarget < _slowingRadius && _slowingRadius > _minFollowDistance)
-        //    {
-        //        TargetVelocity = TargetVelocity.normalized * _distanceToTarget / _slowingRadius;
-        //    }
-
-        //        Move(Velocity, TargetVelocity);
-
-        //}
-    }
-
-    void Pursuit()
-    {
-        float distance = Vector3.Distance(Player.transform.position, transform.position);
-        float predictFrames = distance / Player.GetComponent<Player>().Speed;
-        Vector3 futurePosition = Player.transform.position + Player.GetComponent<Player>().moveVector * predictFrames;
-        Seek(futurePosition);
-    }
-
-    void Evade()
-    {
-        float distance = Vector3.Distance(Player.transform.position, transform.position);
-        float predictFrames = distance / Player.GetComponent<Player>().Speed;
-        Vector3 futurePosition = Player.transform.position + Player.GetComponent<Player>().moveVector * predictFrames;
-        Flee(futurePosition);
-    }
-
-    void Flee(Vector3 target)
-    {
-        if (_distanceToTarget < _minFleeDistance)
-        {
-            isNavMesh = false;
-            TargetVelocity = (transform.position - target).normalized * _speed;
-            Move(Velocity, TargetVelocity);
-        }
-    }
-
-    void NewWanderPoint()
-    {
-        _wanderAngle += Random.Range(-_wanderAngleRange, _wanderAngleRange);
-
-        Displacement = Vector3.zero;
-
-        Displacement.x = Mathf.Cos(_wanderAngle * Mathf.Deg2Rad);
-        Displacement.z = Mathf.Sin(_wanderAngle * Mathf.Deg2Rad);
-        Displacement = Displacement.normalized * _wanderRadius;
-
-        WanderCenter = Velocity.normalized * _wanderCenter;
-        WanderCenter.y = 0;
-
-        WanderPoint = transform.position + WanderCenter + Displacement;
     }
 
     void NewWayPoint()
@@ -332,31 +223,31 @@ public class NPC_Move : MonoBehaviour
 
     IEnumerator Wander()
     {
-        activeWanderCoroutines++;
-        _isWander = false;
-        _isSeek = false;
-        agent.enabled = true;
-        isNavMesh = true;
-        _speed = 3;
-
-        if (Random.Range(0, 5) > 2) 
-        { 
-            NewWayPoint();
-
-            Debug.Log("Walk");
-
-            agent.SetDestination(WanderPoint);
-
-            _isWalk = true;
-
-            WanderCoroutine = StartCoroutine(NavMeshWay(WanderPoint));
-        }
-        else
+        if (!_isEscape)
         {
-            StayCoroutine = StartCoroutine(Stay());
-        }
+            activeWanderCoroutines++;
+            _isWander = false;
+            _speed = 3;
 
-        activeWanderCoroutines--;
+            if (Random.Range(0, 5) > 2)
+            {
+                NewWayPoint();
+
+                Debug.Log("Walk");
+
+                agent.SetDestination(WanderPoint);
+
+                _isWalk = true;
+
+                WalkCoroutine = StartCoroutine(NavMeshWalk(WanderPoint));
+            }
+            else
+            {
+                StayCoroutine = StartCoroutine(Stay());
+            }
+
+            activeWanderCoroutines--;
+        }
         yield return null;
         
     }
@@ -370,8 +261,6 @@ public class NPC_Move : MonoBehaviour
 
         while (Vector3.Distance(transform.position, target.transform.position) > _attackDistance)
         {
-
-
             agent.SetDestination(Player.transform.position);
             Debug.Log("Follow Coroutine");
 
@@ -387,11 +276,12 @@ public class NPC_Move : MonoBehaviour
         activeFollowCoroutines--;
     }
 
-    IEnumerator NavMeshWay(Vector3 target)
+    public IEnumerator NavMeshWalk(Vector3 target)
     {
         Debug.Log("NavMeshWay");
         activeNavMeshCoroutines++;
         Animator.SetInteger("Move", 1);
+        //StopCoroutine("EscapeCoroutine");
 
         while (Vector3.Distance(transform.position, target) > 1)
         {
@@ -410,39 +300,71 @@ public class NPC_Move : MonoBehaviour
                 Stay();
                 break;
             }
+
+            if (_isEscape) break;
         }
         _isWalk = false;
         _isEscape = false;
+        isFire = false;
         activeNavMeshCoroutines--;
+        isStopWalk = false;
         yield return null;
     }
 
-    IEnumerator Stay()
+    public IEnumerator NavMeshEscape(Vector3 target)
+    {
+        NavMeshHit hit;
+        if (NavMesh.Raycast(transform.position, target, out hit, 0))
+        { target = hit.position; }
+        
+        Debug.Log("NavMeshEscape");
+        _isWander = false;
+        //StopCoroutine("WalkCoroutine");
+        _isEscape = true;
+        activeEscapeCoroutines++;
+        Animator.SetInteger("Move", 1);
+
+        while (Vector3.Distance(transform.position, target) > 0.7f)
+        {
+            Debug.Log("Escape Coroutine");
+            yield return null;
+        }
+
+        _isWalk = false;
+        _isEscape = false;
+        isFire = false;
+        activeEscapeCoroutines--;
+        isStopWalk = false;
+        yield return null;
+    }
+
+    public void Escape(Vector3 target)
+    {
+        Debug.Log("Campfire Escape");
+        StopMove();
+        Animator.SetInteger("Move", 1);
+        _isWalk = false;
+        _isWander = false;
+        _isEscape = true;
+        agent.enabled = false;
+        agent.enabled = true;
+        escapePointNew.transform.position = target;
+        
+        EscapePoint = target;
+        //NewEscapePoint();
+        agent.SetDestination(escapePointNew.transform.position);
+        EscapeCoroutine = StartCoroutine(NavMeshEscape(escapePointNew.transform.position));
+    }
+
+    public IEnumerator Stay()
     {
         activeStayCoroutines++;
         Debug.Log("Stay");
         _isStay = true;
-        agent.enabled = false;
         Animator.SetInteger("Move", 0);
         yield return new WaitForSeconds(Random.Range(1, 3));
         _isStay = false;
-        isNavMesh = false;
         activeStayCoroutines--;
-    }
-
-    void DrawLines()
-    {
-        Vector3 startPoint = transform.position;
-        Vector3 movePoint = transform.position + Velocity + Steering;
-        Vector3 targetPoint = transform.position + TargetVelocity;
-        startPoint.y = 0;
-        movePoint.y = 0;
-        targetPoint.y = 0;
-
-        moveLine.SetPosition(0, startPoint);
-        moveLine.SetPosition(1, movePoint);
-        targetLine.SetPosition(0, startPoint);
-        targetLine.SetPosition(1, targetPoint);
     }
 
     public enum AiMoveType : byte
