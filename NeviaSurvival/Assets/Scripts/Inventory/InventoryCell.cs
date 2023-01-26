@@ -18,6 +18,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     public Text Name;
     public int index;
     public GameObject Prefab;
+    public GameObject item3dObject;
     public bool isInRightHand;
     public bool isInLeftHand;
     public bool isEquiped;
@@ -29,6 +30,24 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public Transform _rightHandParent;
     public Transform _leftHandParent;
+
+    // В старте привязывемся 3д объекты к иконкам соответсвующей ячейки инвентаря, экмипировки, хранилища
+    private void Start()
+    {
+        if (storage == null)
+        {
+            if (index == 100 && inventory.ItemInLeftHand != null) item3dObject = inventory.ItemInLeftHand;
+            if (index == 101 && inventory.ItemInRightHand != null) item3dObject = inventory.ItemInRightHand;
+            if (index < 9 && inventory.inventoryItemObjects[index] != null)
+            {
+                item3dObject = inventory.inventoryItemObjects[index];
+            }
+        }
+        else if (storage.storageItemObjects[index] != null)
+        {
+            item3dObject = storage.storageItemObjects[index];
+        }
+    }
 
     public void Equip()
     {
@@ -43,6 +62,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         _originalParent = transform.parent;
     }
 
+    // При начале перетаскивания ИКОНКА меняет парент, а её исходный парент запоминается
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (Input.GetMouseButton(0))
@@ -52,6 +72,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         }
     }
 
+    // При зажатой кнопке мыши ИКОНКА ПЕРЕТАСКИВАЕТСЯ вместе с курсором
     public void OnDrag(PointerEventData eventData)
     {
         if (Input.GetMouseButton(0))
@@ -60,6 +81,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         }
     }
 
+    // При отпускании кнопки над слотами ИКОНКА ПЕРЕХОДИТ В СЛОТ или дропается предмет
     public void OnEndDrag(PointerEventData eventData)
     {
         for (int i = 0; i < 9; i++)
@@ -77,6 +99,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         else Drop();
     }
 
+    // Метод определяющий, что курсор на определенном 2д-объекте
     private bool InRectangle(RectTransform rectangle)
     {
         return RectTransformUtility.RectangleContainsScreenPoint(rectangle, transform.position);
@@ -84,39 +107,86 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     private void DragInSlot(RectTransform slot)
     {
+        // Определяем номер слота, куда перетащили
         int moveToIndex = 0;
         for (int i = 0; i < 9; i++)
         {
             if (inventoryWindow.slots[i] == slot) moveToIndex = i;
         }
 
-        if (isInRightHand)
+        if (isInRightHand) // Если из правой руки, то меняем ячейки 3д-объектов местами в нужных списках
         {
-            Destroy(inventory.ItemInRightHand);
+            inventory.ItemInRightHand.SetActive(false); // 3д-объект деактивируем
+
+            GameObject thisObject;
+            thisObject = inventory.ItemInRightHand;
+            inventory.ItemInRightHand = inventory.inventoryItemObjects[moveToIndex];
+            inventory.inventoryItemObjects[moveToIndex] = thisObject;
             isEquiped = false;
         }
-        else if (isInLeftHand) 
+        else if (isInLeftHand) // Если из левой руки, то меняем ячейки 3д Объектов местами в нужных списках
         {
-            Destroy(inventory.ItemInLeftHand);
+            inventory.ItemInLeftHand.SetActive(false); // 3д-объект деактивируем
+
+            GameObject thisObject;
+            thisObject = inventory.ItemInLeftHand;
+            inventory.ItemInLeftHand = inventory.inventoryItemObjects[moveToIndex];
+            inventory.inventoryItemObjects[moveToIndex] = thisObject;
             isEquiped = false;
         }
 
-        if (slot.childCount > 0)
+        if (slot.childCount > 0)   // Если перетаскивается на НЕ ПУСТОЙ слот ИНВЕНТАРЯ
         {
             var prefab = slot.GetChild(0).GetComponent<InventoryCell>().Prefab;
+
             if (isInRightHand)
             {
-                SpawnItem(prefab, _rightHandParent);
+                if (inventory.ItemInRightHand == null)
+                {
+                    SpawnItem(prefab, _rightHandParent);
+                }
+
                 slot.GetChild(0).GetComponent<InventoryCell>().isInRightHand = true;
             }
-            if (isInLeftHand)
+            else if (isInLeftHand)
             {
-                SpawnItem(prefab, _leftHandParent);
+                if (inventory.ItemInLeftHand == null)
+                {
+                    SpawnItem(prefab, _leftHandParent);
+                }
                 slot.GetChild(0).GetComponent<InventoryCell>().isInLeftHand = true;
             }
-            if (storage != null)
+            else if (storage != null)
             {
+                if (item3dObject != null || slot.GetChild(0).GetComponent<InventoryCell>().item3dObject != null)
+                {
+                    GameObject thisItem = storage.storageItemObjects[index];
+                    storage.storageItemObjects[index] = inventory.inventoryItemObjects[moveToIndex];
+                    inventory.inventoryItemObjects[moveToIndex] = thisItem;
+                }
+
                 slot.GetChild(0).GetComponent<InventoryCell>().storage = storage;
+            }
+        }
+        else
+        {
+            if (isInInventory)
+            {
+                if (item3dObject != null)
+                {
+                    GameObject thisItem = inventory.inventoryItemObjects[index];
+                    inventory.inventoryItemObjects[index] = inventory.inventoryItemObjects[moveToIndex];
+                    inventory.inventoryItemObjects[moveToIndex] = thisItem;
+                }
+            }
+            else if (storage != null)
+            {
+                if (item3dObject != null)
+                {
+                    GameObject thisItem = storage.storageItemObjects[index];
+                    storage.storageItemObjects[index] = inventory.inventoryItemObjects[moveToIndex];
+                    inventory.inventoryItemObjects[moveToIndex] = thisItem;
+                }
             }
         }
 
@@ -137,12 +207,24 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
         if (isInRightHand)
         {
-            Destroy(inventory.ItemInRightHand);
+            inventory.ItemInRightHand.SetActive(false);
+
+            GameObject thisObject;
+            thisObject = inventory.ItemInRightHand;
+            inventory.ItemInRightHand = storage.storageItemObjects[moveToIndex];
+            storage.storageItemObjects[moveToIndex] = thisObject;
+
             isEquiped = false;
         }
         else if (isInLeftHand)
         {
-            Destroy(inventory.ItemInLeftHand);
+            inventory.ItemInLeftHand.SetActive(false);
+
+            GameObject thisObject;
+            thisObject = inventory.ItemInLeftHand;
+            inventory.ItemInLeftHand = storage.storageItemObjects[moveToIndex];
+            storage.storageItemObjects[moveToIndex] = thisObject;
+
             isEquiped = false;
         }
 
@@ -151,13 +233,49 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             var prefab = slot.GetChild(0).GetComponent<InventoryCell>().Prefab;
             if (isInRightHand)
             {
-                SpawnItem(prefab, _rightHandParent);
+                if (inventory.ItemInRightHand == null)
+                {
+                    SpawnItem(prefab, _rightHandParent);
+                }
                 slot.GetChild(0).GetComponent<InventoryCell>().isInRightHand = true;
             }
-            if (isInLeftHand)
+            else if (isInLeftHand)
             {
-                SpawnItem(prefab, _leftHandParent);
+                if (inventory.ItemInLeftHand == null)
+                {
+                    SpawnItem(prefab, _leftHandParent);
+                }
                 slot.GetChild(0).GetComponent<InventoryCell>().isInLeftHand = true;
+            }
+            else if (storage != null)
+            {
+                if (item3dObject != null || slot.GetChild(0).GetComponent<InventoryCell>().item3dObject != null)
+                {
+                    GameObject thisItem = storage.storageItemObjects[index];
+                    storage.storageItemObjects[index] = storage.storageItemObjects[moveToIndex];
+                    storage.storageItemObjects[moveToIndex] = thisItem;
+                }
+            }
+            else if (isInInventory)
+            {
+                if (item3dObject != null || slot.GetChild(0).GetComponent<InventoryCell>().item3dObject != null)
+                {
+                    GameObject thisItem = inventory.inventoryItemObjects[index];
+                    inventory.inventoryItemObjects[index] = storage.storageItemObjects[moveToIndex];
+                    storage.storageItemObjects[moveToIndex] = thisItem;
+                }
+            }
+        }
+        else 
+        {
+            if (isInInventory)
+            {
+                if (item3dObject != null)
+                {
+                    GameObject thisItem = inventory.inventoryItemObjects[index];
+                    inventory.inventoryItemObjects[index] = storage.storageItemObjects[moveToIndex];
+                    storage.storageItemObjects[moveToIndex] = thisItem;
+                }
             }
         }
 
@@ -189,7 +307,8 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
         if (firstCell.isInLeftHand) { firstItem = inventory.LeftHand; }
         else if (firstCell.isInRightHand) { firstItem = inventory.RightHand; }
-        else if (firstCell.isInInventory && !firstCell.isInLeftHand && !firstCell.isInRightHand) { firstItem = inventory.inventoryItems[firstCell.index]; Debug.Log(firstItem); }
+        else if (firstCell.isInInventory && !firstCell.isInLeftHand && !firstCell.isInRightHand) 
+        { firstItem = inventory.inventoryItems[firstCell.index]; Debug.Log("First item is " + firstItem); }
         else { firstItem = storage.storageItems[firstCell.index]; Debug.Log(firstItem); }
 
         if (targetSlot.childCount > 0 && secondCell != null)
@@ -224,8 +343,8 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             }
             else if (!isToStorage && !isFromStorage && firstItem != null)
             {
-                inventory.inventoryItems[targetIndex] = firstItem;
                 inventory.inventoryItems[itemIndex] = secondItem;
+                inventory.inventoryItems[targetIndex] = firstItem;
                 firstCell.isInInventory = true;
             }
         }
@@ -331,6 +450,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             isInLeftHand = false;
         }
+        else if (isInInventory) isInInventory = false;
 
         storageWindow.RedrawStorage();
         inventoryWindow.Redraw();
@@ -338,6 +458,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     private void DragInRightHand()
     {
+        
         if (inventory.RightHand != null && isInLeftHand)
         {
             inventoryWindow.rightHandSlot.GetChild(0).GetComponent<InventoryCell>().index = index;
@@ -355,18 +476,44 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().storage = storage;
             
             inventoryWindow.rightHandSlot.GetChild(0).SetParent(_originalParent);
-            Destroy(inventory.ItemInRightHand);
+
+            item3dObject.transform.parent = _rightHandParent;
+            if (isInInventory) inventory.inventoryItemObjects[index] = inventory.ItemInRightHand;
+            if (storage != null) storage.storageItemObjects[index] = inventory.ItemInRightHand;
+            inventory.ItemInRightHand = item3dObject;
+            
         }
 
         if (inventory.ItemInRightHand == null || inventory.ItemInRightHand != null && !isInLeftHand)
         {
+            if (item3dObject == null)
             SpawnItem(Prefab, _rightHandParent);
+            else
+            {
+                item3dObject.GetComponent<Rigidbody>().isKinematic = true;
+                item3dObject.transform.parent = _rightHandParent;
+                item3dObject.transform.localPosition = new Vector3(0, 0, 0);
+                item3dObject.transform.localRotation = new Quaternion(0, 0, 0, 0);
+                if (isInInventory)
+                {
+                    GameObject temp = inventory.ItemInLeftHand;
+                    inventory.ItemInRightHand = inventory.inventoryItemObjects[index];
+                    inventory.inventoryItemObjects[index] = temp;
+                }
+                if (storage != null)
+                {
+                    GameObject temp = inventory.ItemInLeftHand;
+                    inventory.ItemInRightHand = storage.storageItemObjects[index];
+                    storage.storageItemObjects[index] = temp;
+                }
+                inventory.ItemInRightHand.SetActive(true);
+                item3dObject.GetComponent<BoxCollider>().enabled = false;
+            }
         }
 
         if (isInLeftHand) 
-        { 
+        {
             isInLeftHand = false;
-            if (inventory.RightHand == null) Destroy(inventory.ItemInLeftHand);
             Item temp;
             temp = inventory.RightHand;
             inventory.RightHand = inventory.LeftHand;
@@ -396,6 +543,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
         isInRightHand = true;
         isEquiped = true;
+        isInInventory = false;
         index = 101;
         
         inventoryWindow.Redraw();
@@ -403,7 +551,8 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     private void DragInLeftHand()
     {        
-        if (inventory.LeftHand != null && isInRightHand)
+        // Если в левой руке уже что-то есть, то перекидываем эту иконку из левой руки на место перетаскиваемой
+        if (inventory.LeftHand != null && isInRightHand) // В правую руку
         {
             inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().index = index;
             inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().isInRightHand = true;
@@ -412,38 +561,64 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
            
             SwapHands();
         }
-        else if (inventory.LeftHand != null && isInLeftHand)
+        else if (inventory.LeftHand != null && isInLeftHand) // Возврат иконки обратно в тот же слот
         {
             transform.SetParent(_originalParent);
             return;
         }
-        else if (inventory.LeftHand != null)
+        else if (inventory.LeftHand != null) // В инвентарь, либо в хранилища
         {
-            
-            inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().index = index;
-            inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().isInLeftHand = false;
-            inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().storage = storage;
-            
-            inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>()._originalParent = _originalParent;
+            //inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().index = index;
+            //inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().isInLeftHand = false;
+            //inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().storage = storage;
+            //inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>().isEquiped = false;
+
+
+            //inventoryWindow.leftHandSlot.GetChild(0).GetComponent<InventoryCell>()._originalParent = _originalParent;
             inventoryWindow.leftHandSlot.GetChild(0).SetParent(_originalParent);
-            Destroy(inventory.ItemInLeftHand);
         }
 
+        // Перемещение 3д-объектов, либо создание объекта
         if (inventory.ItemInLeftHand == null || inventory.ItemInLeftHand != null && !isInRightHand)
         {
-            SpawnItem(Prefab, _leftHandParent);
+            if (item3dObject == null)
+                SpawnItem(Prefab, _leftHandParent);
+            else
+            {
+                item3dObject.GetComponent<Rigidbody>().isKinematic = true;
+                item3dObject.transform.parent = _leftHandParent;
+                item3dObject.transform.localPosition = new Vector3(0, 0, 0);
+                item3dObject.transform.localRotation = new Quaternion(0, 0, 0, 0);
+
+                if (isInInventory)
+                {
+                    Debug.Log("Swap gameobjects");
+                    GameObject temp = inventory.ItemInLeftHand;
+                    inventory.ItemInLeftHand = inventory.inventoryItemObjects[index];
+                    inventory.inventoryItemObjects[index] = temp;
+                }
+                if (storage != null)
+                {
+                    GameObject temp = inventory.ItemInLeftHand;
+                    inventory.ItemInLeftHand = storage.storageItemObjects[index];
+                    storage.storageItemObjects[index] = temp;
+                }
+
+                inventory.ItemInLeftHand.SetActive(true);
+                item3dObject.GetComponent<BoxCollider>().enabled = false;
+            }
         }
 
+        // Перекидывание местами предметов Item из правой руки в левую
         if (isInRightHand)
         {
             isInRightHand = false;
-            if (inventory.LeftHand == null) Destroy(inventory.ItemInRightHand);
             Item temp;
             temp = inventory.LeftHand;
             inventory.LeftHand = inventory.RightHand;
             inventory.RightHand = temp;
         }
-        else
+        else // Перекидывание местами предметов Item из инвентаря или хранилища
         {
             Item temp;
             temp = inventory.LeftHand;
@@ -459,37 +634,54 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             }
         }
 
+        // Если иконка из хранилища, то убираем её из списка отображаемых иконок
         if (_originalParent.GetComponent<InventorySlot>().isStorage) storageWindow.drawnIcons.Remove(gameObject);
+
+        // Помещаем иконку в слот левой руки и делаем его исходным
         transform.parent = inventoryWindow.leftHandSlot;
         _originalParent = transform.parent;
+        
+        // Присваиваем параметры свойственные иконке лежащей в слоте левой руки
         storage = null;
-
         isInLeftHand = true;
         isEquiped = true;
+        isInInventory = false;
         index = 100;
 
+        // Перерисовываем все иконки инвентаря и экипировки
         inventoryWindow.Redraw();
     }
 
     void SpawnItem(GameObject prefab, Transform spawnPlace)
     {
-        var item = Instantiate(prefab, spawnPlace);
-        item.GetComponent<BoxCollider>().enabled = false;
-        if (item.TryGetComponent(out MeshCollider mesh)) mesh.enabled = false;
-        item.GetComponent<Rigidbody>().isKinematic = true;
- 
-        if (spawnPlace == _leftHandParent) inventory.ItemInLeftHand = item;
-        else inventory.ItemInRightHand = item;
+        if (item3dObject == null)
+        {
+            item3dObject = Instantiate(prefab, spawnPlace);
+        }
+        else
+        {
+            item3dObject.SetActive(true);
+            item3dObject.transform.parent = spawnPlace;
+        }
+
+        item3dObject.GetComponent<BoxCollider>().enabled = false;
+        if (item3dObject.TryGetComponent(out MeshCollider mesh)) mesh.enabled = false;
+        item3dObject.GetComponent<Rigidbody>().isKinematic = true;
+        
+
+        if (spawnPlace == _leftHandParent) inventory.ItemInLeftHand = item3dObject;
+        else inventory.ItemInRightHand = item3dObject;
     }
 
     void SwapHands()
     {
+        Debug.Log("Swap Hands");
+        var tempItem = inventory.ItemInLeftHand;
+        inventory.ItemInLeftHand = inventory.ItemInRightHand;
+        inventory.ItemInRightHand = tempItem;
+
         if (inventory.ItemInLeftHand != null && inventory.ItemInRightHand != null)
         {
-            var tempItem = inventory.ItemInLeftHand;
-            inventory.ItemInLeftHand = inventory.ItemInRightHand;
-            inventory.ItemInRightHand = tempItem;
-
             inventory.ItemInLeftHand.transform.position = inventoryWindow._leftHandParent.position;
             inventory.ItemInRightHand.transform.position = inventoryWindow._rightHandParent.position;
 
@@ -500,27 +692,38 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     private void Drop()
     {
-        var item = Instantiate(Prefab, dropParent);
-        item.transform.position = inventory.gameObject.transform.position + new Vector3(0, 1, 0);
-        DropItem?.Invoke();
+        if (item3dObject == null)
+        {
+            Debug.Log("Spawn");
+            item3dObject = Instantiate(Prefab, dropParent);   
+        }
+        else
+        {
+            item3dObject.transform.parent = dropParent;
+            item3dObject.GetComponent<Rigidbody>().isKinematic = false;
+            item3dObject.GetComponent<BoxCollider>().enabled = true; ;
+            item3dObject.SetActive(true);
+        }
+        item3dObject.transform.position = inventory.gameObject.transform.position + new Vector3(0, 1, 0);
         RemoveFromInventory();
+        DropItem?.Invoke();
+        Destroy(gameObject, 0);
+        inventory.gameObject.GetComponent<MousePoint>().isPointUI = false;
 
     }
 
     void RemoveFromInventory()
     {
-        Destroy(gameObject);
-
         if (isInRightHand) 
         { 
-            Destroy(inventory.ItemInRightHand); 
+            inventory.ItemInRightHand = null; 
             inventory.RightHand = null; 
             isInRightHand = false;
             isEquiped = false;
         }
         else if (isInLeftHand) 
         { 
-            Destroy(inventory.ItemInLeftHand); 
+            inventory.ItemInLeftHand = null; 
             inventory.LeftHand = null; 
             isInLeftHand = false;
             isEquiped = false;
@@ -537,6 +740,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
                         {
                             Debug.Log("Remove");
                             inventory.inventoryItems[i] = null;
+                            inventory.inventoryItemObjects[i] = null;
                             inventory.Recount();
                             return;
                         }
@@ -553,6 +757,7 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
                         {
                             Debug.Log("Remove");
                             storage.storageItems[i] = null;
+                            storage.storageItemObjects[i] = null;
                             storage.Recount();
                             return;
                         }
@@ -560,6 +765,9 @@ public class InventoryCell : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
                 }
             }
         }
+        
+        inventoryWindow.Redraw();
+        storageWindow.RedrawStorage();
     }
 
 }

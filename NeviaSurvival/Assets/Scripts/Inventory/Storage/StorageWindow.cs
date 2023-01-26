@@ -54,7 +54,6 @@ public class StorageWindow : MonoBehaviour
         {
             if (targetStorage.storageItems[i] != null)
             {
-                Debug.Log("Redraw Storage");
                 Item item = targetStorage.storageItems[i];
                 var icon = Instantiate(inventoryCellTemplate, slots[i]);
                 icon.name = item.Name + " Icon";

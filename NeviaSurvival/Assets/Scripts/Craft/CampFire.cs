@@ -2,7 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshObstacle))]
+[RequireComponent(typeof(SphereCollider))]
 public class Campfire : MonoBehaviour
 {
     [SerializeField] float burningTime = 2;
@@ -19,15 +22,23 @@ public class Campfire : MonoBehaviour
     [SerializeField] Vector3 spiderPos;
     [SerializeField] Vector3 newPos;
 
+    public NavMeshObstacle obstacle;
+    SphereCollider sphere;
+
     void Start()
     {
         time = FindObjectOfType<TOD_Time>();
         fire = GetComponentInChildren<ParticleSystem>();
+        obstacle = GetComponent<NavMeshObstacle>();
+        sphere = GetComponent<SphereCollider>();
     }
 
 
     void Update()
     {
+        obstacle.radius = burningTime / 2;
+        sphere.radius = burningTime / 1.9f;
+        
         campfirePos = transform.position;
         
         if (burningTime > 0) burningTime -= Time.deltaTime * time.timeFactor / 3600f;
@@ -65,7 +76,7 @@ public class Campfire : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.TryGetComponent(out NPC_Move npc) && npc._isFearOfFire)
+        if (other.gameObject.TryGetComponent(out NPC_Move npc) && npc._isFearOfFire && burningTime > 0)
         {
             Debug.Log("Enter Campfire Radius");
             //npc.StopMove();
@@ -81,7 +92,14 @@ public class Campfire : MonoBehaviour
         if (other.gameObject.TryGetComponent(out Player player))
         {
             if (burningTime > 0)
+            {
                 player.isCold = false;
+                player.isCampfire = true;
+            }
+            else 
+            {
+                player.isCampfire = false;
+            }
 
             distance = Vector3.Distance(player.gameObject.transform.position, transform.position);
             if (distance != 0 && player.Cold < 100 && burningTime > 0)
@@ -99,6 +117,7 @@ public class Campfire : MonoBehaviour
         if (other.gameObject.TryGetComponent(out Player player))
         {
             player.isCold = true;
+            player.isCampfire = false;
         }
     }
 

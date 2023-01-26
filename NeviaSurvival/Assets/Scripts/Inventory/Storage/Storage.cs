@@ -14,6 +14,7 @@ public class Storage : MonoBehaviour
     [SerializeField] List<Item> StartRandomItems = new List<Item>();
     public bool isOpen;
     public List<Item> storageItems = new List<Item>(9);
+    public List<GameObject> storageItemObjects = new List<GameObject>(9);
 
     public int size = 6;
     public int filledSlots;
@@ -26,6 +27,10 @@ public class Storage : MonoBehaviour
         }
 
         onOpenStorage += AutoClose;
+        for (int i = 0; i < 9; i++)
+        {
+            storageItemObjects.Add(null);
+        }
     }
 
     public void SelectStorage()

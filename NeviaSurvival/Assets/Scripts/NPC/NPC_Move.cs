@@ -58,6 +58,7 @@ public class NPC_Move : MonoBehaviour
     public int obstacleHits = 0;
     public bool isNavMesh;
     public NavMeshAgent agent;
+    public Player player;
 
     bool isStopWalk;
 
@@ -86,6 +87,7 @@ public class NPC_Move : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
         inventory = Player.GetComponent<Inventory>();
+        player.GetComponent<Player>();
 
         _attackDistance = _minFollowDistance + 0.2f;
     }
@@ -105,7 +107,9 @@ public class NPC_Move : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.Q))
+        Animator.SetFloat("Velocity", agent.velocity.magnitude);
+
+        if (Input.GetKey(KeyCode.P))
         { 
             StopCoroutine(FollowCoroutine);
             StopCoroutine(WalkCoroutine);
@@ -158,12 +162,11 @@ public class NPC_Move : MonoBehaviour
         //{ _isFlee = false; _isWander = true; }
 
         // Преследование
-        if (_distanceToTarget < _maxFollowDistance && _heightToTarget < 1 && !_isFlee && !_isEscape && !isFire) 
+        if (_distanceToTarget < _maxFollowDistance && _heightToTarget < 1 && !_isFlee && !_isEscape && !isFire && !player.isCampfire) 
         {
             if (StayCoroutine != null) StopCoroutine(StayCoroutine);
             if (WalkCoroutine != null) StopCoroutine(WalkCoroutine);
 
-            //_isSeek = true;
             _isStay = false;
 
             if (!_isFollowing && _distanceToTarget > _attackDistance)
@@ -181,7 +184,7 @@ public class NPC_Move : MonoBehaviour
         // Переход к блужданию
         if (_isWander == false && !_isWalk && !_isStay && !_isEscape && !_isFollowing && !isFire) 
         {
-            if (_distanceToTarget > _maxFollowDistance || _heightToTarget > 1)
+            if (_distanceToTarget > _maxFollowDistance || _heightToTarget > 1 || player.isCampfire)
             {
                 _isWander = true;
                 WanderCoroutine = StartCoroutine(Wander());
@@ -261,12 +264,14 @@ public class NPC_Move : MonoBehaviour
 
         while (Vector3.Distance(transform.position, target.transform.position) > _attackDistance)
         {
+            if (player.isCampfire) break;
+            if (_isEscape) break;
             agent.SetDestination(Player.transform.position);
             Debug.Log("Follow Coroutine");
-
+            
             yield return null;
-            if (_distanceToTarget > _maxFollowDistance) break;
-            if(_distanceToTarget < _minFollowDistance) break;
+            if (_distanceToTarget > _maxFollowDistance || _heightToTarget > 1) break;
+            if(_distanceToTarget < _minFollowDistance || _heightToTarget > 1) break;
 
             //if (_distanceToTarget < _maxFollowDistance && _heightToTarget > 1)
             //{ break; }    
@@ -282,23 +287,27 @@ public class NPC_Move : MonoBehaviour
         activeNavMeshCoroutines++;
         Animator.SetInteger("Move", 1);
         //StopCoroutine("EscapeCoroutine");
+        float timer = 0;
 
         while (Vector3.Distance(transform.position, target) > 1)
         {
             Debug.Log("NavMeshWay Coroutine");
             yield return null;
 
-            if (_distanceToTarget < _maxFollowDistance && !_isEscape && _heightToTarget < 1)
+            if (_distanceToTarget < _maxFollowDistance && !_isEscape && _heightToTarget > 1)
             {
                 _isSeek = true;
                 break;
             }
 
-            if (isObstacle)
+            if (agent.velocity.magnitude <= 0.1f)
             {
-                Debug.Log("Obstacle");
-                Stay();
-                break;
+                timer += Time.deltaTime;
+                if (timer > 1)
+                {
+                    Debug.Log("Obstacle break NavMeshWalk");
+                    break;
+                }
             }
 
             if (_isEscape) break;
@@ -313,9 +322,9 @@ public class NPC_Move : MonoBehaviour
 
     public IEnumerator NavMeshEscape(Vector3 target)
     {
-        NavMeshHit hit;
-        if (NavMesh.Raycast(transform.position, target, out hit, 0))
-        { target = hit.position; }
+        //NavMeshHit hit;
+        //if (NavMesh.Raycast(transform.position, target, out hit, 0))
+        //{ target = hit.position; }
         
         Debug.Log("NavMeshEscape");
         _isWander = false;
@@ -324,9 +333,19 @@ public class NPC_Move : MonoBehaviour
         activeEscapeCoroutines++;
         Animator.SetInteger("Move", 1);
 
-        while (Vector3.Distance(transform.position, target) > 0.7f)
+        while (Vector3.Distance(transform.position, target) > 1.2f)
         {
+            float timer = 0;
             Debug.Log("Escape Coroutine");
+            if (agent.velocity.magnitude <= 0.1f)
+            {
+                timer += Time.deltaTime;
+                if (timer > 1)
+                {
+                    Debug.Log("Obstacle break NavMeshEscape");
+                    break;
+                }
+            }
             yield return null;
         }
 
@@ -341,7 +360,7 @@ public class NPC_Move : MonoBehaviour
     public void Escape(Vector3 target)
     {
         Debug.Log("Campfire Escape");
-        StopMove();
+        //StopMove();
         Animator.SetInteger("Move", 1);
         _isWalk = false;
         _isWander = false;
@@ -358,12 +377,18 @@ public class NPC_Move : MonoBehaviour
 
     public IEnumerator Stay()
     {
+        float time = 0;
         activeStayCoroutines++;
-        Debug.Log("Stay");
         _isStay = true;
         Animator.SetInteger("Move", 0);
-        yield return new WaitForSeconds(Random.Range(1, 3));
-        _isStay = false;
+        while (time < Random.Range(1, 3))
+        {
+            Debug.Log("Stay");
+            if (_isAttack || _isEscape || _isWalk) { Animator.SetInteger("Move", 1); break; }
+            time += Time.deltaTime;
+            yield return null;
+        }
+       _isStay = false;
         activeStayCoroutines--;
     }
 

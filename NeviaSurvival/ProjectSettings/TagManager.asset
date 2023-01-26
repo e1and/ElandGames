@@ -9,6 +9,7 @@ TagManager:
   - Stick
   - Wall
   - Warm
+  - Item
   layers:
   - Default
   - TransparentFX

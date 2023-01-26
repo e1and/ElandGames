@@ -218,7 +218,7 @@ using UnityEngine.AI;
             openingCoroutine = null;
         }
 
-    void Descripion()
+        void Descripion()
         {
             itemNameText.text = "";
 
@@ -275,6 +275,19 @@ using UnityEngine.AI;
             }
         }
 
+        void SendObjectToSlot(Item item, GameObject itemObject)
+        {
+            for (int i = 0; i < inventory.inventoryItems.Count; i++)
+            {
+                if (inventory.inventoryItems[i] == item && inventory.inventoryItemObjects[i] == null)
+                {
+                    inventory.inventoryItemObjects[i] = itemObject;
+                    inventory.inventoryItemObjects[i].SetActive(false);
+                    return;
+                }
+            }
+        }
+    
         void Collect(ItemInfo item, GameObject itemObject)
         {
             if (inventory.filledSlots < inventory.size)
@@ -283,16 +296,16 @@ using UnityEngine.AI;
                 {
                     GetComponent<Inventory>().AddItem(Stick);
                     Player.GetComponent<Player>().Sticks += 1;
+                    SendObjectToSlot(Stick, itemObject);
                 }
-                if (item.type == Items.Axe) GetComponent<Inventory>().AddItem(Axe);
-                if (item.type == Items.Torch) GetComponent<Inventory>().AddItem(Torch);
-                if (item.type == Items.Key) GetComponent<Inventory>().AddItem(Key);
-                if (item.type == Items.BlueKey) GetComponent<Inventory>().AddItem(BlueKey);
-                if (item.type == Items.Cauldron) GetComponent<Inventory>().AddItem(Cauldron);
+                if (item.type == Items.Axe) { GetComponent<Inventory>().AddItem(Axe); SendObjectToSlot(Axe, itemObject); }
+                if (item.type == Items.Torch) { GetComponent<Inventory>().AddItem(Torch); SendObjectToSlot(Torch, itemObject); }
+                if (item.type == Items.Key) { GetComponent<Inventory>().AddItem(Key); SendObjectToSlot(Key, itemObject); }
+                if (item.type == Items.BlueKey) { GetComponent<Inventory>().AddItem(BlueKey); SendObjectToSlot(BlueKey, itemObject); }
+                if (item.type == Items.Cauldron) { GetComponent<Inventory>().AddItem(Cauldron); SendObjectToSlot(Cauldron, itemObject); }
 
-                //Animator.SetTrigger("Grab");
-                Destroy(itemObject, 0);
-                inventory.Recount();
+            //Animator.SetTrigger("Grab");
+            inventory.Recount();
                 inventoryWindow.Redraw();
 
                 itemInfoPanel.SetActive(false);

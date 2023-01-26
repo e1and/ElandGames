@@ -12,6 +12,7 @@ public class Inventory : MonoBehaviour
     [SerializeField] List<Item> StartItems = new List<Item>();
     
     public List<Item> inventoryItems = new List<Item>(9);
+    public List<GameObject> inventoryItemObjects = new List<GameObject>(9);
 
     public Item LeftHand;
     public GameObject ItemInLeftHand;
