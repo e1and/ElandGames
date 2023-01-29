@@ -27,19 +27,19 @@ public class StorageWindow : MonoBehaviour
     private void Awake()
     {
         targetStorage.onStorageItemAdded += OnItemAdded;
-        targetStorage.onOpenStorage += RedrawStorage;
-        RedrawStorage();
+        targetStorage.onOpenStorage += Redraw;
+        Redraw();
         gameObject.SetActive(false);
     }
 
-    void OnItemAdded(Item obj) => RedrawStorage();
+    void OnItemAdded(Item obj) => Redraw();
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.O)) targetStorage.AddItem(itemToAdd);
     }
 
-    public void RedrawStorage()
+    public void Redraw()
     {
         ClearDrawn();
         storageTitle.text = targetStorage.gameObject.GetComponent<ItemInfo>().itemName;

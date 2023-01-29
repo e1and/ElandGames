@@ -43,7 +43,7 @@ public class Storage : MonoBehaviour
         Debug.Log("Open");
         onOpenStorage.Invoke();
         storageWindow.gameObject.SetActive(true);
-        storageWindow.RedrawStorage();
+        storageWindow.Redraw();
         inventoryWindow.Redraw();
     }
 
