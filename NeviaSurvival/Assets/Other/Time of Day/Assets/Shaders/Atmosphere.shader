@@ -55,7 +55,7 @@ Shader "Time of Day/Atmosphere"
 				o.position = TOD_TRANSFORM_VERT(v.vertex);
 
 #if PER_VERTEX
-				o.color = ScatteringColor(v.vertex.xyz, 1);
+				o.color = ScatteringColor(v.vertex.xyz, 0);
 #else
 				o.viewDir = v.vertex.xyz;
 				ScatteringCoefficients(o.viewDir, 1, o.inscatter, o.outscatter);
@@ -68,7 +68,7 @@ Shader "Time of Day/Atmosphere"
 			}
 
 			float4 frag(v2f i) : COLOR {
-				float dither = tex2D(_DitheringTexture, i.frag).a * (1.0 / (BAYER_DIM * BAYER_DIM + 1.0));
+				float dither = tex2D(_DitheringTexture, i.frag).a * (1.0 / (BAYER_DIM * BAYER_DIM + 1));
 
 #if PER_VERTEX
 				float4 color = dither + i.color;

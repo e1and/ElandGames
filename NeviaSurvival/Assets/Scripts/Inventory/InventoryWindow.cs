@@ -51,34 +51,47 @@ public class InventoryWindow : MonoBehaviour
                 DrawIcon(item, i);
             }
         }
+        if (targetInventory.LeftHand != null) DrawIcon(targetInventory.LeftHand, 100);
+        if (targetInventory.RightHand != null) DrawIcon(targetInventory.RightHand, 101);
 
         targetInventory.Recount();
     }
 
     void DrawIcon(Item item, int i)
     {
-        var icon = Instantiate(inventoryCellTemplate, slots[i]);
-        icon.name = item.Name + " Icon";
-        icon.GetComponent<InventoryCell>().Name.text = item.Name;
-        icon.GetComponent<InventoryCell>().index = i;
-        icon.GetComponent<InventoryCell>().Prefab = item.Prefab;
-        icon.GetComponent<InventoryCell>().dropParent = _dropParent;
-        icon.GetComponent<Image>().sprite = item.Icon;
-        icon.GetComponent<InventoryCell>().Init(_draggingParent);
-        icon.GetComponent<InventoryCell>().inventory = targetInventory;
-        icon.GetComponent<InventoryCell>().inventoryWindow = this;
-        icon.GetComponent<InventoryCell>().storageWindow = storageWindow;
+        RectTransform slot = null;
 
-        icon.GetComponent<InventoryCell>()._rightHandParent = _rightHandParent;
-        icon.GetComponent<InventoryCell>()._leftHandParent = _leftHandParent;
-        icon.GetComponent<InventoryCell>().isInInventory = true; ;
-        icon.GetComponent<InventoryCell>().Equip();
-        drawnIcons.Add(icon);
+        if (i < 100) slot = slots[i];
+        else if (i == 100) slot = leftHandSlot;
+        else if (i == 101) slot = rightHandSlot;
 
-        icon.GetComponent<InventoryCell>().item = item;
-        icon.GetComponent<DescribeUI>().mousePoint = mousePoint;
-        icon.GetComponent<ItemInfo>().itemName = item.Name;
-        icon.GetComponent<ItemInfo>().itemDescription = item.Description;
+        GameObject iconGameObject = Instantiate(inventoryCellTemplate, slot);
+        InventoryCell iconScript = iconGameObject.GetComponent<InventoryCell>();
+
+        iconGameObject.name = item.Name + " Icon";
+        iconScript.Name.text = item.Name;
+        iconScript.index = i;
+        iconScript.Prefab = item.Prefab;
+        iconScript.dropParent = _dropParent;
+        iconGameObject.GetComponent<Image>().sprite = item.Icon;
+        iconScript.Init(_draggingParent);
+        iconScript.inventory = targetInventory;
+        iconScript.inventoryWindow = this;
+        iconScript.storageWindow = storageWindow;
+
+        iconScript._rightHandParent = _rightHandParent;
+        iconScript._leftHandParent = _leftHandParent;
+
+        if (i < 100) iconScript.isInInventory = true;
+        else if (i == 100) iconScript.isInLeftHand = true;
+        else if (i == 101) iconScript.isInRightHand = true;
+
+        drawnIcons.Add(iconGameObject);
+
+        iconScript.item = item;
+        iconGameObject.GetComponent<DescribeUI>().mousePoint = mousePoint;
+        iconGameObject.GetComponent<ItemInfo>().itemName = item.Name;
+        iconGameObject.GetComponent<ItemInfo>().itemDescription = item.Description;
     }
 
     void ClearDrawn()
@@ -86,7 +99,6 @@ public class InventoryWindow : MonoBehaviour
         for (var i = 0; i < drawnIcons.Count; i++)
         {
             if (drawnIcons[i] != null)
-            if (!drawnIcons[i].GetComponent<InventoryCell>().isEquiped)
             Destroy(drawnIcons[i]);
         }
         drawnIcons.Clear();

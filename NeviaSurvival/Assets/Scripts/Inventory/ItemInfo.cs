@@ -10,6 +10,13 @@ public class ItemInfo : MonoBehaviour
 
     public bool isUsable;
     public bool isCollectible;
+    public bool isCarrying;
+
+    public Vector3 carryPosition;
+    public Quaternion carryRotation;
+    [Space]
+    [Space]
+    [Space]
 
     public Items type;
 
