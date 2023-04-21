@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3695128842568182412}
   - component: {fileID: 916013009796654311}
   - component: {fileID: -9220042135458166091}
+  - component: {fileID: 5110808045168309495}
   m_Layer: 0
   m_Name: Torch
   m_TagString: Item
@@ -77,12 +78,17 @@ MonoBehaviour:
     \u043C\u0430\u043B\u043E \u0447\u0442\u043E \u0443\u0432\u0438\u0434\u0438\u0448\u044C!"
   durability: 0
   weight: 0
+  isUnique: 0
   isUsable: 0
+  isOpenable: 0
   isCollectible: 1
   isCarrying: 0
   isFirePlace: 0
   isTorch: 1
   isBed: 0
+  isMovable: 0
+  savePosition: {x: 0, y: 0, z: 0}
+  isSaveItemActive: 0
   carryPosition: {x: 0, y: 0, z: 0}
   carryRotation: {x: 0, y: 0, z: 0, w: 0}
   item: {fileID: 11400000, guid: e60b0685d27a3f5409060463b5e6b9e8, type: 2}
@@ -116,6 +122,25 @@ Rigidbody:
   m_Interpolate: 2
   m_Constraints: 0
   m_CollisionDetection: 2
+--- !u!114 &5110808045168309495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d1c271ec91a5a47a261927adc25719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LeftHandPosition: {x: 0.013018948, y: 0.013985886, z: 0.008009419}
+  LeftHandRotation: {x: 0, y: 0, z: 0, w: 0}
+  RightHandPosition: {x: 0.005968079, y: -0.0040085786, z: 0.028000038}
+  RightHandRotation: {x: -0.05846186, y: 0.041986782, z: -0.002461016, w: -0.9974032}
+  backpackPosition: {x: 0, y: 0, z: 0}
+  backpackRotation: {x: 0, y: 0, z: 0, w: 0}
+  Name: 
 --- !u!1 &100002
 GameObject:
   m_ObjectHideFlags: 0

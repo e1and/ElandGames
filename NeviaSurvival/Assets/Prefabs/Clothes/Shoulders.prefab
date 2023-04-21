@@ -29,14 +29,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1467199651139844787}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7069834, y: 0, z: 0, w: 0.7072302}
   m_LocalPosition: {x: 78.26198, y: 0.17975616, z: 31.300087}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -89.98, y: 0, z: 0}
 --- !u!114 &1106889621690375018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54,10 +54,18 @@ MonoBehaviour:
   itemComment: "\u041D\u0430\u043F\u043B\u0435\u0447\u043D\u0438\u043A\u0438 \u0438\u0437
     \u043A\u043E\u0436\u0438!"
   durability: 100
+  weight: 0
+  isUnique: 0
   isUsable: 0
+  isOpenable: 0
   isCollectible: 1
   isCarrying: 0
   isFirePlace: 0
+  isTorch: 0
+  isBed: 0
+  isMovable: 0
+  savePosition: {x: 0, y: 0, z: 0}
+  isSaveItemActive: 0
   carryPosition: {x: 0, y: 0, z: 0}
   carryRotation: {x: 0, y: 0, z: 0, w: 0}
   item: {fileID: 11400000, guid: 07795f3402da73b4ea8fa834e7adea90, type: 2}
@@ -74,10 +82,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09d1c271ec91a5a47a261927adc25719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LeftHandPosition: {x: -0.144, y: 0.12, z: -0.086}
-  LeftHandRotation: {x: 0.63412124, y: -0.40890187, z: -0.093414724, w: 0.6495869}
-  RightHandPosition: {x: 0.1, y: 0.06, z: 0.142}
-  RightHandRotation: {x: 0.53307533, y: 0.38879776, z: -0.67339516, w: -0.33347574}
+  LeftHandPosition: {x: -1.073, y: -0.175, z: 1.039}
+  LeftHandRotation: {x: 0.19705836, y: -0.9021867, z: 0.06316021, w: -0.37846813}
+  RightHandPosition: {x: 0.815, y: 0.209, z: 1.253}
+  RightHandRotation: {x: 0.7217041, y: 0.60165036, z: -0.27831545, w: -0.1992499}
   backpackPosition: {x: 0, y: 0, z: 0}
   backpackRotation: {x: 0, y: 0, z: 0, w: 0}
   Name: 

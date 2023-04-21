@@ -83,10 +83,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09d1c271ec91a5a47a261927adc25719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LeftHandPosition: {x: -0.144, y: 0.12, z: -0.086}
-  LeftHandRotation: {x: 0.63412124, y: -0.40890187, z: -0.093414724, w: 0.6495869}
-  RightHandPosition: {x: 0.1, y: 0.06, z: 0.142}
-  RightHandRotation: {x: 0.53307533, y: 0.38879776, z: -0.67339516, w: -0.33347574}
+  LeftHandPosition: {x: 0.199, y: -0.004, z: 0.152}
+  LeftHandRotation: {x: 0.5799434, y: -0.67902654, z: -0.29231563, w: 0.3422576}
+  RightHandPosition: {x: -0.216, y: -0.062, z: 0.06}
+  RightHandRotation: {x: -0.46459427, y: 0.5994373, z: -0.39928293, w: 0.51517016}
   backpackPosition: {x: 0, y: 0, z: 0}
   backpackRotation: {x: 0, y: 0, z: 0, w: 0}
   Name: 
