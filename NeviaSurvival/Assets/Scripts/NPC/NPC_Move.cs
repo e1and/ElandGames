@@ -69,7 +69,7 @@ public class NPC_Move : MonoBehaviour
     Coroutine FollowCoroutine;
 
     public Vector3 newTargetPoint = Vector3.zero;
-    Inventory inventory;
+    InventoryWindow inventoryWindow;
 
     [SerializeField] GameObject[] Waypoints;
     [SerializeField] GameObject[] EscapePoints;
@@ -86,7 +86,7 @@ public class NPC_Move : MonoBehaviour
         SpawnPoint = transform.position;
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
-        inventory = Player.GetComponent<Inventory>();
+        inventoryWindow = FindObjectOfType<InventoryWindow>();
         player.GetComponent<Player>();
 
         _attackDistance = _minFollowDistance + 0.2f;
@@ -109,7 +109,7 @@ public class NPC_Move : MonoBehaviour
     {
         Animator.SetFloat("Velocity", agent.velocity.magnitude);
 
-        if (Input.GetKey(KeyCode.P))
+        if (Input.GetKey(KeyCode.O))
         { 
             StopCoroutine(FollowCoroutine);
             StopCoroutine(WalkCoroutine);
@@ -137,7 +137,7 @@ public class NPC_Move : MonoBehaviour
         {
             if (_distanceToTarget < _fearDistance)
             {
-                if (inventory.LeftHand == itemTorch || inventory.RightHand == itemTorch)
+                if (inventoryWindow.LeftHandItem == itemTorch || inventoryWindow.RightHandItem == itemTorch)
                 {
                     _isSeek = false;
                     _isWander = false;
@@ -162,7 +162,7 @@ public class NPC_Move : MonoBehaviour
         //{ _isFlee = false; _isWander = true; }
 
         // Преследование
-        if (_distanceToTarget < _maxFollowDistance && _heightToTarget < 1 && !_isFlee && !_isEscape && !isFire && !player.isCampfire) 
+        if ((_distanceToTarget < _maxFollowDistance && _heightToTarget < 1) && (!_isFlee || !_isEscape || !isFire || !player.isCampfire)) 
         {
             if (StayCoroutine != null) StopCoroutine(StayCoroutine);
             if (WalkCoroutine != null) StopCoroutine(WalkCoroutine);
@@ -192,7 +192,7 @@ public class NPC_Move : MonoBehaviour
         }
         
         // Атака
-        if (_distanceToTarget < _attackDistance && !_isAttack && _heightToTarget < 1 && !isFire)
+        if (_distanceToTarget < _attackDistance && !_isAttack && _heightToTarget < 1 && !isFire && !player.isDead)
         {
             Animator.SetTrigger("Attack");
         }
@@ -266,6 +266,7 @@ public class NPC_Move : MonoBehaviour
         {
             if (player.isCampfire) break;
             if (_isEscape) break;
+            if (player.isDead) break;
             agent.SetDestination(Player.transform.position);
             Debug.Log("Follow Coroutine");
             

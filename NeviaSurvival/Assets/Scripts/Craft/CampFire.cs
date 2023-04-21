@@ -8,11 +8,36 @@ using UnityEngine.AI;
 [RequireComponent(typeof(SphereCollider))]
 public class Campfire : MonoBehaviour
 {
-    [SerializeField] float burningTime = 2;
+    [Header("Время горения костра в игровых часах")]
+    public float burningTime = 2;
+    public string burningTimeText;
+
+    [Header("Ссылки на компоненты")]
     [SerializeField] TOD_Time time;
-    [SerializeField] string burningTimeText;
+    
     TimeSpan timeHours;
+    [Space(10)]
+    [Header("Ссылки на партиклы огня и дыма")]
     [SerializeField] ParticleSystem fire;
+    ParticleSystem.MainModule fireMain;
+    ParticleSystem.MainModule smokeMain;
+    Color smokeColor;
+    [SerializeField] ParticleSystem smoke;
+    [SerializeField] ParticleSystem embers;
+    [SerializeField] ParticleSystem embersSmall;
+    [SerializeField] ParticleSystem glow;
+    [SerializeField] GameObject fireLight;
+    [Space(10)]
+    [Header("Дрова")]
+    [SerializeField] GameObject[] fireWoods;
+    [Space(10)]
+    [Header("Материал и текстуры состояния костра")]
+    [SerializeField] Material Shader;
+    [SerializeField] Texture burningTexture;
+    [SerializeField] Texture extinctTexture;
+    MeshRenderer[] meshRenderer;
+    [Space(10)]
+    [Header("Функции согревания и отпугивания")]
     [SerializeField] GameObject warmTrigger;
     [SerializeField] int warmAmount = 1;
     [SerializeField] float warm;
@@ -24,20 +49,96 @@ public class Campfire : MonoBehaviour
 
     public NavMeshObstacle obstacle;
     SphereCollider sphere;
+    ItemInfo info;
 
     void Start()
     {
         time = FindObjectOfType<TOD_Time>();
-        fire = GetComponentInChildren<ParticleSystem>();
+        //fire = GetComponentInChildren<ParticleSystem>();
         obstacle = GetComponent<NavMeshObstacle>();
-        sphere = GetComponent<SphereCollider>();
+        sphere = warmTrigger.GetComponent<SphereCollider>();
+        fireMain = fire.main;
+        smokeMain = smoke.main;
+        smokeColor = smokeMain.startColor.color;
+        info = GetComponent<ItemInfo>();
+        for (int i = 0; i < fireWoods.Length; i++)
+        {
+            if (burningTime < i) fireWoods[i].SetActive(false);
+        }
+
+        meshRenderer = GetComponentsInChildren<MeshRenderer>();
+
+        for (int i = 0; i < meshRenderer.Length; i++)
+        {
+            meshRenderer[i].material = new Material(Shader);
+            meshRenderer[i].material.mainTexture = burningTexture;
+        }
+        StartCoroutine(burningWoodPerHour());
+    }
+
+    public float smokeTime = 0;
+    public float colorA;
+
+    IEnumerator burningWoodPerHour()
+    {
+        fireLight.SetActive(true);
+        while (burningTime > 8) { yield return null; }
+        fireWoods[7].SetActive(false);
+
+        while (burningTime > 7) { yield return null; }
+        fireWoods[6].SetActive(false);
+
+        while (burningTime > 6) { yield return null; }
+        fireWoods[5].SetActive(false);
+
+        while (burningTime > 5) { yield return null; }
+        fireWoods[4].SetActive(false);
+
+        while (burningTime > 4) { yield return null; }
+        fireWoods[3].SetActive(false);
+
+        while (burningTime > 3) { yield return null; }
+        fireWoods[2].SetActive(false);
+
+        while (burningTime > 2) { yield return null; }
+        fireWoods[1].SetActive(false);
+
+        while (burningTime > 1) { yield return null; }
+        {
+            embers.gameObject.SetActive(false);
+            //fire.gameObject.SetActive(false);
+            fireWoods[0].SetActive(false);
+        }
+
+        while (burningTime > 0) { yield return null; }
+        embers.gameObject.SetActive(false);
+        fire.gameObject.SetActive(false);
+        glow.gameObject.SetActive(false);
+        embersSmall.gameObject.SetActive(false);
+        fireLight.SetActive(false);
+
+        for (int i = 0; i < meshRenderer.Length; i++)
+        {
+            meshRenderer[i].material = new Material(Shader);
+            meshRenderer[i].material.mainTexture = extinctTexture;
+        }
+        smokeTime = 0;
+        while (smokeColor.a > 0)
+        {
+            smokeTime += Time.deltaTime;
+            smokeColor.a -= 0.001f;
+            smokeMain.startColor = smokeColor;
+            colorA = smokeColor.a;
+            yield return null;
+        }
+        //smoke.gameObject.SetActive(false);
     }
 
 
     void Update()
     {
         obstacle.radius = burningTime / 2;
-        sphere.radius = burningTime / 1.9f;
+        sphere.radius = burningTime / 1.9f + 1;
         
         campfirePos = transform.position;
         
@@ -45,26 +146,21 @@ public class Campfire : MonoBehaviour
         else burningTime = 0;
         timeHours = TimeSpan.FromHours(burningTime);
 
+        fire.gameObject.transform.localScale = new Vector3(0.2f + 0.01f * burningTime, 0.2f + 0.01f * burningTime, 0.2f + 0.01f * burningTime);
+        
+        if (burningTime >= 0) fire.startLifetime = 0.3f + 0.1f * burningTime;
+        else fire.startLifetime = 0;
 
-        fire.startSize = 0.1f * burningTime;
+        if (burningTime < 2) fire.startSize = burningTime;
+
         if (burningTime > 8)
         {
-            fire.gameObject.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
-            fire.startSize = 0.8f;
+            fireMain.startLifetime = 0.8f;
         }
-        else
-            fire.gameObject.transform.localScale = new Vector3(0.1f * burningTime + 0.4f, 0.1f * burningTime + 0.4f, 0.1f * burningTime + 0.4f);
-        if (burningTime < 1)
-        {
-            fire.startSize += 0.2f;
-        }
-
-
 
         if (burningTime <= 0)
         {
             burningTimeText = $"Костёр полностью догорел";
-            fire.gameObject.SetActive(false);
         }
         else if (burningTime < 0.5f) burningTimeText = $"Костёр догорает";
         else if (burningTime < 1.5f && burningTime > 0.5f)
@@ -72,9 +168,39 @@ public class Campfire : MonoBehaviour
         else if (burningTime > 1.5f && burningTime < 4.5f)
             burningTimeText = $"Гореть будет примерно {Mathf.Round(burningTime)} часа";
         else if (burningTime > 4.5f) burningTimeText = $"Гореть будет примерно {Mathf.Round(burningTime)} часов";
+        info.itemDescription = burningTimeText;
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void AddFireWood()
+    {
+        burningTime++;
+
+        smokeColor.a = 1;
+        smokeMain.startColor = smokeColor;
+
+        for (int i = 0; i < fireWoods.Length; i++)
+        {
+            if (burningTime > i) fireWoods[i].SetActive(true);
+        }
+
+        for (int i = 0; i < meshRenderer.Length; i++)
+        {
+            meshRenderer[i].material = new Material(Shader);
+            meshRenderer[i].material.mainTexture = burningTexture;
+        }
+
+        embers.gameObject.SetActive(true);
+        fire.gameObject.SetActive(true);
+        glow.gameObject.SetActive(true);
+        embersSmall.gameObject.SetActive(true);
+        smoke.gameObject.SetActive(true);
+
+        fireMain.startSize = 2;
+
+        StartCoroutine(burningWoodPerHour());
+    }
+
+    public void TriggerEnter(Collider other)
     {
         if (other.gameObject.TryGetComponent(out NPC_Move npc) && npc._isFearOfFire && burningTime > 0)
         {
@@ -87,7 +213,7 @@ public class Campfire : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay(Collider other)
+    public void TriggerStay(Collider other)
     {
         if (other.gameObject.TryGetComponent(out Player player))
         {
@@ -112,7 +238,7 @@ public class Campfire : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    public void TriggerExit(Collider other)
     {
         if (other.gameObject.TryGetComponent(out Player player))
         {

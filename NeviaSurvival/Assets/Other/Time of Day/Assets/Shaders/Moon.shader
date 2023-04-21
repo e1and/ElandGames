@@ -11,7 +11,7 @@ Shader "Time of Day/Moon"
 	{
 		Tags
 		{
-			"Queue"="Transparent-510"
+			"Queue"="AlphaTest"
 			"RenderType"="Transparent"
 			"IgnoreProjector"="True"
 		}
@@ -56,7 +56,7 @@ Shader "Time of Day/Moon"
 			half4 frag(v2f i) : COLOR {
 				half4 color = half4(TOD_MoonMeshColor, 1);
 
-				half alpha = max(0, dot(i.normal, TOD_SunDirection));
+				half alpha = max(0, dot(i.normal, TOD_SunDirection)) * 0.5;
 				alpha = saturate(i.tex.z) * TOD_MoonMeshBrightness * pow(alpha, TOD_MoonMeshContrast);
 
 				half3 maintex = tex2D(_MainTex, i.tex).rgb;

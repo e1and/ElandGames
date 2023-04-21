@@ -14,5 +14,10 @@ public class HandPositions : MonoBehaviour
     [Space]
     [Space]
     [Space]
+    public Vector3 backpackPosition;
+    public Quaternion backpackRotation;
+    [Space]
+    [Space]
+    [Space]
     [SerializeField] string Name;
 }

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4746029578930041802}
   - component: {fileID: 4746029578930041803}
   - component: {fileID: 1100152558592945144}
+  - component: {fileID: -3418849296426880679}
   m_Layer: 5
   m_Name: 'Slot '
   m_TagString: Untagged
@@ -54,6 +55,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isFull: 0
   indexSlot: 0
+  isStorage: 0
 --- !u!222 &4746029578930041802
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -116,3 +118,15 @@ MonoBehaviour:
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!114 &-3418849296426880679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4746029578930041801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b795600ed1c96341963897d2f550b19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

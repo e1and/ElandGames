@@ -57,7 +57,7 @@ MonoBehaviour:
   MaxLightIntensity: 2
   IntensityLight: 1.82
   color: {r: 1, g: 0.88515174, b: 0.64779866, a: 0}
-  isBurn: 1
+  isBurn: 0
   burningTime: 60
 --- !u!114 &3695128842568182412
 MonoBehaviour:
@@ -75,9 +75,18 @@ MonoBehaviour:
   itemDescription: 
   itemComment: "\u0411\u0435\u0437 \u0444\u0430\u043A\u0435\u043B\u0430 \u043D\u043E\u0447\u044C\u044E
     \u043C\u0430\u043B\u043E \u0447\u0442\u043E \u0443\u0432\u0438\u0434\u0438\u0448\u044C!"
+  durability: 0
+  weight: 0
   isUsable: 0
   isCollectible: 1
-  type: 2
+  isCarrying: 0
+  isFirePlace: 0
+  isTorch: 1
+  isBed: 0
+  carryPosition: {x: 0, y: 0, z: 0}
+  carryRotation: {x: 0, y: 0, z: 0, w: 0}
+  item: {fileID: 11400000, guid: e60b0685d27a3f5409060463b5e6b9e8, type: 2}
+  type: 207
 --- !u!65 &916013009796654311
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -10,14 +10,14 @@ Material:
   m_Name: Atmosphere
   m_Shader: {fileID: 4800000, guid: 893a5c0afb25848deb238df8b9923d03, type: 3}
   m_ValidKeywords:
-  - GAMMA
   - HDR
+  - LINEAR
   - PER_VERTEX
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DitheringTexture:
-        m_Texture: {fileID: 2800000, guid: 0b5345cf23ab840779a8cbf1b89f355a, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:

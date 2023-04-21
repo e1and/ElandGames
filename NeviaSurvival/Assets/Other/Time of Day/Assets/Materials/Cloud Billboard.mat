@@ -10,8 +10,8 @@ Material:
   m_Name: Cloud Billboard
   m_Shader: {fileID: 4800000, guid: d65cf85a7026f4469ad9916280c06062, type: 3}
   m_ValidKeywords:
-  - BUMPED
-  - GAMMA
+  - FASTEST
+  - LINEAR
   m_InvalidKeywords:
   - HDR
   m_LightmapFlags: 4

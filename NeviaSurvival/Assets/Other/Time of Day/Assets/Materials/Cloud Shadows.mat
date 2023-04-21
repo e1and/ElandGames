@@ -10,7 +10,7 @@ Material:
   m_Name: Cloud Shadows
   m_Shader: {fileID: 4800000, guid: 55158f8039b974f21ab2964fcdfdad1a, type: 3}
   m_ValidKeywords:
-  - BUMPED
+  - FASTEST
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0

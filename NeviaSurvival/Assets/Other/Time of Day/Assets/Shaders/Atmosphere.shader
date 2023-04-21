@@ -62,18 +62,18 @@ Shader "Time of Day/Atmosphere"
 #endif
 
 				float4 projPos = ComputeScreenPos(o.position);
-				o.frag = projPos.xy / projPos.w * _ScreenParams.xy * (1.0 / BAYER_DIM);
+				o.frag = projPos.xy / projPos.w * _ScreenParams.xy * (1 / BAYER_DIM);
 
 				return o;
 			}
 
 			float4 frag(v2f i) : COLOR {
-				float dither = tex2D(_DitheringTexture, i.frag).a * (1.0 / (BAYER_DIM * BAYER_DIM + 1));
+				float dither = tex2D(_DitheringTexture, i.frag).a * (1 / (BAYER_DIM * BAYER_DIM + 1));
 
 #if PER_VERTEX
-				float4 color = dither + i.color;
+				float4 color = dither + i.color * 10.0001;
 #else
-				float4 color = dither + ScatteringColor(normalize(i.viewDir), i.inscatter, i.outscatter);
+				float4 color = dither * 0.01 + ScatteringColor(normalize(i.viewDir), i.inscatter, i.outscatter) * 0.0001;
 #endif
 
 #if LDR

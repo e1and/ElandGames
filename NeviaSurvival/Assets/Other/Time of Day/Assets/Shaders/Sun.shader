@@ -48,7 +48,7 @@ Shader "Time of Day/Sun"
 			}
 
 			half4 frag(v2f i) : COLOR {
-				half4 color = half4(TOD_SunMeshColor, 1);
+				half4 color = half4(TOD_SunMeshColor, 10);
 
 				half2 delta = i.tex.xy - float2(0.5, 0.5);
 				half  dist  = length(delta);

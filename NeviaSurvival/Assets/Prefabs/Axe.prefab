@@ -139,6 +139,14 @@ MonoBehaviour:
     \u0442\u0443\u0442 \u0442\u043E\u043F\u043E\u0440! \u041F\u0440\u0438\u0433\u043E\u0434\u0438\u0442\u0441\u044F!"
   isUsable: 0
   isCollectible: 1
+  isCarrying: 0
+  isFirePlace: 0
+  isFood: 0
+  foodValue: 0
+  isBag: 0
+  carryPosition: {x: 0, y: 0, z: 0}
+  carryRotation: {x: 0, y: 0, z: 0, w: 0}
+  item: {fileID: 11400000, guid: dc35edd116a927441bae8c64af75e423, type: 2}
   type: 1
 --- !u!114 &2944617102715226612
 MonoBehaviour:
@@ -156,6 +164,8 @@ MonoBehaviour:
   LeftHandRotation: {x: 0.14943211, y: 0.479617, z: 0.083275355, w: -0.86064094}
   RightHandPosition: {x: -0.001, y: -0.166, z: -0.043}
   RightHandRotation: {x: 0.2637047, y: 0, z: 0, w: 0.9646035}
+  backpackPosition: {x: 0, y: 0, z: 0}
+  backpackRotation: {x: 0, y: 0, z: 0, w: 0}
   Name: 
 --- !u!95 &6178141312114597337
 Animator:

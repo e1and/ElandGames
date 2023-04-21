@@ -8,9 +8,22 @@ public class ItemInfo : MonoBehaviour
     public string itemDescription;
     public string itemComment;
 
+    public int durability;
+    public float weight;
+
+    public bool isUnique;
     public bool isUsable;
+    public bool isOpenable;
     public bool isCollectible;
     public bool isCarrying;
+    public bool isFirePlace;
+    public bool isTorch;
+    public bool isBed;
+    [Space]
+    public bool isMovable;
+    public Vector3 savePosition;
+    public bool isSaveItemActive;
+    [Space]
 
     public Vector3 carryPosition;
     public Quaternion carryRotation;
@@ -18,7 +31,8 @@ public class ItemInfo : MonoBehaviour
     [Space]
     [Space]
 
-    public Items type;
+    public Item item;
+    public ItemType type;
 
 
 }

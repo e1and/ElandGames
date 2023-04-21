@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 7821227194540826814}
   - component: {fileID: 5620582584250172444}
   - component: {fileID: 8847801236421306904}
-  - component: {fileID: 2750805379469393264}
   - component: {fileID: 501363753848313310}
   m_Layer: 0
   m_Name: Branch 2
@@ -51,9 +50,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemName: "\u0421\u0443\u0445\u0430\u044F \u0432\u0435\u0442\u043A\u0430"
+  itemDescription: "\u041F\u043E\u0434\u043E\u0439\u0434\u0451\u0442 \u0434\u043B\u044F
+    \u043A\u043E\u0441\u0442\u0440\u0430!"
   itemComment: "\u041F\u043E\u0434\u043E\u0439\u0434\u0451\u0442 \u0434\u043B\u044F
     \u043A\u043E\u0441\u0442\u0440\u0430!"
   isUsable: 0
+  isCollectible: 0
+  isCarrying: 0
+  isFirePlace: 0
+  isFood: 0
+  foodValue: 0
+  isBag: 0
+  carryPosition: {x: 0, y: 0, z: 0}
+  carryRotation: {x: 0, y: 0, z: 0, w: 0}
+  item: {fileID: 11400000, guid: 524f6668e6bc9d842a2a76fa33018479, type: 2}
+  type: 0
 --- !u!33 &6849377059765441206
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -129,22 +140,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.5309292, y: 0.8910344, z: 2.3842869}
-  m_Center: {x: 0.022003472, y: 0.38301685, z: -0.29335308}
---- !u!114 &2750805379469393264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4451941183071688819}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e068b1458364eb44aa56405cf5358bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InventariStick: {fileID: 0}
-  sticksLimit: 0
+  m_Size: {x: 0.5279865, y: 0.11920741, z: 1.2425325}
+  m_Center: {x: -0.03422478, y: -0.0028968437, z: -0.034281254}
 --- !u!54 &501363753848313310
 Rigidbody:
   m_ObjectHideFlags: 0

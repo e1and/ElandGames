@@ -13,12 +13,12 @@ GameObject:
   - component: {fileID: 353838670972093159}
   - component: {fileID: 7297900967894978746}
   - component: {fileID: 2741135755434012611}
-  - component: {fileID: 187915519015593700}
   - component: {fileID: 2845361463973172743}
   - component: {fileID: -486920954251983442}
+  - component: {fileID: 1551189918076641867}
   m_Layer: 0
   m_Name: Branch 1
-  m_TagString: Stick
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -115,24 +115,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemName: "\u0421\u0443\u0445\u0430\u044F \u0432\u0435\u0442\u043A\u0430"
+  itemDescription: 
   itemComment: "\u041F\u043E\u0434\u043E\u0439\u0434\u0451\u0442 \u0434\u043B\u044F
     \u043A\u043E\u0441\u0442\u0440\u0430!"
+  durability: 0
+  weight: 0
+  isUnique: 0
   isUsable: 0
+  isOpenable: 0
   isCollectible: 1
---- !u!114 &187915519015593700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6976615927814636928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e068b1458364eb44aa56405cf5358bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  InventariStick: {fileID: 0}
-  sticksLimit: 0
+  isCarrying: 0
+  isFirePlace: 0
+  isTorch: 0
+  isBed: 0
+  isMovable: 0
+  savePosition: {x: 0, y: 0, z: 0}
+  isSaveItemActive: 0
+  carryPosition: {x: 0, y: 0, z: 0}
+  carryRotation: {x: 0, y: 0, z: 0, w: 0}
+  item: {fileID: 11400000, guid: 524f6668e6bc9d842a2a76fa33018479, type: 2}
+  type: 0
 --- !u!65 &2845361463973172743
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -144,8 +146,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.90671617, y: 0.2742037, z: 1.9660627}
-  m_Center: {x: -0.025220422, y: 0.07460142, z: -0.052873082}
+  m_Size: {x: 0.70922714, y: 0.17919685, z: 1.5114921}
+  m_Center: {x: -0.028110716, y: 0.027098566, z: -0.18799555}
 --- !u!54 &-486920954251983442
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -162,3 +164,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1551189918076641867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6976615927814636928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d1c271ec91a5a47a261927adc25719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LeftHandPosition: {x: 0.027, y: 0.176, z: 0.007}
+  LeftHandRotation: {x: 0.64944804, y: 0.0000000048501256, z: 0.0000000048501256, w: 0.76040596}
+  RightHandPosition: {x: 0.002, y: 0.04, z: 0.047}
+  RightHandRotation: {x: 0.75229996, y: 0, z: 0, w: 0.65882075}
+  backpackPosition: {x: 0, y: 0, z: 0}
+  backpackRotation: {x: 0, y: 0, z: 0, w: 0}
+  Name: 

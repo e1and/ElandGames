@@ -12,7 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82157b2877980e84f8cc049a002167ff, type: 3}
   m_Name: Key
   m_EditorClassIdentifier: 
-  Name: Key
-  Description: 
+  Name: "\u041A\u043B\u044E\u0447"
+  Description: "\u041D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u043E \u043E\u0442
+    \u0447\u0435\u0433\u043E"
+  Type: 203
   Icon: {fileID: 21300000, guid: 17777792311cab94a92e7e7be61c3e86, type: 3}
   Prefab: {fileID: 374289202576707483, guid: 5f681e00be712f341be82a56290b83f2, type: 3}
+  isFood: 0
+  foodValue: 0
+  warmBonus: 0
+  clothType: 0
+  isBag: 0
+  isBelt: 0
+  isFeet: 0
+  isLegs: 0
+  isHands: 0
+  isBody: 0
+  isShoulders: 0
+  isHead: 0

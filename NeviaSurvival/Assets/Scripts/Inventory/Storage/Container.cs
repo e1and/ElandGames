@@ -8,13 +8,14 @@ public class Container : MonoBehaviour, IPointerClickHandler
     public Animator Animator;
     public bool isOpen;
     Storage Storage;
-    public Player Player;
+    Player player;
     public float openingTime;
 
     void Start()
     {
+        player = FindObjectOfType<Player>();
         Animator = GetComponent<Animator>();
-        if (TryGetComponent<Storage>(out Storage storage))
+        if (TryGetComponent(out Storage storage))
         {
             Storage = storage;
             Storage.onAutoClose += AutoClose;
@@ -35,7 +36,7 @@ public class Container : MonoBehaviour, IPointerClickHandler
     public void Click()
     {
         Storage.SelectStorage();
-        if (Vector3.Distance(Player.transform.position, transform.position) <= 3)
+        if (Vector3.Distance(player.transform.position, transform.position) <= 3)
         {
             OpenClose();
             if (isOpen) Storage.OpenStorage();
@@ -45,7 +46,7 @@ public class Container : MonoBehaviour, IPointerClickHandler
 
     void OpenClose()
     {
-        Animator.SetTrigger("Open");
+        if (Animator != null) Animator.SetTrigger("Open");
         isOpen = !isOpen;
         Storage.isOpen = isOpen;
     }
@@ -54,7 +55,7 @@ public class Container : MonoBehaviour, IPointerClickHandler
     {
         if (Storage.isOpen == true)
         {
-            Animator.SetTrigger("Open");
+            if (Animator != null) Animator.SetTrigger("Open");
             isOpen = false;
         }
     }

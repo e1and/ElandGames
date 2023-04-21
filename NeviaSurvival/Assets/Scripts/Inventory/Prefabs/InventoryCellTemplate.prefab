@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3827695328673677470
 RectTransform:
   m_ObjectHideFlags: 0
@@ -170,24 +170,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 3642585116422162082}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0d1b906dfe49ee4796845258d8031ac, type: 3}
+  m_Script: {fileID: 11500000, guid: 383067990a5aae147868d13325cbb3af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventory: {fileID: 0}
-  inventoryWindow: {fileID: 0}
+  item: {fileID: 0}
   storage: {fileID: 0}
-  storageWindow: {fileID: 0}
   Name: {fileID: 7961585471577495084}
   index: 0
   Prefab: {fileID: 0}
+  item3dObject: {fileID: 0}
   isInRightHand: 0
   isInLeftHand: 0
+  isInBagSlot: 0
+  isInBeltSlot: 0
+  isInFeetSlot: 0
+  isInLegsSlot: 0
+  isInHandsSlot: 0
+  isInBodySlot: 0
+  isInShouldersSlot: 0
+  isInHeadSlot: 0
   isEquiped: 0
   isInInventory: 0
-  dropParent: {fileID: 0}
-  _originalParent: {fileID: 0}
-  _rightHandParent: {fileID: 0}
-  _leftHandParent: {fileID: 0}
+  originalParent: {fileID: 0}
+  links: {fileID: 0}
 --- !u!114 &268642290026605883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,9 +218,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemName: 
+  itemDescription: 
   itemComment: 
+  durability: 0
   isUsable: 0
   isCollectible: 0
+  isCarrying: 0
+  isFirePlace: 0
+  carryPosition: {x: 0, y: 0, z: 0}
+  carryRotation: {x: 0, y: 0, z: 0, w: 0}
+  item: {fileID: 0}
   type: 0
 --- !u!114 &9133164061388964927
 MonoBehaviour:

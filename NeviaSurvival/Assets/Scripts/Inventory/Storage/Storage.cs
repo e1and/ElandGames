@@ -8,10 +8,10 @@ public class Storage : MonoBehaviour
     public Action<Item> onStorageItemAdded;
     public Action onOpenStorage;
     public Action onAutoClose;
-    [SerializeField] StorageWindow storageWindow;
-    [SerializeField] InventoryWindow inventoryWindow;
-    [SerializeField] MousePoint mousePoint;
-    [SerializeField] List<Item> StartRandomItems = new List<Item>();
+    StorageWindow storageWindow;
+    InventoryWindow inventoryWindow;
+    MousePoint mousePoint;
+    public List<Item> startItems = new List<Item>();
     public bool isOpen;
     public List<Item> storageItems = new List<Item>(9);
     public List<GameObject> storageItemObjects = new List<GameObject>(9);
@@ -19,11 +19,19 @@ public class Storage : MonoBehaviour
     public int size = 6;
     public int filledSlots;
 
+    Links links;
+
     void Awake()
     {
-        for (int i = 0; i < StartRandomItems.Count; i++)
+        links = FindObjectOfType<Links>();
+        storageWindow = links.storageWindow;
+        inventoryWindow = links.inventoryWindow;
+        mousePoint = links.mousePoint;
+
+        for (int i = 0; i < startItems.Count; i++)
         {
-            storageItems[i] = StartRandomItems[i];
+            if (startItems[i] != null)
+            storageItems[i] = startItems[i];
         }
 
         onOpenStorage += AutoClose;
@@ -52,6 +60,7 @@ public class Storage : MonoBehaviour
         Debug.Log("Close");
         storageWindow.gameObject.SetActive(false);
         mousePoint.isPointUI = false;
+        mousePoint.IconHighLight.SetActive(false);
         mousePoint.itemInfoPanel.SetActive(false);
     }
 
@@ -62,7 +71,7 @@ public class Storage : MonoBehaviour
 
     IEnumerator AutoCloseCoroutine()
     {
-        while (Vector3.Distance(storageWindow.Player.gameObject.transform.position, transform.position) < 3)
+        while (Vector3.Distance(links.player.gameObject.transform.position, transform.position) < 3)
         {
             if (mousePoint.inputs.isPlayerMove || mousePoint.inputs.jump) break;
             yield return null;

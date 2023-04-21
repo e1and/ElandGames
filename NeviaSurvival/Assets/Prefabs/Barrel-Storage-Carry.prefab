@@ -98,7 +98,6 @@ GameObject:
   - component: {fileID: 474230942229595611}
   - component: {fileID: 474230942228629255}
   - component: {fileID: 474230942229595591}
-  - component: {fileID: 8798205431896784364}
   - component: {fileID: 1836134814486828012}
   - component: {fileID: -6725344315559634778}
   m_Layer: 0
@@ -143,11 +142,22 @@ MonoBehaviour:
     \u0445\u0440\u0430\u043D\u044F\u0442 \u0432\u0438\u043D\u043E!"
   itemComment: "\u0412 \u0442\u0430\u043A\u0438\u0445 \u043E\u0431\u044B\u0447\u043D\u043E
     \u0445\u0440\u0430\u043D\u044F\u0442 \u0432\u0438\u043D\u043E!"
+  durability: 0
+  weight: 0
+  isUnique: 0
   isUsable: 0
+  isOpenable: 0
   isCollectible: 0
   isCarrying: 1
+  isFirePlace: 0
+  isTorch: 0
+  isBed: 0
+  isMovable: 0
+  savePosition: {x: 0, y: 0, z: 0}
+  isSaveItemActive: 0
   carryPosition: {x: 0.289, y: -0.366, z: 0.355}
   carryRotation: {x: 0.4651135, y: -0.15807948, z: 0.6593207, w: 0.5691893}
+  item: {fileID: 0}
   type: 0
 --- !u!114 &474230942229595613
 MonoBehaviour:
@@ -197,6 +207,7 @@ MonoBehaviour:
   storageItemObjects: []
   size: 4
   filledSlots: 0
+  links: {fileID: 0}
 --- !u!95 &474230942229595611
 Animator:
   serializedVersion: 5
@@ -267,20 +278,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8798205431896784364
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 474230942231862023}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 915d3ebae80522f4fa118fba380c4bcf, type: 3}
 --- !u!65 &1836134814486828012
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -19,9 +19,9 @@ TagManager:
   - UI
   - Push
   - Walls
-  - 
-  - 
-  - 
+  - PostProcess
+  - Bounce
+  - NoCameraCollision
   - 
   - 
   - 

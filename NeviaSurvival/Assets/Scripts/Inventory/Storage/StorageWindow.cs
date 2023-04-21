@@ -7,29 +7,31 @@ using UnityEngine.UI;
 public class StorageWindow : MonoBehaviour
 {
     public Storage targetStorage;
-    [SerializeField] MousePoint mousePoint;
-    public Player Player;
     public RectTransform[] slots;
-    [SerializeField] Inventory inventory;
-    [SerializeField] InventoryWindow inventoryWindow;
-    [SerializeField] GameObject inventoryCellTemplate;
-    [SerializeField] private Transform _rightHandParent;
-    [SerializeField] private Transform _leftHandParent;
-    [SerializeField] private Transform _draggingParent;
-    [SerializeField] private Transform _dropParent;
     [SerializeField] Sprite emptySlotImage;
     [SerializeField] TMP_Text storageTitle;
 
     [SerializeField] Item itemToAdd;
 
     public List<GameObject> drawnIcons = new List<GameObject>();
+    [Space]
+
+    Links links;
 
     private void Awake()
     {
+        links = FindObjectOfType<Links>();     
+        Redraw();
+    }
+    private void Start()
+    {
+        gameObject.SetActive(false);
+    }
+
+    void OnOpenStorage()
+    {
         targetStorage.onStorageItemAdded += OnItemAdded;
         targetStorage.onOpenStorage += Redraw;
-        Redraw();
-        gameObject.SetActive(false);
     }
 
     void OnItemAdded(Item obj) => Redraw();
@@ -55,26 +57,27 @@ public class StorageWindow : MonoBehaviour
             if (targetStorage.storageItems[i] != null)
             {
                 Item item = targetStorage.storageItems[i];
-                var icon = Instantiate(inventoryCellTemplate, slots[i]);
+                var icon = Instantiate(links.inventoryWindow.inventoryCellTemplate, slots[i]);
+                
                 icon.name = item.Name + " Icon";
-                icon.GetComponent<InventoryCell>().Name.text = item.Name;
-                icon.GetComponent<InventoryCell>().index = i;
-                icon.GetComponent<InventoryCell>().Prefab = item.Prefab;
-                icon.GetComponent<InventoryCell>().dropParent = _dropParent;
+                icon.GetComponent<DescribeUI>().mousePoint = links.mousePoint;
+                Debug.Log(icon.GetComponent<InventoryIcon>() + " & " + item);
+                
+
+                icon.GetComponent<InventoryIcon>().index = i;
+                icon.GetComponent<InventoryIcon>().Prefab = item.Prefab;
                 icon.GetComponent<Image>().sprite = item.Icon;
-                icon.GetComponent<InventoryCell>().Init(_draggingParent);
-                icon.GetComponent<InventoryCell>().inventory = inventory;
-                icon.GetComponent<InventoryCell>().inventoryWindow = inventoryWindow;
-                icon.GetComponent<InventoryCell>().storageWindow = this;
-                icon.GetComponent<InventoryCell>().storage = targetStorage;
-                icon.GetComponent<InventoryCell>()._rightHandParent = _rightHandParent;
-                icon.GetComponent<InventoryCell>()._leftHandParent = _leftHandParent;
+                icon.GetComponent<InventoryIcon>().Init(links.inventoryWindow.draggingParent);
+                icon.GetComponent<InventoryIcon>().links = links;
+                icon.GetComponent<InventoryIcon>().storage = targetStorage;
+                
                 drawnIcons.Add(icon);
 
-                icon.GetComponent<InventoryCell>().item = item;
-                icon.GetComponent<DescribeUI>().mousePoint = mousePoint;
+                icon.GetComponent<InventoryIcon>().item = item;
+                icon.GetComponent<ItemInfo>().item = item;
                 icon.GetComponent<ItemInfo>().itemName = item.Name;
                 icon.GetComponent<ItemInfo>().itemDescription = item.Description;
+                icon.GetComponent<InventoryIcon>().Name.text = item.Name;
             }
         }
 
