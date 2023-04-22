@@ -11,10 +11,15 @@ public class Container : MonoBehaviour, IPointerClickHandler
     Player player;
     public float openingTime;
 
-    void Start()
+    private void Awake()
     {
         player = FindObjectOfType<Player>();
         Animator = GetComponent<Animator>();
+    }
+
+    void Start()
+    {
+
         if (TryGetComponent(out Storage storage))
         {
             Storage = storage;

@@ -89,6 +89,8 @@ public class NPC_Move : MonoBehaviour
         inventoryWindow = FindObjectOfType<InventoryWindow>();
         player.GetComponent<Player>();
 
+        Animator.ResetTrigger("GetUp");
+
         _attackDistance = _minFollowDistance + 0.2f;
     }
 
@@ -261,6 +263,9 @@ public class NPC_Move : MonoBehaviour
         Debug.Log("NavMeshFollow");
         activeFollowCoroutines++;
         Animator.SetInteger("Move", 1);
+        _isWalk = false;
+
+        agent.speed = 5;
 
         while (Vector3.Distance(transform.position, target.transform.position) > _attackDistance)
         {
@@ -277,14 +282,15 @@ public class NPC_Move : MonoBehaviour
             //if (_distanceToTarget < _maxFollowDistance && _heightToTarget > 1)
             //{ break; }    
         }
-        
+
+        agent.speed = 2;
+
         _isFollowing = false;
         activeFollowCoroutines--;
     }
 
     public IEnumerator NavMeshWalk(Vector3 target)
     {
-        Debug.Log("NavMeshWay");
         activeNavMeshCoroutines++;
         Animator.SetInteger("Move", 1);
         //StopCoroutine("EscapeCoroutine");
@@ -292,7 +298,6 @@ public class NPC_Move : MonoBehaviour
 
         while (Vector3.Distance(transform.position, target) > 1)
         {
-            Debug.Log("NavMeshWay Coroutine");
             yield return null;
 
             if (_distanceToTarget < _maxFollowDistance && !_isEscape && _heightToTarget > 1)
@@ -301,7 +306,7 @@ public class NPC_Move : MonoBehaviour
                 break;
             }
 
-            if (agent.velocity.magnitude <= 0.1f)
+            if (agent.velocity.magnitude < 0.2f)
             {
                 timer += Time.deltaTime;
                 if (timer > 1)

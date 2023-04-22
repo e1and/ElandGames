@@ -5,6 +5,7 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     public bool isLocked;
+    public bool isBlocked;
     public bool isOpen;
     public bool isOpenMirror;
     Animator animator;
@@ -20,13 +21,14 @@ public class Door : MonoBehaviour
 
     public void OpenClose()
     {
-        if (!isLocked)
+        if (!isLocked && !isBlocked)
         {
             isOpen = !isOpen;
 
             if (isOpenMirror) animator.SetBool("OpenMirror", !animator.GetBool("OpenMirror"));
             else animator.SetBool("Open", !animator.GetBool("Open"));
         }
+
     }
 
     public bool SearchingKey()

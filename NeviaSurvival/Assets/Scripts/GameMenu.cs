@@ -19,10 +19,20 @@ public class GameMenu : MonoBehaviour
         MainMenu();
     }
 
+    public void StartGame()
+    {
+        links.player.gameObject.SetActive(true);
+        links.ScottyCamera.gameObject.SetActive(false);
+        ui.startMenuPanel.SetActive(false);
+        ui.statusPanel.SetActive(true);
+        links.player.Death();
+
+    }
+
     public void ExitGame()
     {
         Application.Quit();
-        EditorApplication.ExitPlaymode();
+        //EditorApplication.ExitPlaymode();
     }
 
     public void MainMenu()

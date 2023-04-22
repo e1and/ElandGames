@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WarmZone : MonoBehaviour
 {
-    int warmBonus = 1;
+    public int warmBonus = 5;
 
     private void OnTriggerEnter(Collider other)
     {

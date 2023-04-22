@@ -577,8 +577,9 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         else if (isInInventory)
         {
             if (toStorage != null && toStorage.storageItems[moveToIndex].Type == ItemType.Bag ||
-                toStorage == null && (moveToIndex == 100 && inventoryWindow.LeftHandItem.Type == ItemType.Bag ||
-                moveToIndex == 101 && inventoryWindow.RightHandItem.Type == ItemType.Bag))
+                toStorage == null && (moveToIndex == 100 && inventoryWindow.LeftHandItem != null && 
+                inventoryWindow.LeftHandItem.Type == ItemType.Bag ||
+                moveToIndex == 101 && inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Bag))
             {
                 links.mousePoint.Comment("Положить сумку в сумку не получится!");
                 transform.parent = originalParent;

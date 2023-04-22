@@ -55,7 +55,7 @@ public class DayNight : MonoBehaviour
         hour = skyScript.hour;
 
         dayIndicator.text = "";
-        if (hour < 5.5f || hour > 6f) StartCoroutine(ShowThisDayNumber());
+        if (hour < 5.5f || hour > 6f) showDayNumber = StartCoroutine(ShowThisDayNumber());
 
 
 
@@ -152,6 +152,13 @@ public class DayNight : MonoBehaviour
     }
 
     public Color dayColor;
+    public Coroutine showDayNumber;
+
+    public void StopShow()
+    {
+        if (links.dayNight.showDayNumber != null) StopCoroutine(links.dayNight.showDayNumber);
+    }
+
     public IEnumerator ShowThisDayNumber()
     {
         dayColor.a = 0;
@@ -166,6 +173,7 @@ public class DayNight : MonoBehaviour
         dayIndicator.text = "Δενό " + thisDay;
         while (dayColor.a < 1)
         {
+            if (links.player.isDead )
             dayColor.a += 0.02f;
             dayIndicator.color = dayColor;
             yield return null;
@@ -185,7 +193,7 @@ public class DayNight : MonoBehaviour
         dayIndicator.text = "";
     }
 
-    public Coroutine showDayNumber;
+    
 
     IEnumerator StartDay()
     {
@@ -193,10 +201,12 @@ public class DayNight : MonoBehaviour
         if (links.music.music.clip != links.music.dayMusic) links.music.DayMusic();
         if (!links.player.isDead) 
         { 
-            thisDay++; StartCoroutine(ShowThisDayNumber());
+            thisDay++;
+            showDayNumber = StartCoroutine(ShowThisDayNumber());
             if (thisDay == 2) links.questWindow.QuestDone(links.questWindow.Survive1Day);
         }
         else links.player.isDead = false;
+
 
         //if (showDayNumber != null) StopCoroutine(showDayNumber);
 

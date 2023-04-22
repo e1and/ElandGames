@@ -21,7 +21,8 @@ public enum ItemType
     Cauldron, 
     Scroll,
     GrassStack,
-    Torch
+    Torch,
+    Axe
 }
 
 public class InventoryWindow : MonoBehaviour
@@ -97,6 +98,8 @@ public class InventoryWindow : MonoBehaviour
     {
         if (inventory != null) inventory.onItemAdded += OnItemAdded;
         Redraw();
+        gameObject.SetActive(false);
+        links.ui.equipmentPanel.SetActive(false);
 
     }
 

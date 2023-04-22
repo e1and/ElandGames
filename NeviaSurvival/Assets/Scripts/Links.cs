@@ -30,6 +30,8 @@ public class Links : MonoBehaviour
     public Transform objectPool;
     public Transform playerBuildings;
 
+    public Camera ScottyCamera;
+
     void Start()
     {
         mainCamera = Camera.main;

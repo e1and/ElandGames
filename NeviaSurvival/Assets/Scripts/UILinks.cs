@@ -47,8 +47,10 @@ public class UILinks : MonoBehaviour
     public GameObject buildingPanel;
     public GameObject aboutPanel;
     public GameObject mainMenuPanel;
+    public GameObject startMenuPanel;
 
     public GameObject pauseText;
+    public GameObject thisDayIndicator;
 
     [Header("Сообщения-подсказки:")]
     public TMP_Text pressToStand;

@@ -33,7 +33,7 @@ MonoBehaviour:
   QuestItemNeed: 0
   RewardText: "+2 \u043E\u0447\u043A\u0430 \u043D\u0430\u0432\u044B\u043A\u043E\u0432,
     +1 \u043A\u0440\u0430\u0441\u043D\u044B\u0439 \u0433\u0440\u0438\u0431"
-  RewardNextQuest: {fileID: 0}
+  RewardNextQuest: {fileID: 11400000, guid: b24dc0f54f6c81e4a9153ed8cafe72b0, type: 2}
   RewardItem: {fileID: 11400000, guid: 5540ad73f9ddcd94cb8b01afd512cf9e, type: 2}
   RewardSkillPoint: 2
   RewardNewBlueprint: 0

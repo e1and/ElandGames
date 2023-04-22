@@ -286,6 +286,11 @@ public class MousePoint : MonoBehaviour
                                 if (door.SearchingKey())
                                     openingCoroutine = StartCoroutine(OpeningDoor(door));
 
+                                if (door.isBlocked)
+                                {
+                                    Comment("Дверь заблокирована!");
+                                }
+
                             }
                         }
                     }
@@ -346,7 +351,8 @@ public class MousePoint : MonoBehaviour
                         Animator.SetTrigger("Use");
                         if (pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Torchlight torch))
                         {
-                            torch.isBurn = !torch.isBurn;
+                            if (!torch.isBurn) torch.TorchOn();
+                            else torch.TorchOff();
                         }
                     }
                     else Comment("Чтобы зажечь факел надо взять его в руки!");

@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\u0421\u0432\u0438\u0442\u043E\u043A"
   Description: "\u041D\u0435 \u0438\u0437\u0443\u0447\u0435\u043D"
-  Type: 6
+  Type: 205
   Icon: {fileID: 21300000, guid: db427fab3e94daf4caa704d9314a77a1, type: 3}
   Prefab: {fileID: 2070951319447837228, guid: b447aa15b93980c4e9cea262dca3c257, type: 3}
+  weight: 0
   isFood: 0
   foodValue: 0
-  isBag: 0
+  warmBonus: 0
+  clothType: 0

@@ -35,7 +35,7 @@ public class Torchlight : MonoBehaviour {
 			if (IntensityLight > MaxLightIntensity) IntensityLight = MaxLightIntensity;
 
 			TorchLight.GetComponent<Light>().intensity =
-			IntensityLight / 2f + Mathf.Lerp(IntensityLight, IntensityLight + 0.02f, Mathf.Cos(Time.time * 30));
+			IntensityLight / 2f + Mathf.Lerp(IntensityLight, IntensityLight + 0.02f, Mathf.Cos(Time.time * 30) / 2);
 
 			TorchLight.GetComponent<Light>().color = color;
 			new Color(Mathf.Min(IntensityLight / 1.5f, 1f), Mathf.Min(IntensityLight / 2f, 1f), 0f);
@@ -53,5 +53,25 @@ public class Torchlight : MonoBehaviour {
 			IntensityLight = burningTime * 0.1f;
 			if (IntensityLight >= MaxLightIntensity) IntensityLight = MaxLightIntensity;
 		}
+	}
+
+	public void TorchOn()
+	{
+		isBurn = true;
+		TorchLight.SetActive(true);
+		MainFlame.SetActive(true);
+		BaseFlame.SetActive(true);
+		Etincelles.SetActive(true);
+		Fumee.SetActive(true);
+	}
+
+	public void TorchOff()
+    {
+		isBurn = false;
+		TorchLight.SetActive(false);
+		MainFlame.SetActive(false);
+		BaseFlame.SetActive(false);
+		Etincelles.SetActive(false);
+		Fumee.SetActive(false);
 	}
 }

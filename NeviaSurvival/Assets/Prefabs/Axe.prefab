@@ -153,7 +153,7 @@ MonoBehaviour:
   carryPosition: {x: 0, y: 0, z: 0}
   carryRotation: {x: 0, y: 0, z: 0, w: 0}
   item: {fileID: 11400000, guid: dc35edd116a927441bae8c64af75e423, type: 2}
-  type: 1
+  type: 208
 --- !u!114 &2944617102715226612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,10 +166,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09d1c271ec91a5a47a261927adc25719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LeftHandPosition: {x: -0.034, y: -0.126, z: 0.031}
-  LeftHandRotation: {x: 0.14943211, y: 0.479617, z: 0.083275355, w: -0.86064094}
-  RightHandPosition: {x: -0.001, y: -0.166, z: -0.043}
-  RightHandRotation: {x: 0.2637047, y: 0, z: 0, w: 0.9646035}
+  LeftHandPosition: {x: 0.011, y: -0.009, z: 0.011}
+  LeftHandRotation: {x: 0, y: 0.54038715, z: 0, w: 0.8414165}
+  RightHandPosition: {x: 0.008, y: -0.084, z: 0.029}
+  RightHandRotation: {x: 0.020414732, y: -0.76565796, z: 0.024329329, w: 0.6424633}
   backpackPosition: {x: 0, y: 0, z: 0}
   backpackRotation: {x: 0, y: 0, z: 0, w: 0}
   Name: 
@@ -221,7 +221,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!1 &6178141312107296443
 GameObject:
   m_ObjectHideFlags: 0

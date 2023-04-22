@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     public bool isUnderWater;
     public bool isRun;
     public bool isSleep;
+    public bool isStart = true;
     [Header("Ограничения игрока")]
     public float runCoolDown;
     public bool isAbleJump;
@@ -120,6 +121,7 @@ public class Player : MonoBehaviour
 
         animator = GetComponent<Animator>();
         mousePoint = GetComponent<MousePoint>();
+        gameObject.SetActive(false);
     }
 
     float fpsTime;
@@ -274,12 +276,12 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.P)) Death();
 
-        if (Input.GetKeyDown(KeyCode.Q) && (isLay || isSit))
+        if (Input.GetKeyDown(KeyCode.Q) && (isLay || isSit) && !isSleep)
         {
             GetUp();
         }
 
-        if (Input.GetKeyDown(KeyCode.X) && !isSit)
+        if (Input.GetKeyDown(KeyCode.X) && !isSit && !isSleep)
         {
             Sit();
         }
@@ -523,7 +525,7 @@ public class Player : MonoBehaviour
         if (Oxygen == maxOxygen) ui.OxygenIndicator.gameObject.SetActive(false);
     }
 
-    void Death()
+    public void Death()
     {
         if (mousePoint.carryObject != null) mousePoint.CarryRelease();
         PlayerControl(false);
@@ -531,8 +533,11 @@ public class Player : MonoBehaviour
         transform.position = spawnPoint.transform.position;
 
         isDead = true;
-        nighmares++;
-        ui.nightmaresIndicator.text = "" + nighmares;
+        if (!isStart)
+        {
+            nighmares++;
+            ui.nightmaresIndicator.text = "" + nighmares;
+        }
         
         time.Cycle.Hour = saveTime;
         time.Cycle.Day = saveDay;
@@ -545,7 +550,8 @@ public class Player : MonoBehaviour
         Energy = saveEnergy;
         links.saveInventory.LoadItems();
 
-        DayTime.Day();
+        if (saveTime >= 6 && saveTime < 18) DayTime.Day(); else DayTime.Night();
+        links.dayNight.StopShow();
         StartCoroutine(links.dayNight.ShowThisDayNumber());
 
         isLay = true;

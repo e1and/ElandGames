@@ -29,6 +29,7 @@ public class DescribeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 if (icon.item.isFood) mousePoint.itemActionPanelText.text = "E - съесть";
                 else if (icon.item.Type == ItemType.Torch) mousePoint.itemActionPanelText.text = "E - зажечь/потушить";
                 else if (icon.item.Type == ItemType.Scroll) mousePoint.itemActionPanelText.text = "E - прочитать";
+                else if (icon.item.Type == ItemType.Key) mousePoint.itemActionPanelText.text = "ЛКМ на двери (удерж.)";
                 else mousePoint.itemActionPanelText.text = "";
 
                 mousePoint.pointedIcon = itemInfo;

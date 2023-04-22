@@ -161,7 +161,10 @@ MonoBehaviour:
   isFirePlace: 0
   isTorch: 0
   isBed: 0
+  isMovable: 0
+  savePosition: {x: 0, y: 0, z: 0}
+  isSaveItemActive: 0
   carryPosition: {x: 0, y: 0, z: 0}
   carryRotation: {x: 0, y: 0, z: 0, w: 0}
   item: {fileID: 11400000, guid: 8c21bc54c24dc324ab196fdb1afc1880, type: 2}
-  type: 6
+  type: 205

@@ -70,6 +70,7 @@ public class ItemSpawner : MonoBehaviour
         {
             for (int y = 0; y < keys[i].Count; y++)
             {
+                Debug.Log(i + " " + y + " " + keys[i][y]);
                 int randomPlace = Random.Range(0, spawnPoints[i].Count);
 
                 if (spawnPoints[i][randomPlace].TryGetComponent(out Storage storage))
