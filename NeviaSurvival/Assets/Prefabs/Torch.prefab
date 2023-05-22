@@ -55,11 +55,11 @@ MonoBehaviour:
   BaseFlame: {fileID: 100008}
   Etincelles: {fileID: 100004}
   Fumee: {fileID: 100010}
-  MaxLightIntensity: 2
-  IntensityLight: 1.82
+  MaxLightIntensity: 1
+  IntensityLight: 1
   color: {r: 1, g: 0.88515174, b: 0.64779866, a: 0}
   isBurn: 0
-  burningTime: 60
+  burningTime: 120
 --- !u!114 &3695128842568182412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,6 +88,7 @@ MonoBehaviour:
   isBed: 0
   isMovable: 0
   savePosition: {x: 0, y: 0, z: 0}
+  saveRotation: {x: 0, y: 0, z: 0, w: 0}
   isSaveItemActive: 0
   carryPosition: {x: 0, y: 0, z: 0}
   carryRotation: {x: 0, y: 0, z: 0, w: 0}

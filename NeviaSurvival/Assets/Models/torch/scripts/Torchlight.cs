@@ -13,9 +13,11 @@ public class Torchlight : MonoBehaviour {
 	public Color color;
 	public bool isBurn;
 	public float burningTime = 10;
+	Links links;
 
 	void Start () 
 	{
+		links = FindObjectOfType<Links>();
 		if (isBurn)
 		{
 			TorchLight.GetComponent<Light>().intensity = IntensityLight;

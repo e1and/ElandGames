@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameMenu : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class GameMenu : MonoBehaviour
     {
         ui = FindObjectOfType<UILinks>();
         links = FindObjectOfType<Links>();
+        ui.startMenuPanel.SetActive(true);
+
     }
 
     public void PlayGame()
@@ -33,6 +36,11 @@ public class GameMenu : MonoBehaviour
     {
         Application.Quit();
         //EditorApplication.ExitPlaymode();
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(0);
     }
 
     public void MainMenu()
@@ -91,57 +99,60 @@ public class GameMenu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
+        if (!links.player.isStart)
         {
-            BuildingMenu();
-        }
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                BuildingMenu();
+            }
 
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Equipment();
-        }
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            Backpack();
-        }
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            StatusPanel();
-        }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            InfoPanel();
-        }
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            Help();
-        }
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            if (ui.fpsIndicator.gameObject.activeSelf) ui.fpsIndicator.gameObject.SetActive(false);
-            else ui.fpsIndicator.gameObject.SetActive(true);
-        }
-        if (Input.GetKeyDown(KeyCode.F3))
-        {
-            if (Time.timeScale == 1)
+            if (Input.GetKeyDown(KeyCode.C))
             {
-                Time.timeScale = 0;
-                ui.pauseText.SetActive(true);
-                
+                Equipment();
             }
-            else
+            if (Input.GetKeyDown(KeyCode.V))
             {
-                Time.timeScale = 1;
-                ui.pauseText.SetActive(false);
+                Backpack();
             }
-        }
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            QuestPanel();
-        }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            MainMenu();
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                StatusPanel();
+            }
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                InfoPanel();
+            }
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+                Help();
+            }
+            if (Input.GetKeyDown(KeyCode.F2))
+            {
+                if (ui.fpsIndicator.gameObject.activeSelf) ui.fpsIndicator.gameObject.SetActive(false);
+                else ui.fpsIndicator.gameObject.SetActive(true);
+            }
+            if (Input.GetKeyDown(KeyCode.F3))
+            {
+                if (Time.timeScale == 1)
+                {
+                    Time.timeScale = 0;
+                    ui.pauseText.SetActive(true);
+
+                }
+                else
+                {
+                    Time.timeScale = 1;
+                    ui.pauseText.SetActive(false);
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                QuestPanel();
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                MainMenu();
+            }
         }
     }
 }

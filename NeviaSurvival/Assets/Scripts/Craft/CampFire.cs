@@ -50,9 +50,16 @@ public class Campfire : MonoBehaviour
     public NavMeshObstacle obstacle;
     SphereCollider sphere;
     ItemInfo info;
+    AudioSource audioSource;
+    float volume;
+
+    public Transform cauldronPlace;
+    public Container cauldron;
 
     void Start()
     {
+        audioSource = gameObject.GetComponent<AudioSource>();
+        volume = audioSource.volume;
         time = FindObjectOfType<TOD_Time>();
         //fire = GetComponentInChildren<ParticleSystem>();
         obstacle = GetComponent<NavMeshObstacle>();
@@ -81,6 +88,9 @@ public class Campfire : MonoBehaviour
 
     IEnumerator burningWoodPerHour()
     {
+        audioSource.enabled = true;
+        audioSource.volume = volume;
+        
         fireLight.SetActive(true);
         while (burningTime > 8) { yield return null; }
         fireWoods[7].SetActive(false);
@@ -103,19 +113,27 @@ public class Campfire : MonoBehaviour
         while (burningTime > 2) { yield return null; }
         fireWoods[1].SetActive(false);
 
-        while (burningTime > 1) { yield return null; }
+        while (burningTime > 1) 
         {
-            embers.gameObject.SetActive(false);
-            //fire.gameObject.SetActive(false);
-            fireWoods[0].SetActive(false);
+            
+            yield return null; 
+        
         }
+        embers.gameObject.SetActive(false);
+        //fire.gameObject.SetActive(false);
+        fireWoods[0].SetActive(false);
 
-        while (burningTime > 0) { yield return null; }
+        while (burningTime > 0) 
+        {
+            audioSource.volume -= 0.0001f;
+            yield return null; 
+        }
         embers.gameObject.SetActive(false);
         fire.gameObject.SetActive(false);
         glow.gameObject.SetActive(false);
         embersSmall.gameObject.SetActive(false);
         fireLight.SetActive(false);
+        audioSource.enabled = false;
 
         for (int i = 0; i < meshRenderer.Length; i++)
         {
@@ -155,7 +173,7 @@ public class Campfire : MonoBehaviour
 
         if (burningTime > 8)
         {
-            fireMain.startLifetime = 0.8f;
+            fire.startLifetime = 0.8f;
         }
 
         if (burningTime <= 0)
@@ -215,35 +233,38 @@ public class Campfire : MonoBehaviour
 
     public void TriggerStay(Collider other)
     {
-        if (other.gameObject.TryGetComponent(out Player player))
+        if (other.gameObject.TryGetComponent(out PlayerWarmCollider col))
         {
+            
             if (burningTime > 0)
             {
-                player.isCold = false;
-                player.isCampfire = true;
+                //player.isCold = false;
+                col.player.isCampfire = true;
+                col.player.campfireTemperature = burningTime * 10 / distance;
             }
             else 
             {
-                player.isCampfire = false;
+                col.player.isCampfire = false;
+                col.player.campfireTemperature = 0;
             }
 
-            distance = Vector3.Distance(player.gameObject.transform.position, transform.position);
-            if (distance != 0 && player.Cold < 100 && burningTime > 0)
+            distance = Vector3.Distance(col.player.gameObject.transform.position, transform.position);
+            if (distance != 0 && col.player.feelingTemperature > col.player.DayTime.freezeTemperature && col.player.Cold < col.player.maxCold)
             {
                 warm += burningTime * warmAmount * Time.deltaTime / distance;
                 if (warm > 1)
-                { player.Cold++; warm = 0; }
+                {
+                    col.player.Cold++; warm = 0; }
             }
-            if (burningTime <= 0) player.isCold = true;
         }
     }
 
     public void TriggerExit(Collider other)
     {
-        if (other.gameObject.TryGetComponent(out Player player))
+        if (other.gameObject.TryGetComponent(out PlayerWarmCollider col))
         {
-            player.isCold = true;
-            player.isCampfire = false;
+            col.player.isCampfire = false;
+            col.player.campfireTemperature = 0;
         }
     }
 

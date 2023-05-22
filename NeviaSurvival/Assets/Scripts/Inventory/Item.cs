@@ -11,10 +11,13 @@ public class Item : ScriptableObject
     public Sprite Icon;
     public GameObject Prefab;
     [Header("Параметры предмета:")]
+    public float rarity;
     public float weight;
     [Header("Съедобный ли это предмет:")]
     public bool isFood;
     public int foodValue;
+    public int poisonValue;
+    public bool isLiquid;
     [Header("Вид и параметры одежды:")]
     public float warmBonus;
     public ClothType clothType;

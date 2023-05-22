@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82157b2877980e84f8cc049a002167ff, type: 3}
+  m_Name: PotatoBurned
+  m_EditorClassIdentifier: 
+  Name: "\u0421\u0433\u043E\u0440\u0435\u0432\u0448\u0438\u0439 \u043A\u0430\u0440\u0442\u043E\u0444\u0435\u043B\u044C"
+  Description: "+2 \u0441\u044B\u0442\u043E\u0441\u0442\u0438 -5 \u0437\u0434\u043E\u0440\u043E\u0432\u044C\u044F"
+  Type: 200
+  Icon: {fileID: 21300000, guid: c95cb42e00d52174e9355d20c1af076b, type: 3}
+  Prefab: {fileID: 1582787091285320325, guid: c89d255784ee32e4e99ef3683b8f0489, type: 3}
+  rarity: 95
+  weight: 0.1
+  isFood: 1
+  foodValue: 2
+  poisonValue: 5
+  isLiquid: 0
+  warmBonus: 0
+  clothType: 0

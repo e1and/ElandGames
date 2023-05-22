@@ -73,7 +73,7 @@ public class MousePoint : MonoBehaviour
     [SerializeField] InventoryWindow inventoryWindow;
     [SerializeField] RectTransform inventoryRect;
     [SerializeField] Image progressIndicator;
-    Coroutine openingCoroutine;
+    public Coroutine openingCoroutine;
     public StarterAssetsInputs inputs;
     Building building;
 
@@ -94,7 +94,7 @@ public class MousePoint : MonoBehaviour
 
     float objectHeight = 0;
 
-    Links links;
+    public Links links;
 
     private void Awake()
     {
@@ -173,8 +173,8 @@ public class MousePoint : MonoBehaviour
                         // По нажатию кнопки мыши комментируем предмет
                         if (Input.GetMouseButtonDown(0))
                         {
-                            //Comment(item.itemComment); // Пока отключил комментирование (не факт что нужно)
                             if (item.TryGetComponent(out Campfire campfire)) Comment(campfire.burningTimeText);
+                            else Comment(item.itemComment);
                         }
 
                         if (Input.GetMouseButtonDown(0) && item.isCollectible) // Если предмет собираемый, то запускаем корутину подбора
@@ -189,7 +189,10 @@ public class MousePoint : MonoBehaviour
                             if (player.isAbleCarry)
                             {
                                 if (inventoryWindow.LeftHandItem == null && inventoryWindow.RightHandItem == null)
-                                Carry(item);
+                                {
+                                    Carry(item);
+                                    if (item.type == ItemType.Cauldron && !item.isCollectible) item.GetComponent<Cauldron>().GrabCauldron();
+                                }
                                 else Comment("Чтобы что-то поднять двумя руками, надо чтобы в них ничего не было!");
                             }
                             else
@@ -199,20 +202,55 @@ public class MousePoint : MonoBehaviour
                             }
                         }
                         
-
+                        // Установка котелка на костёр и подкладывание дров в костёр
                         if (Input.GetKeyDown(KeyCode.E))
                         {
                             if (item.isFirePlace)
                             {
-                                if (player.Wood > 0)
+                                if (inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Cauldron ||
+                                     inventoryWindow.LeftHandItem != null && inventoryWindow.LeftHandItem.Type == ItemType.Cauldron)
                                 {
-                                    item.GetComponent<Campfire>().AddFireWood();
-                                    player.Wood--;
-                                    links.building.SpendWood(1);
-                                    Animator.SetTrigger("Use");
-                                    inventoryWindow.Redraw();
+                                    if (inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Cauldron)
+                                    {
+                                        if (inventoryWindow.RightHandObject.TryGetComponent(out Cauldron cauldron))
+                                        {
+                                            cauldron.PlaceCauldron(item.gameObject.GetComponent<Campfire>());
+                                            inventoryWindow.rightHandSlot.GetChild(0).gameObject.GetComponent<InventoryIcon>().RemoveFromInventory();
+                                        }
+                                    }
+                                    else if (inventoryWindow.LeftHandItem != null && inventoryWindow.LeftHandItem.Type == ItemType.Cauldron)
+                                    {
+                                        if (inventoryWindow.LeftHandObject.TryGetComponent(out Cauldron cauldron))
+                                        {
+                                            cauldron.PlaceCauldron(item.gameObject.GetComponent<Campfire>());
+                                            inventoryWindow.leftHandSlot.GetChild(0).gameObject.GetComponent<InventoryIcon>().RemoveFromInventory();
+                                        }
+                                    }
                                 }
-                                else Comment("Нечего подложить - надо поискать дрова!");
+                                else
+                                {
+                                    if (player.Wood > 0)
+                                    {
+                                        item.GetComponent<Campfire>().AddFireWood();
+                                        player.Wood--;
+                                        links.building.SpendWood(1);
+                                        Animator.SetTrigger("Use");
+                                        inventoryWindow.Redraw();
+                                    }
+                                    else Comment("Нечего подложить - надо поискать дрова!");
+                                }
+
+                            }
+
+                            if (item.isCollectible && item.gameObject.TryGetComponent(out Cauldron cauldronOnFire))
+                            {
+                                if (cauldronOnFire.campfire != null && item.gameObject.TryGetComponent(out Container container))
+                                {
+                                    if (openingCoroutine == null)
+                                    {
+                                        openingCoroutine = StartCoroutine(OpeningContainer(container));
+                                    }
+                                }
                             }
                         }
 
@@ -242,7 +280,7 @@ public class MousePoint : MonoBehaviour
                     {
                         Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
 
-                        if (Input.GetMouseButtonDown(0))
+                        if (Input.GetKeyDown(KeyCode.E))
                         {
                             if (_distanceToTarget <= 3 && !trigger.doorScript.isMoving)
                             {
@@ -258,7 +296,7 @@ public class MousePoint : MonoBehaviour
                         Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
                         Debug.Log("111");
 
-                        if (Input.GetMouseButtonDown(0))
+                        if (Input.GetKeyDown(KeyCode.E))
                         {
                             if (_distanceToTarget <= 3 && openingCoroutine == null)
                             {
@@ -277,14 +315,18 @@ public class MousePoint : MonoBehaviour
                     {
                         Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
 
-                        if (Input.GetMouseButtonDown(0))
+                        if (Input.GetKeyDown(KeyCode.E))
                         {
                             if (_distanceToTarget <= 3)
                             {
                                 Animator.SetTrigger("Use");
 
-                                if (door.SearchingKey())
+                                if (door.key != null && door.isLocked && door.SearchingKey())
                                     openingCoroutine = StartCoroutine(OpeningDoor(door));
+                                else
+                                {
+                                    door.OpenClose();
+                                }
 
                                 if (door.isBlocked)
                                 {
@@ -333,18 +375,25 @@ public class MousePoint : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 // Поедание еды
-                if (pointedIcon != null && pointedIcon.item.isFood && pointedIcon.gameObject.TryGetComponent(out InventoryIcon icon))
+                if (pointedIcon != null && pointedIcon.item != null && pointedIcon.item.isFood && pointedIcon.gameObject.TryGetComponent(out InventoryIcon icon))
                 {
                     Debug.Log("Eat Food");
-                    GetComponent<Player>().Food += pointedIcon.item.foodValue;
-                    icon.RemoveFromInventory();
-                    icon.item3dObject.SetActive(false);
-                    icon.item3dObject.transform.parent = links.objectPool;
-                    Destroy(pointedIcon.gameObject);
+                    if (pointedIcon.item.foodValue > player.maxFood - player.Food && player.Food > player.maxFood - 5) 
+                        Comment("Я пока не голоден!");
+                    else
+                    {
+                        player.Food += pointedIcon.item.foodValue;
+                        if (player.Food > player.maxFood) player.Food = player.maxFood;
+                        player.Health -= pointedIcon.item.poisonValue;
+                        icon.RemoveFromInventory();
+                        icon.item3dObject.SetActive(false);
+                        icon.item3dObject.transform.parent = links.objectPool;
+                        Destroy(pointedIcon.gameObject);
+                    }
                 }
 
                 // Зажигание факела
-                else if (pointedIcon != null && pointedIcon.item.Type == ItemType.Torch)
+                else if (pointedIcon != null && pointedIcon.item != null && pointedIcon.item.Type == ItemType.Torch)
                 {
                     if (pointedIcon.GetComponentInParent<InventorySlot>().indexSlot == 100 || pointedIcon.GetComponentInParent<InventorySlot>().indexSlot == 101)
                     {
@@ -359,7 +408,7 @@ public class MousePoint : MonoBehaviour
                 }
 
                 // Чтение свитка
-                else if (pointedIcon != null && pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Scroll scroll))
+                else if (pointedIcon != null && pointedIcon.item != null && pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Scroll scroll))
                 {
                     scrollPanel.SetActive(true);
                     scrollTitle.text = scroll.title;
@@ -374,6 +423,33 @@ public class MousePoint : MonoBehaviour
                         }
                     }
 
+                }
+
+                // Открывание окна содержимого котелка
+                else if (pointedIcon != null && pointedIcon.item != null && 
+                    pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Cauldron cauldron))
+                {
+                    if (openingCoroutine == null)
+                    {
+                        openingCoroutine = StartCoroutine(OpeningContainer(cauldron.gameObject.GetComponent<Container>()));
+                    }
+                }
+            }
+            // Наполнение котелка водой
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                if (pointedIcon != null && pointedIcon.item != null && pointedIcon.TryGetComponent(out InventoryIcon icon) &&
+                icon.item3dObject.TryGetComponent(out Cauldron cauldron))
+                {
+                    if (!cauldron.isWater)
+                    {
+                        if (!cauldron.isSoup) cauldron.Water(true);
+                        else Comment("В котелке еще что-то осталось!");
+                    }
+                    else
+                    {
+                        cauldron.Water(false);
+                    }
                 }
             }
         }
@@ -390,7 +466,7 @@ public class MousePoint : MonoBehaviour
             if (carryObject.TryGetComponent(out ItemInfo itemInfo)) carryWeight = itemInfo.weight;
             Animator.SetTrigger("CarryTrigger");
             Animator.SetBool("Carry", true);
-            carryObject.layer = 3;
+            carryObject.layer = 10;
             carryObject.transform.parent = carryParent;
             carryObject.transform.position = Vector3.zero;
             carryObject.transform.rotation = new Quaternion(0, 0, 0, 0);
@@ -401,6 +477,7 @@ public class MousePoint : MonoBehaviour
             if (TryGetComponent(out MeshCollider mesh)) mesh.enabled = false;
             Player.GetComponent<CharacterController>().radius = 0.6f;
             Player.GetComponent<CharacterController>().center = new Vector3(0, 0.94f, 0.49f);
+            links.ui.pressToDrop.gameObject.SetActive(true);
         }
     }    
 
@@ -418,6 +495,7 @@ public class MousePoint : MonoBehaviour
         Player.GetComponent<CharacterController>().radius = 0.28f;
         Player.GetComponent<CharacterController>().center = new Vector3(0, 0.94f, 0f);
         StartCoroutine(CarryCoolDown());
+        links.ui.pressToDrop.gameObject.SetActive(false);
     }
 
     IEnumerator CarryCoolDown()
@@ -430,6 +508,11 @@ public class MousePoint : MonoBehaviour
         }
         isCarry = false;
     }
+
+    public void OpenContainer(Container container)
+    {
+         openingCoroutine = StartCoroutine(OpeningContainer(container));
+    }    
 
     IEnumerator OpeningContainer(Container container)
     {
@@ -458,7 +541,7 @@ public class MousePoint : MonoBehaviour
         float time = 0;
         progressIndicator.transform.parent.gameObject.SetActive(true);
         player.PlayerControl(false);
-        while (time < door.openingTime && Input.GetMouseButton(0))
+        while (time < door.openingTime && Input.GetKey(KeyCode.E))
         {
             if (!door.isLocked) { player.PlayerControl(true); break; }
             time += Time.deltaTime * links.time.timeFactor / 60;
@@ -469,6 +552,7 @@ public class MousePoint : MonoBehaviour
         { 
             door.isLocked = false;
             door.OpenClose();
+            links.questWindow.QuestEventRecount();
         }
         player.PlayerControl(true);
         progressIndicator.fillAmount = 0;
@@ -513,11 +597,28 @@ public class MousePoint : MonoBehaviour
         item3dNamePanelText.text = item.itemName;
         item3dDescriptionPanelText.text = item.itemDescription;
         string actions = null;
-        if (item.isCollectible) actions = "ЛКМ - подобрать";
-        if (item.isCarrying) actions = "G - поднять/поставить";
+        if (item.isCollectible)
+        {
+            if (item.gameObject.TryGetComponent(out Cauldron cauldron) && cauldron.campfire != null)
+            actions = "Е - открыть, ЛКМ - взять";
+            else
+            actions = "ЛКМ - подобрать";
+        }
+        if (item.isCarrying) actions = "G - поднять";
         if (item.isUsable) actions = "ЛКМ - открыть";
-        if (item.isOpenable) actions = "ЛКМ - открыть";
-        if (item.isFirePlace) actions = "E - подложить дров";
+        if (item.isOpenable) actions = "E - открыть";
+        if (item.isOpenable && item.gameObject.TryGetComponent(out Door door) && door.isLocked) actions = "Удерживать E - отпереть";
+        if (item.isOpenable && item.isCollectible) actions = "E - открыть, ЛКМ - взять";
+        if (item.isOpenable && item.isCarrying) actions = "E - открыть, G - поднять";
+        if (item.isFirePlace)
+        {
+            if (inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Cauldron ||
+                inventoryWindow.LeftHandItem != null && inventoryWindow.LeftHandItem.Type == ItemType.Cauldron)
+            {
+                actions = "E - поставить котелок";
+            }
+            else actions = "E - подложить дров";
+        }
         if (item.isBed) { if (player.isLay) actions = "Q - встать"; else actions = "E - прилечь"; }
         item3dActionPanelText.text = actions;
 
@@ -597,12 +698,19 @@ public class MousePoint : MonoBehaviour
                 itemObject.transform.parent = inventoryWindow.leftHandParent;
                 itemObject.layer = 3;
             }
-                
+            
+            if (itemObject.TryGetComponent(out Cauldron cauldron))
+            {
+                cauldron.isOnFire = false;
+                cauldron.campfire = null;
+            }
+
             Animator.SetTrigger("Grab");
             if (inventoryWindow.inventory != null) inventoryWindow.inventory.Recount();
             inventoryWindow.Redraw();
 
             itemInfoPanel.SetActive(false);
+            if (links.ui.inventoryPanel.activeSelf == false) links.ui.inventoryPanel.SetActive(true);
 
             questWindow.onCollectItem?.Invoke();
         }

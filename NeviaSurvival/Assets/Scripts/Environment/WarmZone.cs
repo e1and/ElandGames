@@ -9,7 +9,7 @@ public class WarmZone : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out Player player))
-            player.buildingTemperature += warmBonus;
+            player.buildingTemperature = warmBonus;
 
     }
 

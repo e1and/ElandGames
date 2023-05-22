@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82157b2877980e84f8cc049a002167ff, type: 3}
   m_Name: Bag 16slots
   m_EditorClassIdentifier: 
-  Name: "\u0420\u044E\u043A\u0437\u0430\u043A"
+  Name: "\u0421\u0443\u043C\u043A\u0430"
   Description: "\u041D\u0430 16 \u0441\u043B\u043E\u0442\u043E\u0432"
   Type: 102
-  Icon: {fileID: 21300000, guid: fe025e83f69d0b54f8a4fe3c7c128fd7, type: 3}
+  Icon: {fileID: 21300000, guid: c64ce85d788758f4cbd1190519d02650, type: 3}
   Prefab: {fileID: 9009615680021606485, guid: 0f776add875b94d4ab97031c2e8d3868, type: 3}
   weight: 0
   isFood: 0

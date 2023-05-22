@@ -22,6 +22,7 @@ public class ItemInfo : MonoBehaviour
     [Space]
     public bool isMovable;
     public Vector3 savePosition;
+    public Quaternion saveRotation;
     public bool isSaveItemActive;
     [Space]
 

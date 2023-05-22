@@ -19,8 +19,9 @@ public class DayNight : MonoBehaviour
     public float dayTemperature = 25;
     public float nightTemperature = 0;
     public float freezeTemperature = 17;
+    public float hotTemperature = 40;
     public float thisDay = 1;
-    [SerializeField] TMP_Text dayIndicator;
+    public TMP_Text dayIndicator;
     [SerializeField] Material daySkyBoxMaterial;
     [SerializeField] Material nightSkyBoxMaterial;
     [SerializeField] Color nightFogColor;
@@ -46,20 +47,31 @@ public class DayNight : MonoBehaviour
     [SerializeField] float fullExposurePos;
 
     Links links;
+    ShowDayNumber showDayNumber;
 
-
-    void Start()
+    private void Awake()
     {
         links = FindObjectOfType<Links>();
-        
+        showDayNumber = gameObject.GetComponent<ShowDayNumber>();
+    }
+
+    void Start()
+    {  
         hour = skyScript.hour;
 
         dayIndicator.text = "";
-        if (hour < 5.5f || hour > 6f) showDayNumber = StartCoroutine(ShowThisDayNumber());
+        //if (hour < 5.5f || hour > 6f) ShowDay();
 
-
+        SetDaySettings();
 
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+
+        if (hour < 6) 
+            thisDay = 1;
+    }
+
+    public void SetDaySettings()
+    {
         if (hour > startDayTime && hour < startNightTime)
         {
             RenderSettings.skybox = daySkyBoxMaterial;
@@ -74,8 +86,8 @@ public class DayNight : MonoBehaviour
             isDay = false;
             Night();
         }
-        if (hour < 6) 
-            thisDay = 1;
+        sunLight.SetActive(true);
+        moonLight.SetActive(true);
     }
 
     public void Day()
@@ -102,11 +114,23 @@ public class DayNight : MonoBehaviour
         RenderSettings.ambientGroundColor = nightAmbientColor3;
     }
 
+    public void Dungeon()
+    {
+        sunLight.SetActive(false);
+        moonLight.SetActive(false);
+        RenderSettings.ambientSkyColor = nightAmbientColor;
+        RenderSettings.ambientEquatorColor = nightAmbientColor2;
+        RenderSettings.ambientGroundColor = nightAmbientColor3;
+        RenderSettings.reflectionIntensity = 0;
+    }
+
     public float step;
     public float timestep;
     public float timestepMoon;
     float exposureStep;
     float time1;
+
+    public bool isDungeon;
     void Update()
     {
         hour = skyScript.hour;
@@ -122,104 +146,54 @@ public class DayNight : MonoBehaviour
         if (timestep > 1) timestep = 1; if (timestep < 0) timestep = 0f;
         if (timestepMoon > 1) timestepMoon = 1; if (timestepMoon < 0) timestepMoon = 0;
 
-        sunLight.GetComponent<Light>().intensity = timestep * sunLightIntensity;
-        moonLight.GetComponent<Light>().intensity = timestepMoon * moonLightIntensity;
+        if (!isDungeon)
+        { 
+            sunLight.GetComponent<Light>().intensity = timestep * sunLightIntensity;
+            moonLight.GetComponent<Light>().intensity = timestepMoon * moonLightIntensity;
 
-        skyScript.Night.ColorMultiplier = timestepMoon / 2 + 0.5f;
+            skyScript.Night.ColorMultiplier = timestepMoon / 2 + 0.5f;
 
-        RenderSettings.reflectionIntensity = timestep / 2;
+            RenderSettings.reflectionIntensity = timestep / 2;
 
-        RenderSettings.ambientSkyColor = Color.Lerp(nightAmbientColor, dayAmbientColor, timestep);
-        RenderSettings.ambientEquatorColor = Color.Lerp(nightAmbientColor2, dayAmbientColor2, timestep);
-        RenderSettings.ambientGroundColor = Color.Lerp(nightAmbientColor3, dayAmbientColor3, timestep);
-        RenderSettings.fogColor = Color.Lerp(nightFogColor, dayFogColor, timestep);
+            RenderSettings.ambientSkyColor = Color.Lerp(nightAmbientColor, dayAmbientColor, timestep);
+            RenderSettings.ambientEquatorColor = Color.Lerp(nightAmbientColor2, dayAmbientColor2, timestep);
+            RenderSettings.ambientGroundColor = Color.Lerp(nightAmbientColor3, dayAmbientColor3, timestep);
+            RenderSettings.fogColor = Color.Lerp(nightFogColor, dayFogColor, timestep);
 
-        if (timestep > 0.2) { RenderSettings.skybox = daySkyBoxMaterial; }
-        else { RenderSettings.skybox = nightSkyBoxMaterial; }
+            if (timestep > 0.2) { RenderSettings.skybox = daySkyBoxMaterial; }
+            else { RenderSettings.skybox = nightSkyBoxMaterial; }
 
-        exposureStep = (sun.transform.position.y - sunSetPos) * (fullExposurePos - sunSetPos) / 1000;
+            exposureStep = (sun.transform.position.y - sunSetPos) * (fullExposurePos - sunSetPos) / 1000;
 
-        if (exposureStep > 1) exposureStep = 1;
-        if (exposureStep < 0.2f) exposureStep = 0.2f; if (timestepMoon < 0.2f) timestepMoon = 0.2f;
-        daySkyBoxMaterial.SetFloat("_Exposure", skyExposure * exposureStep - 0.2f);
-        nightSkyBoxMaterial.SetFloat("_Exposure", skyExposure * timestepMoon - 0.2f);
-
-
-
+            if (exposureStep > 1) exposureStep = 1;
+            if (exposureStep < 0.2f) exposureStep = 0.2f; if (timestepMoon < 0.2f) timestepMoon = 0.2f;
+            daySkyBoxMaterial.SetFloat("_Exposure", skyExposure * exposureStep - 0.2f);
+            nightSkyBoxMaterial.SetFloat("_Exposure", skyExposure * timestepMoon - 0.2f);
+        }
 
         if (hour > startDayTime && hour < startNightTime && !isDay) { StartCoroutine(StartDay()); isDay = true; Debug.Log("Start Day"); }
         if (hour > startNightTime && isDay) { StartCoroutine(StartNight()); isDay = false; Debug.Log("Start Night"); }
-    }
-
-    public Color dayColor;
-    public Coroutine showDayNumber;
-
-    public void StopShow()
-    {
-        if (links.dayNight.showDayNumber != null) StopCoroutine(links.dayNight.showDayNumber);
-    }
-
-    public IEnumerator ShowThisDayNumber()
-    {
-        dayColor.a = 0;
-
-        Debug.Log("day number " + thisDay);
-        yield return new WaitForSeconds(3);
-        
-        dayColor = dayIndicator.color;
-        dayColor.a = 0;
-        dayIndicator.color = dayColor;
-
-        dayIndicator.text = "День " + thisDay;
-        while (dayColor.a < 1)
-        {
-            if (links.player.isDead )
-            dayColor.a += 0.02f;
-            dayIndicator.color = dayColor;
-            yield return null;
-        }
-        dayColor.a = 1;
-        dayIndicator.color = dayColor;
-
-        yield return new WaitForSeconds(2);
-
-        while (dayColor.a > 0)
-        {
-            dayColor.a -= 0.02f;
-            dayIndicator.color = dayColor;
-            yield return null;
-        }
-        dayColor.a = 0;
-        dayIndicator.text = "";
-    }
-
-    
+    }  
 
     IEnumerator StartDay()
     {
         isDay = true;
+
         if (links.music.music.clip != links.music.dayMusic) links.music.DayMusic();
+
         if (!links.player.isDead) 
         { 
             thisDay++;
-            showDayNumber = StartCoroutine(ShowThisDayNumber());
-            if (thisDay == 2) links.questWindow.QuestDone(links.questWindow.Survive1Day);
+            if (!isDungeon) ShowDay();
+            links.questWindow.QuestEventRecount();
         }
         else links.player.isDead = false;
 
-
-        //if (showDayNumber != null) StopCoroutine(showDayNumber);
-
-
-
-        //moonLight.SetActive(false);
-
-        //sunLight.SetActive(true);
         links.ui.temperatureStatusIcon.itemComment = "Теплеет";
         while (hour < startNightTime && hour > startDayTime && temperature < dayTemperature)
         {
 
-            temperature += 0.003f;
+            temperature += 0.0025f * links.time.timeFactor / 60 * Time.timeScale;
      
             yield return null;
         }
@@ -229,20 +203,23 @@ public class DayNight : MonoBehaviour
     IEnumerator StartNight()
     {
         isDay = false;
+
         if (links.music.music.clip != links.music.nightMusic) links.music.NightMusic();
-
-        //sunLight.SetActive(false);
-
-        //moonLight.SetActive(true);
 
         links.ui.temperatureStatusIcon.itemComment = "Холодает";
         while ((hour > startNightTime || hour < startDayTime) && temperature > nightTemperature)
         {
-            temperature -= 0.003f;
+            temperature -= 0.0025f * links.time.timeFactor / 60 * Time.timeScale;
 
             yield return null;
         }
         links.ui.temperatureStatusIcon.itemComment = "Ночной холод";
 
+    }
+
+    public void ShowDay()
+    {
+        if (!links.player.isStart)
+        showDayNumber.Show();
     }
 }

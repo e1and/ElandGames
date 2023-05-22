@@ -39,6 +39,8 @@ public class QuestWindow : MonoBehaviour
     public Text FinalText;
 
     public Quest Survive1Day;
+    public Quest Survive3Day;
+    public Quest Survive7Day;
 
     //[SerializeField] InventoryWindow inventoryWindow;
     Links links;
@@ -55,11 +57,21 @@ public class QuestWindow : MonoBehaviour
 
     void OnCollectItem()
     {
-        QuestItemsReCount();
-        
+        QuestItemsRecount(); 
     }
 
-    public void QuestItemsReCount()
+    public void QuestEventRecount()
+    {
+        for (int i = 0; i < questBlocksList.Count; i++)
+        {
+            if (questBlocksList[i].quest.isTime && questBlocksList[i].quest.days < links.dayNight.thisDay)
+            QuestDone(questBlocksList[i].quest);
+            if (questBlocksList[i].quest.isOpenDoor && !QuestDoors[(int)questBlocksList[i].quest.door].isLocked)
+                QuestDone(questBlocksList[i].quest);
+        }
+    }
+
+    public void QuestItemsRecount()
     {
         for (int i = 0; i < questBlocksList.Count; i++)
         {
@@ -86,6 +98,7 @@ public class QuestWindow : MonoBehaviour
 
         }
         QuestItemsCountRedraw();
+        QuestStatusUpdate();
     }
 
     public void QuestItemsCountRedraw()
@@ -126,7 +139,7 @@ public class QuestWindow : MonoBehaviour
             quest.name = questList[i].Name;
 
             var questInfo = quest.GetComponent<QuestInfo>();
-            questBlocksList.Add(questInfo);          
+            questBlocksList.Add(questInfo);
 
             questInfo.quest = questList[i];
 
@@ -136,16 +149,34 @@ public class QuestWindow : MonoBehaviour
             questInfo.QuestItemNeed = questList[i].QuestItemNeed;
 
             questInfo.questWindow = this;
-
         }
-        QuestItemsReCount();
+
+        links.ui.activeQuestCount.text = questList.Count.ToString();
+        if (questList.Count > 0) links.ui.activeQuestCount.enabled = true;
+        else links.ui.activeQuestCount.enabled = false;
+        QuestItemsRecount();
+        QuestItemsCountRedraw();
+        QuestEventRecount();
+    }
+
+    public void QuestStatusUpdate()
+    {
+        for (int i = 0; i < questBlocksList.Count; i++)
+        {
+            if (questBlocksList[i].isComplete == true)
+            {
+                links.ui.questCompleteSign.SetActive(true);
+                return;
+            }
+        }
+        links.ui.questCompleteSign.SetActive(false);
     }
 
     public GameObject FollowingQuestPanel;
 
     public void FollowQuest()
     {
-        if (FollowingQuestPanel.activeSelf) FollowingQuestPanel.SetActive(false);
+        if (FollowingQuestPanel.activeSelf && FollowingQuest != null && FollowingQuest == OpenedQuest) FollowingQuestPanel.SetActive(false);
         else FollowingQuestPanel.SetActive(true);
 
         FollowingQuest = OpenedQuest;
@@ -194,6 +225,7 @@ public class QuestWindow : MonoBehaviour
 
         questList.Remove(OpenedQuest.quest);
         completedQuests.Add(OpenedQuest.quest);
+        OpenedQuest.isComplete = false;
 
         QuestUpdate();
         links.inventoryWindow.Redraw();
@@ -220,5 +252,15 @@ public class QuestWindow : MonoBehaviour
                 }
             }
         }
+        QuestStatusUpdate();
     }
+
+    public List<Door> QuestDoors = new List<Door>();
+
+}
+
+public enum QuestDoor
+{
+    None = 0,
+    BakerHouse = 1
 }

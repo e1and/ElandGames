@@ -38,8 +38,8 @@ namespace Stats
 
             DayIndicator.text = player.DayTime.thisDay.ToString();
             DateIndicator.text = time.Cycle.Day + " " + time.Cycle.Month + " " + time.Cycle.Year;
-            TemperatureIndicator.text = Mathf.Round(player.DayTime.temperature) + "C";
-            PlayerTemperatureIndicator.text = Mathf.Round(player.feelingTemperature) + "C";
+            TemperatureIndicator.text = Mathf.Round(player.DayTime.temperature) + "°C";
+            PlayerTemperatureIndicator.text = Mathf.Round(player.feelingTemperature) + "°C";
         }
     }
 }

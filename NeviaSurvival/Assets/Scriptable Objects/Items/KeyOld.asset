@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82157b2877980e84f8cc049a002167ff, type: 3}
   m_Name: KeyOld
   m_EditorClassIdentifier: 
-  Name: "\u0421\u0442\u0430\u0440\u044B\u0439 \u0440\u0436\u0430\u0432\u044B\u0439
-    \u043A\u043B\u044E\u0447"
+  Name: "\u0421\u0442\u0430\u0440\u044B\u0439 \u043A\u043B\u044E\u0447"
   Description: "\u041F\u043E\u0445\u043E\u0436\u0435 \u043E\u0442 \u0434\u043E\u043C\u0430"
   Type: 203
   Icon: {fileID: 21300000, guid: 17777792311cab94a92e7e7be61c3e86, type: 3}
   Prefab: {fileID: 374289202576707483, guid: 3e28332616ba1514e98800e6bd6f01ed, type: 3}
+  rarity: 0
   weight: 0
   isFood: 0
   foodValue: 0

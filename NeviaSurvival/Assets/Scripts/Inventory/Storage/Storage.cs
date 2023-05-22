@@ -18,6 +18,7 @@ public class Storage : MonoBehaviour
 
     public int size = 6;
     public int filledSlots;
+    public bool isSmallCauldron;
 
     Links links;
 
@@ -51,8 +52,11 @@ public class Storage : MonoBehaviour
         Debug.Log("Open");
         onOpenStorage.Invoke();
         storageWindow.gameObject.SetActive(true);
+        links.ui.inventoryPanel.SetActive(true);
         storageWindow.Redraw();
         inventoryWindow.Redraw();
+        if (gameObject.TryGetComponent(out Cauldron cauldron) && cauldron.isCooking)
+            links.ui.CookingIndicator.gameObject.SetActive(true);
     }
 
     public void CloseStorage()
@@ -62,6 +66,7 @@ public class Storage : MonoBehaviour
         mousePoint.isPointUI = false;
         mousePoint.IconHighLight.SetActive(false);
         mousePoint.itemInfoPanel.SetActive(false);
+        links.ui.CookingIndicator.gameObject.SetActive(false);
     }
 
     void AutoClose()

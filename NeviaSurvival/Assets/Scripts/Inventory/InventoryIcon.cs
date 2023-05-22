@@ -38,10 +38,6 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public Links links;
 
-    //public Transform rightHandParent;
-    //public Transform leftHandParent;
-    //public Transform backpackParent;
-
     // В старте привязывем 3д объекты к иконкам соответсвующей ячейки инвентаря, экмипировки, хранилища
     // 100 - Left Hand, 101 - Right Hand, 102 - Backpack, 103 - Belt, 104 - Foots, 105 - Legs, 106 - Hands, 107 - Body, 
     // 108 - Shoulders, 109 - Head
@@ -171,7 +167,10 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
 
         item3dObject.GetComponent<Rigidbody>().isKinematic = true;
-        item3dObject.GetComponent<BoxCollider>().enabled = false;
+        if (item3dObject.TryGetComponent(out BoxCollider box)) box.enabled = false;
+        if (item3dObject.TryGetComponent(out MeshCollider mesh)) mesh.enabled = false;
+        if (item3dObject.TryGetComponent(out SphereCollider sphere)) sphere.enabled = false;
+        if (item3dObject.TryGetComponent(out CapsuleCollider capsule)) capsule.enabled = false;
 
 
     }
@@ -187,15 +186,19 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     {
         if (Input.GetMouseButton(0))
         {
-            originalParent = transform.parent;
-            transform.parent = draggingParent;
+            if (!item.isLiquid)
+            {
+                originalParent = transform.parent;
+                transform.parent = draggingParent;
+            }
+            else links.mousePoint.Comment("Жидкость нельзя перетаскивать!");
         }
     }
 
     // При зажатой кнопке мыши ИКОНКА ПЕРЕТАСКИВАЕТСЯ вместе с курсором
     public void OnDrag(PointerEventData eventData)
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && !item.isLiquid)
         {
             transform.position = Input.mousePosition;
         }
@@ -204,91 +207,107 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     // При отпускании кнопки над слотами ИКОНКА ПЕРЕХОДИТ В СЛОТ или дропается предмет
     public void OnEndDrag(PointerEventData eventData)
     {
-        for (int i = 0; i < 9; i++)
-        {
-            if (InRectangle(links.inventoryWindow.slots[i]))
-            { DragInSlot(links.inventoryWindow.slots[i]); return; }
-        }
-        for (int i = 0; i < 9; i++)
-        {
-            if (InRectangle(links.storageWindow.slots[i]) && links.storageWindow.gameObject.activeSelf == true)
-            { DragInSlot(links.storageWindow.slots[i]); return; }
-        }
-        if (InRectangle(links.inventoryWindow.rightHandSlot)) DragInSlot(links.inventoryWindow.rightHandSlot);
-        else if (InRectangle(links.inventoryWindow.leftHandSlot)) DragInSlot(links.inventoryWindow.leftHandSlot);
-        else if (InRectangle(links.inventoryWindow.backpackSlot)) // Перемещение иконки в слот рюкзака
-        {
-            if (item.Type == ItemType.Bag) DragInSlot(links.inventoryWindow.backpackSlot);
-            else
+        if (!item.isLiquid)
+        { 
+            for (int i = 0; i < 16; i++)
             {
-                gameObject.transform.SetParent(originalParent);
-                links.mousePoint.Comment("Не могу повесить это на спину! Этот слот для рюкзака!");
+                if (InRectangle(links.inventoryWindow.slots[i]))
+                {
+                    if (links.inventoryWindow.slots[i].gameObject.activeSelf)
+                    {
+                        DragInSlot(links.inventoryWindow.slots[i]); return;
+                    }
+                    else
+                    {
+                        gameObject.transform.SetParent(originalParent);
+                        links.mousePoint.Comment("Надо найти сумку для вещей!");
+                        return;
+                    }
+                }
             }
-        }
-        else if (InRectangle(links.inventoryWindow.beltSlot)) // Перемещение иконки в слот пояса
-        {
-            if (item.Type == ItemType.Belt) DragInSlot(links.inventoryWindow.beltSlot);
-            else
+
+            for (int i = 0; i < 9; i++)
             {
-                gameObject.transform.SetParent(originalParent);
-                links.mousePoint.Comment("Не могу повесить это на пояс! Этот слот для ремня!");
+                if (InRectangle(links.storageWindow.slots[i]) && links.storageWindow.gameObject.activeSelf == true)
+                { DragInSlot(links.storageWindow.slots[i]); return; }
             }
-        }
-        else if (InRectangle(links.inventoryWindow.feetSlot)) // Перемещение иконки в слот обуви
-        {
-            if (item.Type == ItemType.Feet) DragInSlot(links.inventoryWindow.feetSlot);
-            else
+
+            if (InRectangle(links.inventoryWindow.rightHandSlot)) DragInSlot(links.inventoryWindow.rightHandSlot);
+            else if (InRectangle(links.inventoryWindow.leftHandSlot)) DragInSlot(links.inventoryWindow.leftHandSlot);
+            else if (InRectangle(links.inventoryWindow.backpackSlot)) // Перемещение иконки в слот рюкзака
             {
-                gameObject.transform.SetParent(originalParent);
-                links.mousePoint.Comment("Не могу надеть это на ступни! Этот слот для обуви!");
+                if (item.Type == ItemType.Bag) DragInSlot(links.inventoryWindow.backpackSlot);
+                else
+                {
+                    gameObject.transform.SetParent(originalParent);
+                    links.mousePoint.Comment("Не могу повесить это на спину! Этот слот для рюкзака!");
+                }
             }
-        }
-        else if (InRectangle(links.inventoryWindow.legsSlot)) // Перемещение иконки в слот ног
-        {
-            if (item.Type == ItemType.Legs) DragInSlot(links.inventoryWindow.legsSlot);
-            else
+            else if (InRectangle(links.inventoryWindow.beltSlot)) // Перемещение иконки в слот пояса
             {
-                gameObject.transform.SetParent(originalParent);
-                links.mousePoint.Comment("Не могу надеть это на ноги! Этот слот для штанов!");
+                if (item.Type == ItemType.Belt) DragInSlot(links.inventoryWindow.beltSlot);
+                else
+                {
+                    gameObject.transform.SetParent(originalParent);
+                    links.mousePoint.Comment("Не могу повесить это на пояс! Этот слот для ремня!");
+                }
             }
-        }
-        else if (InRectangle(links.inventoryWindow.armsSlot)) // Перемещение иконки в слот рук
-        {
-            if (item.Type == ItemType.Hands) DragInSlot(links.inventoryWindow.armsSlot);
-            else
+            else if (InRectangle(links.inventoryWindow.feetSlot)) // Перемещение иконки в слот обуви
             {
-                gameObject.transform.SetParent(originalParent);
-                links.mousePoint.Comment("Не могу надеть это на руки! Этот слот для наручей!");
+                if (item.Type == ItemType.Feet) DragInSlot(links.inventoryWindow.feetSlot);
+                else
+                {
+                    gameObject.transform.SetParent(originalParent);
+                    links.mousePoint.Comment("Не могу надеть это на ступни! Этот слот для обуви!");
+                }
             }
-        }
-        else if (InRectangle(links.inventoryWindow.bodySlot)) // Перемещение иконки в слот тела
-        {
-            if (item.Type == ItemType.Body) DragInSlot(links.inventoryWindow.bodySlot);
-            else
+            else if (InRectangle(links.inventoryWindow.legsSlot)) // Перемещение иконки в слот ног
             {
-                gameObject.transform.SetParent(originalParent);
-                links.mousePoint.Comment("Не могу надеть это на тело! Этот слот для рубахи или доспеха!");
+                if (item.Type == ItemType.Legs) DragInSlot(links.inventoryWindow.legsSlot);
+                else
+                {
+                    gameObject.transform.SetParent(originalParent);
+                    links.mousePoint.Comment("Не могу надеть это на ноги! Этот слот для штанов!");
+                }
             }
-        }
-        else if (InRectangle(links.inventoryWindow.shouldersSlot)) // Перемещение иконки в слот плечей
-        {
-            if (item.Type == ItemType.Shoulders) DragInSlot(links.inventoryWindow.shouldersSlot);
-            else
+            else if (InRectangle(links.inventoryWindow.armsSlot)) // Перемещение иконки в слот рук
             {
-                gameObject.transform.SetParent(originalParent);
-                links.mousePoint.Comment("Не могу надеть это на плечи! Этот слот для плаща или наплечников!");
+                if (item.Type == ItemType.Hands) DragInSlot(links.inventoryWindow.armsSlot);
+                else
+                {
+                    gameObject.transform.SetParent(originalParent);
+                    links.mousePoint.Comment("Не могу надеть это на руки! Этот слот для наручей!");
+                }
             }
-        }
-        else if (InRectangle(links.inventoryWindow.headSlot)) // Перемещение иконки в слот головы
-        {
-            if (item.Type == ItemType.Head) DragInSlot(links.inventoryWindow.headSlot);
-            else
+            else if (InRectangle(links.inventoryWindow.bodySlot)) // Перемещение иконки в слот тела
             {
-                gameObject.transform.SetParent(originalParent);
-                links.mousePoint.Comment("Не могу надеть это на голову! Этот слот для шапки!");
+                if (item.Type == ItemType.Body) DragInSlot(links.inventoryWindow.bodySlot);
+                else
+                {
+                    gameObject.transform.SetParent(originalParent);
+                    links.mousePoint.Comment("Не могу надеть это на тело! Этот слот для рубахи или доспеха!");
+                }
             }
+            else if (InRectangle(links.inventoryWindow.shouldersSlot)) // Перемещение иконки в слот плечей
+            {
+                if (item.Type == ItemType.Shoulders) DragInSlot(links.inventoryWindow.shouldersSlot);
+                else
+                {
+                    gameObject.transform.SetParent(originalParent);
+                    links.mousePoint.Comment("Не могу надеть это на плечи! Этот слот для плаща или наплечников!");
+                }
+            }
+            else if (InRectangle(links.inventoryWindow.headSlot)) // Перемещение иконки в слот головы
+            {
+                if (item.Type == ItemType.Head) DragInSlot(links.inventoryWindow.headSlot);
+                else
+                {
+                    gameObject.transform.SetParent(originalParent);
+                    links.mousePoint.Comment("Не могу надеть это на голову! Этот слот для шапки!");
+                }
+            }
+            else Drop();
         }
-        else Drop();
     }
 
     // Метод определяющий, что курсор на определенном 2д-объекте
@@ -445,7 +464,32 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             inventoryWindow.Redraw();
             return;
         }
-        
+
+        if (item.Type == ItemType.Cauldron && toStorage == null && moveToIndex < 16)
+        {
+            if (item3dObject.TryGetComponent(out Cauldron cauldron1) && (cauldron1.isSoup || cauldron1.isWater))
+            {
+                transform.parent = originalParent;
+                links.mousePoint.Comment("Наполенный котелок положить в сумку нельзя!");
+                storageWindow.Redraw();
+                inventoryWindow.Redraw();
+                return;
+            }
+        }
+
+        if (toStorage != null && moveToIndex < 16 && toStorage.gameObject.TryGetComponent(out Cauldron cauldron))
+        {
+            if (item.Type != ItemType.Food || cauldron.isSoup)
+            {
+                if (item.Type != ItemType.Food) links.mousePoint.Comment("В котелок можно положить только еду!");
+                else if (cauldron.isSoup) links.mousePoint.Comment("В котелке еще остался суп!");
+                transform.parent = originalParent;
+                storageWindow.Redraw();
+                inventoryWindow.Redraw();
+                return;
+            }
+        }
+
         if (isInRightHand) // Если из правой руки, то меняем ячейки 3д-объектов и Item местами в нужных списках
         {
             inventoryWindow.RightHandObject.SetActive(false);
@@ -576,7 +620,8 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         }
         else if (isInInventory)
         {
-            if (toStorage != null && toStorage.storageItems[moveToIndex].Type == ItemType.Bag ||
+            if (toStorage != null && toStorage.storageItems[moveToIndex] != null && 
+                toStorage.storageItems[moveToIndex].Type == ItemType.Bag ||
                 toStorage == null && (moveToIndex == 100 && inventoryWindow.LeftHandItem != null && 
                 inventoryWindow.LeftHandItem.Type == ItemType.Bag ||
                 moveToIndex == 101 && inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Bag))
@@ -624,17 +669,20 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         if (item3dObject == null)
         {
             Debug.Log("Spawn");
-            item3dObject = Instantiate(Prefab, inventoryWindow.dropParent);   
+            item3dObject = Instantiate(Prefab, inventoryWindow.dropParent);
         }
         else
         {
             item3dObject.transform.parent = inventoryWindow.dropParent;
             item3dObject.GetComponent<Rigidbody>().isKinematic = false;
-            item3dObject.GetComponent<BoxCollider>().enabled = true;
+            if (item3dObject.TryGetComponent(out BoxCollider box)) box.enabled = true;
+            if (item3dObject.TryGetComponent(out MeshCollider mesh)) mesh.enabled = true;
+            if (item3dObject.TryGetComponent(out SphereCollider sphere)) sphere.enabled = true;
+            if (item3dObject.TryGetComponent(out CapsuleCollider capsule)) capsule.enabled = true;
             item3dObject.layer = 0;
             item3dObject.SetActive(true);
         }
-        item3dObject.transform.position = links.player.transform.position + new Vector3(0, 1, 0);
+        item3dObject.transform.position = links.player.transform.position + links.player.transform.forward + new Vector3(0, 1, 0);
         RemoveFromInventory();
         DropItem?.Invoke();
         Destroy(gameObject, 0);
@@ -729,6 +777,7 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
                             storage.storageItemObjects[i] = null;
                             storage.Recount();
                             inventoryWindow.Redraw();
+                            storageWindow.Redraw();
                             return;
                         }
                     }

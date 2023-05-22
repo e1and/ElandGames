@@ -17,7 +17,7 @@ Material:
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -75,18 +75,18 @@ Material:
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
-    - _Density: 0.24
+    - _Density: 0.219
     - _DepthTransparency: 2.53
     - _DetailNormalMapScale: 1
-    - _DistanceFade: 0.5
-    - _Distortion: 0.098
+    - _DistanceFade: 5
+    - _Distortion: 0.07
     - _DstBlend: 0
     - _EnableCustomFog: 0
     - _EnableProbeRelfections: 1
     - _EnableRealtimeReflections: 1
     - _EnableReflections: 1
     - _Fade: 2
-    - _FarTilingDistance: 60
+    - _FarTilingDistance: 100
     - _FoamBlend: 0.2
     - _FoamContrast: 0.114
     - _FoamIntensity: 1.59
@@ -99,17 +99,17 @@ Material:
     - _Gloss: 0.7
     - _Glossiness: 0.5
     - _LightWrapping: 2
-    - _MediumTilingDistance: 10
+    - _MediumTilingDistance: 50
     - _Metallic: 0
     - _Mode: 0
     - _NormalStrength: 0.47
     - _NormalTiling: 0.19
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _ProbeReflectionIntensity: 0.496
-    - _RealtimeReflectionIntensity: 0.228
+    - _ProbeReflectionIntensity: 0.579
+    - _RealtimeReflectionIntensity: 0.655
     - _ReflectionIntensity: 0.385
-    - _Refraction: 0.615
+    - _Refraction: 0.636
     - _RefractionDistance: 10
     - _RefractionFalloff: 1
     - _ShoreFade: 0.56

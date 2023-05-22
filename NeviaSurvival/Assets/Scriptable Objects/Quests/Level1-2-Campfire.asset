@@ -31,9 +31,8 @@ MonoBehaviour:
     \u043C\u0435\u0441\u0442\u0435."
   QuestItem: {fileID: 0}
   QuestItemNeed: 0
-  RewardText: "+1 \u043E\u0447\u043A\u043E \u043D\u0430\u0432\u044B\u043A\u043E\u0432,
-    \u0447\u0435\u0440\u0442\u0451\u0436 \u043D\u0430\u0441\u0442\u0438\u043B\u0430
-    \u0438\u0437 \u043B\u0438\u0441\u0442\u044C\u0435\u0432"
+  RewardText: "+1 \u043E\u0447\u043A\u043E \u043D\u0430\u0432\u044B\u043A\u043E\u0432\n\u0427\u0435\u0440\u0442\u0451\u0436
+    \u043D\u0430\u0441\u0442\u0438\u043B\u0430 \u0438\u0437 \u043B\u0438\u0441\u0442\u044C\u0435\u0432"
   RewardNextQuest: {fileID: 11400000, guid: e0e76572e48393b46bd7a4f79e53431e, type: 2}
   RewardItem: {fileID: 0}
   RewardSkillPoint: 1

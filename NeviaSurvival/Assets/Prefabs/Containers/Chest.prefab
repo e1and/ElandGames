@@ -165,6 +165,7 @@ MonoBehaviour:
   storageItemObjects: []
   size: 6
   filledSlots: 0
+  isSmallCauldron: 0
 --- !u!114 &6404459885843951014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,14 +186,15 @@ MonoBehaviour:
   weight: 0
   isUnique: 0
   isUsable: 0
-  isOpenable: 0
+  isOpenable: 1
   isCollectible: 0
-  isCarrying: 0
+  isCarrying: 1
   isFirePlace: 0
   isTorch: 0
   isBed: 0
   isMovable: 0
   savePosition: {x: 0, y: 0, z: 0}
+  saveRotation: {x: 0, y: 0, z: 0, w: 0}
   isSaveItemActive: 0
   carryPosition: {x: 0, y: 0, z: 0}
   carryRotation: {x: 0, y: 0, z: 0, w: 0}

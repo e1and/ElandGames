@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 9054482332033150998}
   - component: {fileID: 9054482332033150997}
   - component: {fileID: 9054482332033150996}
+  - component: {fileID: 6087768877582223783}
   m_Layer: 0
   m_Name: Bed
   m_TagString: Untagged
@@ -156,6 +157,7 @@ MonoBehaviour:
   isBed: 1
   isMovable: 0
   savePosition: {x: 0, y: 0, z: 0}
+  saveRotation: {x: 0, y: 0, z: 0, w: 0}
   isSaveItemActive: 0
   carryPosition: {x: 0, y: 0, z: 0}
   carryRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -175,6 +177,25 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 3d27964f2ea12f043b80ea427f49b2b2, type: 3}
+--- !u!205 &6087768877582223783
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9054482332033150986}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 1
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.036420036
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 9054482332033150999}
+  m_Enabled: 1
 --- !u!1 &9054482332132741496
 GameObject:
   m_ObjectHideFlags: 0

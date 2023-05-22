@@ -17,6 +17,7 @@ MonoBehaviour:
   Type: 204
   Icon: {fileID: 21300000, guid: ea6f0d4c2427eab4281781dee0a97c7d, type: 3}
   Prefab: {fileID: 596621412107208678, guid: a91730aa2f5131240bf419e9aae2ea8c, type: 3}
+  rarity: 20
   weight: 0
   isFood: 0
   foodValue: 0

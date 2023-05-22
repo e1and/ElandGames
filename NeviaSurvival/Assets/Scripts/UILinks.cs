@@ -16,6 +16,8 @@ public class UILinks : MonoBehaviour
     public Text EnergyIndicator;
     public Slider StaminaIndicator;
     public Slider OxygenIndicator;
+    public Slider CookingIndicator;
+    public Slider BurningIndicator;
     public Image progressIndicator;
 
     [Header("Окно статистики:")]
@@ -51,12 +53,16 @@ public class UILinks : MonoBehaviour
 
     public GameObject pauseText;
     public GameObject thisDayIndicator;
+    public GameObject questCompleteSign;
+    public TMP_Text activeQuestCount;
+    public GameObject newSkillPointsSign;
 
     [Header("Сообщения-подсказки:")]
     public TMP_Text pressToStand;
     public TMP_Text pressToSleep;
     public TMP_Text pressToWakeUp;
     public TMP_Text pressToGrabGrass;
+    public TMP_Text pressToDrop;
 
 
 }

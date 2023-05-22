@@ -120,11 +120,19 @@ MonoBehaviour:
     \u043D\u0430 \u0437\u0435\u043C\u043B\u0435"
   itemComment: 
   durability: 100
+  weight: 0
+  isUnique: 0
   isUsable: 0
+  isOpenable: 0
   isCollectible: 0
   isCarrying: 0
   isFirePlace: 0
+  isTorch: 0
   isBed: 1
+  isMovable: 0
+  savePosition: {x: 0, y: 0, z: 0}
+  saveRotation: {x: 0, y: 0, z: 0, w: 0}
+  isSaveItemActive: 0
   carryPosition: {x: 0, y: 0, z: 0}
   carryRotation: {x: 0, y: 0, z: 0, w: 0}
   item: {fileID: 0}
@@ -140,8 +148,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.011195984, y: 0.008464473, z: 0.016298756}
-  m_Center: {x: -0.000042266845, y: 0.00013804674, z: 0.008155325}
+  m_Size: {x: 0.003115565, y: 0.008464473, z: 0.0082754595}
+  m_Center: {x: 0.0036135993, y: 0.00013804674, z: 0.0041436837}
 --- !u!114 &7430619241331553650
 MonoBehaviour:
   m_ObjectHideFlags: 0

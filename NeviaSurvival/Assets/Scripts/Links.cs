@@ -8,6 +8,7 @@ public class Links : MonoBehaviour
     public Building building;
     public InventoryWindow inventoryWindow;
     public StorageWindow storageWindow;
+    public Cooking cooking;
     public SaveInventory saveInventory;
     public QuestWindow questWindow;
     public ItemSpawner itemSpawner;
@@ -18,6 +19,7 @@ public class Links : MonoBehaviour
     public StarterAssetsInputs inputs;
     public DayNight dayNight;
     public Music music;
+    public Sounds sounds;
     public TOD_Time time;
     public TOD_CycleParameters cycle;
     public CameraController cameraController;

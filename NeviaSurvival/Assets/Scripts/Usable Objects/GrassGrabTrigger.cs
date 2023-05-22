@@ -16,7 +16,7 @@ public class GrassGrabTrigger : MonoBehaviour
     {
         if (other.TryGetComponent(out Player player))
         {
-            if (player.isLay || player.isSit) player.GrassGrab(false);
+            if (player.isLay || player.isSit || player.mousePoint.isCarry) player.GrassGrab(false);
             else player.GrassGrab(true);
         }
     }

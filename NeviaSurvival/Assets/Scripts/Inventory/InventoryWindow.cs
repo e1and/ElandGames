@@ -98,7 +98,7 @@ public class InventoryWindow : MonoBehaviour
     {
         if (inventory != null) inventory.onItemAdded += OnItemAdded;
         Redraw();
-        gameObject.SetActive(false);
+        links.ui.inventoryPanel.SetActive(false);
         links.ui.equipmentPanel.SetActive(false);
 
     }
@@ -114,13 +114,18 @@ public class InventoryWindow : MonoBehaviour
     public void Redraw()
     {
         ClearDrawn();
-        links.questWindow.QuestItemsReCount();
+        links.questWindow.QuestItemsRecount();
         UpdateClothes();
         RecountWood();
 
         if (Backpack != null)
         {
             inventory = Backpack.GetComponent<Inventory>();
+            if (!links.saveInventory.bags.Contains(inventory))
+            {
+                links.saveInventory.bags.Add(inventory);
+                links.saveInventory.AddNewSaveBag(inventory);
+            }
         }
         else inventory = null;
 
@@ -202,6 +207,16 @@ public class InventoryWindow : MonoBehaviour
         iconGameObject.GetComponent<DescribeUI>().mousePoint = links.mousePoint;
         iconGameObject.GetComponent<ItemInfo>().itemName = item.Name;
         iconGameObject.GetComponent<ItemInfo>().itemDescription = item.Description;
+        if (i == 100 && LeftHandObject != null)
+        {
+            iconGameObject.GetComponent<ItemInfo>().itemName = LeftHandObject.GetComponent<ItemInfo>().itemName;
+            iconGameObject.GetComponent<ItemInfo>().itemDescription = LeftHandObject.GetComponent<ItemInfo>().itemDescription;
+        }
+        if (i == 101 && RightHandObject != null)
+        {
+            iconGameObject.GetComponent<ItemInfo>().itemName = RightHandObject.GetComponent<ItemInfo>().itemName;
+            iconGameObject.GetComponent<ItemInfo>().itemDescription = RightHandObject.GetComponent<ItemInfo>().itemDescription;
+        }
 
         iconGameObject.GetComponent<ItemInfo>().item = item;
         iconGameObject.GetComponent<ItemInfo>().type = item.Type;
@@ -250,13 +265,18 @@ public class InventoryWindow : MonoBehaviour
         Clothes[5] = Shoulders; ClothesItems[5] = ShouldersItem;
         Clothes[6] = Head; ClothesItems[6] = HeadItem;
 
+        UpdateClothesWarm();
+        UpdateClothesVisual();
+    }
+
+    public void UpdateClothesWarm()
+    {
         links.player.clothesTemperature = 0;
         for (int i = 0; i < Clothes.Count; i++)
         {
             if (ClothesItems[i] != null) links.player.clothesTemperature += ClothesItems[i].warmBonus
                     * Clothes[i].GetComponent<ItemInfo>().durability * 0.01f;
         }
-        UpdateClothesVisual();
     }
 
     public void UpdateClothesVisual()

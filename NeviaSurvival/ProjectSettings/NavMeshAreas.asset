@@ -11,8 +11,8 @@ NavMeshProjectSettings:
     cost: 1
   - name: Jump
     cost: 2
-  - name: 
-    cost: 1
+  - name: HardWay
+    cost: 5
   - name: 
     cost: 1
   - name: 
@@ -75,7 +75,7 @@ NavMeshProjectSettings:
     agentTypeID: 0
     agentRadius: 0.32
     agentHeight: 1.41
-    agentSlope: 60
+    agentSlope: 50.5
     agentClimb: 0.96
     ledgeDropHeight: 0
     maxJumpAcrossDistance: 0

@@ -54,7 +54,6 @@ public class SaveInventory : MonoBehaviour
         }
 
         SaveItemPositions();
-        FindBags();
         SaveBuildings();
     }
 
@@ -176,15 +175,14 @@ public class SaveInventory : MonoBehaviour
 
     void FindContainers()
     {
-        // Поиск всех хранилищ в паренте хранилищ
-        for (int i = 0; i < links.containersParent.childCount; i++)
+        // Поиск всех хранилищ на сцене
+        Storage[] allStorages = FindObjectsOfType<Storage>();
+
+        for (int i = 0; i < allStorages.Length; i++)
         {
-            if (links.containersParent.GetChild(i).TryGetComponent(out Storage storage))
-            {
-                storages.Add(storage);
-                saveStorageItems.Add(storage.storageItems);
-                saveStorageItemObjects.Add(storage.storageItemObjects);
-            }
+                storages.Add(allStorages[i]);
+                saveStorageItems.Add(allStorages[i].storageItems);
+                saveStorageItemObjects.Add(allStorages[i].storageItemObjects);
         }
     }
 
@@ -215,7 +213,7 @@ public class SaveInventory : MonoBehaviour
     public List<Item> bagItems2 = new List<Item>();
     public List<GameObject> bagItems2Objects = new List<GameObject>();
 
-    void SaveBags()
+    public void SaveBags()
     {
         // Сохранение содержимого всех сумок
         for (int i = 0; i < bags.Count; i++)
@@ -225,7 +223,13 @@ public class SaveInventory : MonoBehaviour
         }
     }
 
-    void SaveContainers()
+    public void AddNewSaveBag(Inventory bag)
+    {
+        saveBagItems.Add(new List<Item>(bag.inventoryItems));
+        saveBagItemObjects.Add(new List<GameObject>(bag.inventoryItemObjects));
+    }    
+
+    public void SaveContainers()
     {
         // Сохранение содержимого всех хранилищ
         for (int i = 0; i < storages.Count; i++)
@@ -233,6 +237,9 @@ public class SaveInventory : MonoBehaviour
                 saveStorageItems[i] = new List<Item>(storages[i].storageItems);
                 saveStorageItemObjects[i] = new List<GameObject>(storages[i].storageItemObjects);
         }
+
+        storageItems2 = saveStorageItems[0];
+        storageItems2Objects = saveStorageItemObjects[0];
     }
 
     // Для отслеживания работы хранилищ (можно удалить)
@@ -251,6 +258,9 @@ public class SaveInventory : MonoBehaviour
                 storages[i].storageItemObjects[j] = saveStorageItemObjects[i][j];
             }
         }
+        Debug.Log(saveStorageItems[0][0]);
+        Debug.Log(saveStorageItems[0][1]);
+        Debug.Log(saveStorageItems[0][2]);
     }
 
     void LoadBags()
@@ -282,7 +292,7 @@ public class SaveInventory : MonoBehaviour
         // Сохранение начальных положений всех предметов на уровне (предметы должны быть в паренте Items)
         for (int i = 0; i < items.Count; i++)
         {
-            if (items[i].TryGetComponent(out ItemInfo info))
+            if (items[i] != null && items[i].TryGetComponent(out ItemInfo info))
             {
                 info.savePosition = items[i].transform.position;
                 if (info.gameObject.activeSelf) info.isSaveItemActive = true;
@@ -306,6 +316,10 @@ public class SaveInventory : MonoBehaviour
             {
                 if (storages[i].gameObject.transform.position != info.savePosition)
                     info.savePosition = storages[i].gameObject.transform.position;
+
+                if (storages[i].gameObject.transform.rotation != info.saveRotation)
+                    info.saveRotation = storages[i].gameObject.transform.rotation;
+
                 if (info.gameObject.activeSelf) info.isSaveItemActive = true;
             }
         }
@@ -351,6 +365,9 @@ public class SaveInventory : MonoBehaviour
             {
                 if (storages[i].gameObject.transform.position != info.savePosition) 
                     storages[i].gameObject.transform.position = info.savePosition + new Vector3(0, 1, 0);
+
+                if (storages[i].gameObject.transform.rotation != info.saveRotation)
+                    storages[i].gameObject.transform.rotation = info.saveRotation;
             }      
         }
     }

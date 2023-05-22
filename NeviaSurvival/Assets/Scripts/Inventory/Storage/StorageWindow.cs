@@ -9,7 +9,7 @@ public class StorageWindow : MonoBehaviour
     public Storage targetStorage;
     public RectTransform[] slots;
     [SerializeField] Sprite emptySlotImage;
-    [SerializeField] TMP_Text storageTitle;
+    public TMP_Text storageTitle;
 
     [SerializeField] Item itemToAdd;
 
@@ -76,12 +76,15 @@ public class StorageWindow : MonoBehaviour
                 icon.GetComponent<InventoryIcon>().item = item;
                 icon.GetComponent<ItemInfo>().item = item;
                 icon.GetComponent<ItemInfo>().itemName = item.Name;
+                if (targetStorage.storageItemObjects[i] != null)
+                    icon.GetComponent<ItemInfo>().itemName = targetStorage.storageItemObjects[i].GetComponent<ItemInfo>().itemName;
                 icon.GetComponent<ItemInfo>().itemDescription = item.Description;
                 icon.GetComponent<InventoryIcon>().Name.text = item.Name;
             }
         }
 
         targetStorage.Recount();
+        if (targetStorage.isSmallCauldron) targetStorage.gameObject.GetComponent<Cauldron>().UpdateCauldron();
     }
 
     void ClearDrawn()

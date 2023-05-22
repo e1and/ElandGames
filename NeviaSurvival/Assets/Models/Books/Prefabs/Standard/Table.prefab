@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8662651363331407195}
   - component: {fileID: 3741095548433870255}
   - component: {fileID: -864672219082316057}
+  - component: {fileID: 8108433227385001681}
   m_Layer: 0
   m_Name: Table
   m_TagString: Untagged
@@ -29,6 +30,7 @@ Transform:
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -97,3 +99,22 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6692290496178104961, guid: 3a3113843c2d00240862fe10887715f3, type: 3}
+--- !u!205 &8108433227385001681
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8406328925507435983}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 1
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.07636299
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 3741095548433870255}
+  m_Enabled: 1

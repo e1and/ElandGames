@@ -90,6 +90,7 @@ public class Building : MonoBehaviour
 				{
 					questWindow.questBlocksList[i].isComplete = true;
 					questWindow.questBlocksList[i].checkMarkImage.gameObject.SetActive(true);
+					questWindow.QuestStatusUpdate();
 					break;
 				}
 			}
@@ -124,22 +125,26 @@ public class Building : MonoBehaviour
 		chosenPlace = buildingPlace;
 		float timer = 0;
 		ui.progressIndicator.transform.parent.gameObject.SetActive(true);
+		links.player.animator.SetBool("CollectGrass", true);
 		while (timer < buildingTime)
 		{
 			timer += Time.deltaTime * links.time.timeFactor / 60;
 			ui.progressIndicator.fillAmount = timer / buildingTime;
 			yield return null;
-			if (Input.GetMouseButtonDown(1) || player.isDead)
+			if (Input.GetKeyDown(KeyCode.Space) || player.isDead)
 			{
 				campFireBluePrint.SetActive(false);
+				grassBedBluePrint.SetActive(false);
 				isBlueprintActive = false;
 				isCampFireBuilding = false;
 				isGrassBedBuilding = false;
 				player.PlayerControl(true);
 				ui.progressIndicator.transform.parent.gameObject.SetActive(false);
+				links.player.animator.SetBool("CollectGrass", false);
 				yield break;
 			}
 		}
+		links.player.animator.SetBool("CollectGrass", false);
 		ui.progressIndicator.fillAmount = 0;
 		ui.progressIndicator.transform.parent.gameObject.SetActive(false);
 
@@ -164,7 +169,7 @@ public class Building : MonoBehaviour
 	public void Campfire()
     {
 		isCampFireBuilding = true;
-		buildingCoroutine = StartCoroutine(BlueprintPlace(campFireBluePrint, campFirePrefab, campFireQuest, 20));
+		buildingCoroutine = StartCoroutine(BlueprintPlace(campFireBluePrint, campFirePrefab, campFireQuest, 5));
 	}
 
 	void CampfireBuild()
@@ -183,6 +188,7 @@ public class Building : MonoBehaviour
 			woodAmount++;
 			links.inventoryWindow.RightHandItem = null;
 			Destroy(links.inventoryWindow.RightHandObject);
+			links.inventoryWindow.RightHandObject = null;
 		}
 		if (woodAmount == amount) return;
 		if (links.inventoryWindow.LeftHandItem != null && links.inventoryWindow.LeftHandItem.Type == ItemType.Wood && woodAmount < amount)
@@ -190,6 +196,7 @@ public class Building : MonoBehaviour
 			woodAmount++;
 			links.inventoryWindow.LeftHandItem = null;
 			Destroy(links.inventoryWindow.LeftHandObject);
+			links.inventoryWindow.LeftHandObject = null;
 		}
 		if (woodAmount == amount) return;
 		if (links.inventoryWindow.inventory != null)
@@ -207,7 +214,7 @@ public class Building : MonoBehaviour
 	public void GrassBed()
 	{
 		isGrassBedBuilding = true;
-		buildingCoroutine = StartCoroutine(BlueprintPlace(grassBedBluePrint, grassBedPrefab, grassBedQuest, 30));
+		buildingCoroutine = StartCoroutine(BlueprintPlace(grassBedBluePrint, grassBedPrefab, grassBedQuest, 8));
 	}
 
 	void GrassBedBuild()
