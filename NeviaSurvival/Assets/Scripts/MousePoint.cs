@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
 using Cinemachine;
+using Cysharp.Threading.Tasks;
 
 public class MousePoint : MonoBehaviour
 {
@@ -113,348 +114,352 @@ public class MousePoint : MonoBehaviour
         _camera = links.mainCamera;
         cinemachine = links.cinemachine;
         progressIndicator = links.ui.progressIndicator;
+        _ = MousePointUpdate();
 
     }
 
-    void Update()
+    async UniTask<bool> MousePointUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) scrollPanel.SetActive(false);
-
-        // Атака правой рукой
-        if (Input.GetKeyDown(KeyCode.F))
+        while (true)
         {
-            Animator.SetTrigger("Attack");
-        }
+            if (Input.GetKeyDown(KeyCode.Escape)) scrollPanel.SetActive(false);
 
-        // Перетаскивание больших предметов (отпускание)
-        if (Input.GetKeyDown(KeyCode.G) && isCarry)
-        {
-            CarryRelease();
-        }
-
-        mousePosition = Input.mousePosition;
-
-        ray = _camera.ScreenPointToRay(Input.mousePosition);
-
-        if (!Input.GetMouseButton(1) && !player.isLay && Physics.Raycast(ray, out hit, raycastLength, 3))
-        {
-            if (!isPointUI)
+            // Атака правой рукой
+            if (Input.GetKeyDown(KeyCode.F))
             {
-                building.buildingPlace = hit.point;
+                Animator.SetTrigger("Attack");
+            }
 
-                itemInfoPanel.SetActive(false);
+            // Перетаскивание больших предметов (отпускание)
+            if (Input.GetKeyDown(KeyCode.G) && isCarry)
+            {
+                CarryRelease();
+            }
 
-                _distanceToTarget = Vector3.Distance(Player.transform.position, hit.transform.position);
+            mousePosition = Input.mousePosition;
 
-                if (Input.GetMouseButton(1))
+            ray = _camera.ScreenPointToRay(Input.mousePosition);
+
+            if (!Input.GetMouseButton(1) && !player.isLay && Physics.Raycast(ray, out hit, raycastLength, 3))
+            {
+                if (!isPointUI)
                 {
-                    if (Input.GetMouseButtonDown(0))
+                    building.buildingPlace = hit.point;
+
+                    itemInfoPanel.SetActive(false);
+
+                    _distanceToTarget = Vector3.Distance(Player.transform.position, hit.transform.position);
+
+                    if (Input.GetMouseButton(1))
                     {
-                        DropObject();
-                    }
-                }
-
-                if (_distanceToTarget <= useDistance)
-                {
-                    // Индикация предметов
-                    if (hit.collider.TryGetComponent(out ItemInfo item))
-                    {
-                        Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
-
-                        if (!Input.GetMouseButton(1)) // Выводим название предмета рядом с курсором
-                        {
-
-                            Descripion3d(hit, item);
-
-                        }
-                        else
-                        { item3dInfoPanel.SetActive(false); }
-
-                        // По нажатию кнопки мыши комментируем предмет
                         if (Input.GetMouseButtonDown(0))
                         {
-                            if (item.TryGetComponent(out Campfire campfire)) Comment(campfire.burningTimeText);
-                            else Comment(item.itemComment);
+                            DropObject();
                         }
+                    }
 
-                        if (Input.GetMouseButtonDown(0) && item.isCollectible) // Если предмет собираемый, то запускаем корутину подбора
+                    if (_distanceToTarget <= useDistance)
+                    {
+                        // Индикация предметов
+                        if (hit.collider.TryGetComponent(out ItemInfo item))
                         {
-                            if (!isCarry) Collect(item, hit.collider.gameObject);
-                            else Comment("Вот бы у меня была третья рука!");
-                        }
+                            Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
 
-                        // Перетаскивание больших предметов в 2 руках
-                        if (Input.GetKeyDown(KeyCode.G))
-                        {
-                            if (player.isAbleCarry)
+                            if (!Input.GetMouseButton(1)) // Выводим название предмета рядом с курсором
                             {
-                                if (inventoryWindow.LeftHandItem == null && inventoryWindow.RightHandItem == null)
-                                {
-                                    Carry(item);
-                                    if (item.type == ItemType.Cauldron && !item.isCollectible) item.GetComponent<Cauldron>().GrabCauldron();
-                                }
-                                else Comment("Чтобы что-то поднять двумя руками, надо чтобы в них ничего не было!");
+
+                                Descripion3d(hit, item);
+
                             }
                             else
+                            { item3dInfoPanel.SetActive(false); }
+
+                            // По нажатию кнопки мыши комментируем предмет
+                            if (Input.GetMouseButtonDown(0))
                             {
-                                player.animator.SetTrigger("Tired");
-                                Comment("Я так устал, что ничего тяжелого поднять уже не могу!");
+                                if (item.TryGetComponent(out Campfire campfire)) Comment(campfire.burningTimeText);
+                                else Comment(item.itemComment);
                             }
-                        }
-                        
-                        // Установка котелка на костёр и подкладывание дров в костёр
-                        if (Input.GetKeyDown(KeyCode.E))
-                        {
-                            if (item.isFirePlace)
+
+                            if (Input.GetMouseButtonDown(0) && item.isCollectible) // Если предмет собираемый, то запускаем корутину подбора
                             {
-                                if (inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Cauldron ||
-                                     inventoryWindow.LeftHandItem != null && inventoryWindow.LeftHandItem.Type == ItemType.Cauldron)
+                                if (!isCarry) Collect(item, hit.collider.gameObject);
+                                else Comment("Вот бы у меня была третья рука!");
+                            }
+
+                            // Перетаскивание больших предметов в 2 руках
+                            if (Input.GetKeyDown(KeyCode.G))
+                            {
+                                if (player.isAbleCarry)
                                 {
-                                    if (inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Cauldron)
+                                    if (inventoryWindow.LeftHandItem == null && inventoryWindow.RightHandItem == null)
                                     {
-                                        if (inventoryWindow.RightHandObject.TryGetComponent(out Cauldron cauldron))
-                                        {
-                                            cauldron.PlaceCauldron(item.gameObject.GetComponent<Campfire>());
-                                            inventoryWindow.rightHandSlot.GetChild(0).gameObject.GetComponent<InventoryIcon>().RemoveFromInventory();
-                                        }
+                                        Carry(item);
+                                        if (item.type == ItemType.Cauldron && !item.isCollectible) item.GetComponent<Cauldron>().GrabCauldron();
                                     }
-                                    else if (inventoryWindow.LeftHandItem != null && inventoryWindow.LeftHandItem.Type == ItemType.Cauldron)
-                                    {
-                                        if (inventoryWindow.LeftHandObject.TryGetComponent(out Cauldron cauldron))
-                                        {
-                                            cauldron.PlaceCauldron(item.gameObject.GetComponent<Campfire>());
-                                            inventoryWindow.leftHandSlot.GetChild(0).gameObject.GetComponent<InventoryIcon>().RemoveFromInventory();
-                                        }
-                                    }
+                                    else Comment("Чтобы что-то поднять двумя руками, надо чтобы в них ничего не было!");
                                 }
                                 else
                                 {
-                                    if (player.Wood > 0)
+                                    player.animator.SetTrigger("Tired");
+                                    Comment("Я так устал, что ничего тяжелого поднять уже не могу!");
+                                }
+                            }
+
+                            // Установка котелка на костёр и подкладывание дров в костёр
+                            if (Input.GetKeyDown(KeyCode.E))
+                            {
+                                if (item.isFirePlace)
+                                {
+                                    if (inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Cauldron ||
+                                         inventoryWindow.LeftHandItem != null && inventoryWindow.LeftHandItem.Type == ItemType.Cauldron)
                                     {
-                                        item.GetComponent<Campfire>().AddFireWood();
-                                        player.Wood--;
-                                        links.building.SpendWood(1);
-                                        Animator.SetTrigger("Use");
-                                        inventoryWindow.Redraw();
+                                        if (inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Cauldron)
+                                        {
+                                            if (inventoryWindow.RightHandObject.TryGetComponent(out Cauldron cauldron))
+                                            {
+                                                cauldron.PlaceCauldron(item.gameObject.GetComponent<Campfire>());
+                                                inventoryWindow.rightHandSlot.GetChild(0).gameObject.GetComponent<InventoryIcon>().RemoveFromInventory();
+                                            }
+                                        }
+                                        else if (inventoryWindow.LeftHandItem != null && inventoryWindow.LeftHandItem.Type == ItemType.Cauldron)
+                                        {
+                                            if (inventoryWindow.LeftHandObject.TryGetComponent(out Cauldron cauldron))
+                                            {
+                                                cauldron.PlaceCauldron(item.gameObject.GetComponent<Campfire>());
+                                                inventoryWindow.leftHandSlot.GetChild(0).gameObject.GetComponent<InventoryIcon>().RemoveFromInventory();
+                                            }
+                                        }
                                     }
-                                    else Comment("Нечего подложить - надо поискать дрова!");
-                                }
-
-                            }
-
-                            if (item.isCollectible && item.gameObject.TryGetComponent(out Cauldron cauldronOnFire))
-                            {
-                                if (cauldronOnFire.campfire != null && item.gameObject.TryGetComponent(out Container container))
-                                {
-                                    if (openingCoroutine == null)
+                                    else
                                     {
-                                        openingCoroutine = StartCoroutine(OpeningContainer(container));
+                                        if (player.Wood > 0)
+                                        {
+                                            item.GetComponent<Campfire>().AddFireWood();
+                                            player.Wood--;
+                                            links.building.SpendWood(1);
+                                            Animator.SetTrigger("Use");
+                                            inventoryWindow.Redraw();
+                                        }
+                                        else Comment("Нечего подложить - надо поискать дрова!");
+                                    }
+
+                                }
+
+                                if (item.isCollectible && item.gameObject.TryGetComponent(out Cauldron cauldronOnFire))
+                                {
+                                    if (cauldronOnFire.campfire != null && item.gameObject.TryGetComponent(out Container container))
+                                    {
+                                        if (openingCoroutine == null)
+                                        {
+                                            openingCoroutine = StartCoroutine(OpeningContainer(container));
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        if (Input.GetKeyDown(KeyCode.E))
-                        {
-                            if (item.isBed)
+                            if (Input.GetKeyDown(KeyCode.E))
                             {
-                                player.Lay();
-                                player.transform.position = item.GetComponent<Bed>().layPosition.transform.position;
-                                player.transform.rotation = item.GetComponent<Bed>().layPosition.transform.rotation;
-                                player.ui.pressToSleep.gameObject.SetActive(true);
-                                player.sleepPlace = item.GetComponent<Bed>().layPosition;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        item3dInfoPanel.SetActive(false);
-                        Cursor.SetCursor(cursorDefault, Vector2.zero, CursorMode.Auto);
-
-                    }
-
-
-
-                    // Нажатие рычага/кнопки
-                    if (hit.collider.TryGetComponent(out DoorTrigger trigger))
-                    {
-                        Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
-
-                        if (Input.GetKeyDown(KeyCode.E))
-                        {
-                            if (_distanceToTarget <= 3 && !trigger.doorScript.isMoving)
-                            {
-                                Animator.SetTrigger("Use");
-                                trigger.OpenDoor();
-                            }
-                        }
-                    }
-
-                    // Открытие сундуков
-                    else if (hit.collider.TryGetComponent(out Container container))
-                    {
-                        Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
-                        Debug.Log("111");
-
-                        if (Input.GetKeyDown(KeyCode.E))
-                        {
-                            if (_distanceToTarget <= 3 && openingCoroutine == null)
-                            {
-                                Animator.SetTrigger("Use");
-                                openingCoroutine = StartCoroutine(OpeningContainer(container));
-                            }
-                        }
-                    }
-                }
-                if (_distanceToTarget < useDistance + 0.5f)
-                {
-                    if (hit.collider.TryGetComponent(out ItemInfo item) && item.isOpenable) Descripion3d(hit, item);
-
-                    // Открытие двери
-                    if (hit.collider.TryGetComponent(out Door door))
-                    {
-                        Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
-
-                        if (Input.GetKeyDown(KeyCode.E))
-                        {
-                            if (_distanceToTarget <= 3)
-                            {
-                                Animator.SetTrigger("Use");
-
-                                if (door.key != null && door.isLocked && door.SearchingKey())
-                                    openingCoroutine = StartCoroutine(OpeningDoor(door));
-                                else
+                                if (item.isBed)
                                 {
-                                    door.OpenClose();
+                                    player.Lay();
+                                    player.transform.position = item.GetComponent<Bed>().layPosition.transform.position;
+                                    player.transform.rotation = item.GetComponent<Bed>().layPosition.transform.rotation;
+                                    player.ui.pressToSleep.gameObject.SetActive(true);
+                                    player.sleepPlace = item.GetComponent<Bed>().layPosition;
                                 }
-
-                                if (door.isBlocked)
-                                {
-                                    Comment("Дверь заблокирована!");
-                                }
-
                             }
                         }
-                    }
-                }
-                else
-                {
-                    Cursor.SetCursor(cursorDefault, Vector2.zero, CursorMode.Auto);
-                    item3dInfoPanel.SetActive(false);
-                }
-
-                if (Input.GetKeyDown(KeyCode.E) && !player.isLay && !player.isSit && !isCarry)
-                {
-                    if (player.isAbleToGrabGrass)
-                    {
-                        if (player.animator.GetBool("CollectGrass")) player.animator.SetBool("CollectGrass", false);
                         else
                         {
-                            StartCoroutine(player.CollectGrass());
-                            player.animator.SetBool("CollectGrass", true);
+                            item3dInfoPanel.SetActive(false);
+                            Cursor.SetCursor(cursorDefault, Vector2.zero, CursorMode.Auto);
+
                         }
-                    }
-                }
-                
-            }
-        }
-        else
-        {
-            Cursor.SetCursor(cursorDefault, Vector2.zero, CursorMode.Auto);
-            item3dInfoPanel.SetActive(false);
-        }
 
-        if (isPointUI)
-        {
-            item3dInfoPanel.SetActive(false);
-            if (!Input.GetMouseButton(1))
-            {
-                Descripion();
-            }
 
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                // Поедание еды
-                if (pointedIcon != null && pointedIcon.item != null && pointedIcon.item.isFood && pointedIcon.gameObject.TryGetComponent(out InventoryIcon icon))
-                {
-                    Debug.Log("Eat Food");
-                    if (pointedIcon.item.foodValue > player.maxFood - player.Food && player.Food > player.maxFood - 5) 
-                        Comment("Я пока не голоден!");
-                    else
-                    {
-                        player.Food += pointedIcon.item.foodValue;
-                        if (player.Food > player.maxFood) player.Food = player.maxFood;
-                        player.Health -= pointedIcon.item.poisonValue;
-                        icon.RemoveFromInventory();
-                        icon.item3dObject.SetActive(false);
-                        icon.item3dObject.transform.parent = links.objectPool;
-                        Destroy(pointedIcon.gameObject);
-                    }
-                }
 
-                // Зажигание факела
-                else if (pointedIcon != null && pointedIcon.item != null && pointedIcon.item.Type == ItemType.Torch)
-                {
-                    if (pointedIcon.GetComponentInParent<InventorySlot>().indexSlot == 100 || pointedIcon.GetComponentInParent<InventorySlot>().indexSlot == 101)
-                    {
-                        Animator.SetTrigger("Use");
-                        if (pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Torchlight torch))
+                        // Нажатие рычага/кнопки
+                        if (hit.collider.TryGetComponent(out DoorTrigger trigger))
                         {
-                            if (!torch.isBurn) torch.TorchOn();
-                            else torch.TorchOff();
+                            Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
+
+                            if (Input.GetKeyDown(KeyCode.E))
+                            {
+                                if (_distanceToTarget <= 3 && !trigger.doorScript.isMoving)
+                                {
+                                    Animator.SetTrigger("Use");
+                                    trigger.OpenDoor();
+                                }
+                            }
                         }
-                    }
-                    else Comment("Чтобы зажечь факел надо взять его в руки!");
-                }
 
-                // Чтение свитка
-                else if (pointedIcon != null && pointedIcon.item != null && pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Scroll scroll))
-                {
-                    scrollPanel.SetActive(true);
-                    scrollTitle.text = scroll.title;
-                    scrollText.text = scroll.text;
-
-                    if (scroll.quest != null)
-                    {
-                        if (!questWindow.questList.Contains(scroll.quest) && !questWindow.completedQuests.Contains(scroll.quest))
+                        // Открытие сундуков
+                        else if (hit.collider.TryGetComponent(out Container container))
                         {
-                            questWindow.questList.Add(scroll.quest);
-                            questWindow.QuestUpdate();
+                            Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
+                            Debug.Log("111");
+
+                            if (Input.GetKeyDown(KeyCode.E))
+                            {
+                                if (_distanceToTarget <= 3 && openingCoroutine == null)
+                                {
+                                    Animator.SetTrigger("Use");
+                                    openingCoroutine = StartCoroutine(OpeningContainer(container));
+                                }
+                            }
                         }
                     }
-
-                }
-
-                // Открывание окна содержимого котелка
-                else if (pointedIcon != null && pointedIcon.item != null && 
-                    pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Cauldron cauldron))
-                {
-                    if (openingCoroutine == null)
+                    if (_distanceToTarget < useDistance + 0.5f)
                     {
-                        openingCoroutine = StartCoroutine(OpeningContainer(cauldron.gameObject.GetComponent<Container>()));
-                    }
-                }
-            }
-            // Наполнение котелка водой
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                if (pointedIcon != null && pointedIcon.item != null && pointedIcon.TryGetComponent(out InventoryIcon icon) &&
-                icon.item3dObject.TryGetComponent(out Cauldron cauldron))
-                {
-                    if (!cauldron.isWater)
-                    {
-                        if (!cauldron.isSoup) cauldron.Water(true);
-                        else Comment("В котелке еще что-то осталось!");
+                        if (hit.collider.TryGetComponent(out ItemInfo item) && item.isOpenable) Descripion3d(hit, item);
+
+                        // Открытие двери
+                        if (hit.collider.TryGetComponent(out Door door))
+                        {
+                            Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
+
+                            if (Input.GetKeyDown(KeyCode.E))
+                            {
+                                if (_distanceToTarget <= 3)
+                                {
+                                    Animator.SetTrigger("Use");
+
+                                    if (door.key != null && door.isLocked && door.SearchingKey())
+                                        openingCoroutine = StartCoroutine(OpeningDoor(door));
+                                    else
+                                    {
+                                        door.OpenClose();
+                                    }
+
+                                    if (door.isBlocked)
+                                    {
+                                        Comment("Дверь заблокирована!");
+                                    }
+
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        cauldron.Water(false);
+                        Cursor.SetCursor(cursorDefault, Vector2.zero, CursorMode.Auto);
+                        item3dInfoPanel.SetActive(false);
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.E) && !player.isLay && !player.isSit && !isCarry)
+                    {
+                        if (player.isAbleToGrabGrass)
+                        {
+                            if (player.animator.GetBool("CollectGrass")) player.animator.SetBool("CollectGrass", false);
+                            else
+                            {
+                                StartCoroutine(player.CollectGrass());
+                                player.animator.SetBool("CollectGrass", true);
+                            }
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+                Cursor.SetCursor(cursorDefault, Vector2.zero, CursorMode.Auto);
+                item3dInfoPanel.SetActive(false);
+            }
+
+            if (isPointUI)
+            {
+                item3dInfoPanel.SetActive(false);
+                if (!Input.GetMouseButton(1))
+                {
+                    Descripion();
+                }
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    // Поедание еды
+                    if (pointedIcon != null && pointedIcon.item != null && pointedIcon.item.isFood && pointedIcon.gameObject.TryGetComponent(out InventoryIcon icon))
+                    {
+                        Debug.Log("Eat Food");
+                        if (pointedIcon.item.foodValue > player.maxFood - player.Food && player.Food > player.maxFood - 5)
+                            Comment("Я пока не голоден!");
+                        else
+                        {
+                            player.Food += pointedIcon.item.foodValue;
+                            if (player.Food > player.maxFood) player.Food = player.maxFood;
+                            player.Health -= pointedIcon.item.poisonValue;
+                            icon.RemoveFromInventory();
+                            icon.item3dObject.SetActive(false);
+                            icon.item3dObject.transform.parent = links.objectPool;
+                            Destroy(pointedIcon.gameObject);
+                        }
+                    }
+
+                    // Зажигание факела
+                    else if (pointedIcon != null && pointedIcon.item != null && pointedIcon.item.Type == ItemType.Torch)
+                    {
+                        if (pointedIcon.GetComponentInParent<InventorySlot>().indexSlot == 100 || pointedIcon.GetComponentInParent<InventorySlot>().indexSlot == 101)
+                        {
+                            Animator.SetTrigger("Use");
+                            if (pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Torchlight torch))
+                            {
+                                if (!torch.isBurn) torch.TorchOn();
+                                else torch.TorchOff();
+                            }
+                        }
+                        else Comment("Чтобы зажечь факел надо взять его в руки!");
+                    }
+
+                    // Чтение свитка
+                    else if (pointedIcon != null && pointedIcon.item != null && pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Scroll scroll))
+                    {
+                        scrollPanel.SetActive(true);
+                        scrollTitle.text = scroll.title;
+                        scrollText.text = scroll.text;
+
+                        if (scroll.quest != null)
+                        {
+                            if (!questWindow.questList.Contains(scroll.quest) && !questWindow.completedQuests.Contains(scroll.quest))
+                            {
+                                questWindow.questList.Add(scroll.quest);
+                                questWindow.QuestUpdate();
+                            }
+                        }
+
+                    }
+
+                    // Открывание окна содержимого котелка
+                    else if (pointedIcon != null && pointedIcon.item != null &&
+                        pointedIcon.GetComponent<InventoryIcon>().item3dObject.TryGetComponent(out Cauldron cauldron))
+                    {
+                        if (openingCoroutine == null)
+                        {
+                            openingCoroutine = StartCoroutine(OpeningContainer(cauldron.gameObject.GetComponent<Container>()));
+                        }
+                    }
+                }
+                // Наполнение котелка водой
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    if (pointedIcon != null && pointedIcon.item != null && pointedIcon.TryGetComponent(out InventoryIcon icon) &&
+                    icon.item3dObject.TryGetComponent(out Cauldron cauldron))
+                    {
+                        if (!cauldron.isWater)
+                        {
+                            if (!cauldron.isSoup) cauldron.Water(true);
+                            else Comment("В котелке еще что-то осталось!");
+                        }
+                        else
+                        {
+                            cauldron.Water(false);
+                        }
                     }
                 }
             }
+            await UniTask.DelayFrame(1);
+
         }
-
-
     }
 
     public void Carry(ItemInfo item)
