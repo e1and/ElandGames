@@ -17,7 +17,6 @@ public class Door : MonoBehaviour
     public MousePoint mousePoint;
     public float openingTime;
     public string doorInfo;
-    public MusicZone musicZone;
     Links links;
 
     private void Start()
@@ -100,7 +99,6 @@ public class Door : MonoBehaviour
     {
         links.player.PlayerControl(false); 
         mousePoint.Player.transform.position = entrancePoint.transform.position;
-        if (musicZone != null) musicZone.ExitZone();
         links.dayNight.isDungeon = false;
         links.dayNight.SetDaySettings();
         links.player.PlayerControl(true);
