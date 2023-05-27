@@ -8,6 +8,7 @@ public class Music : MonoBehaviour
     public AudioSource music;
     public AudioClip dayMusic;
     public AudioClip nightMusic;
+    public bool isAreaMusic;
     void Start()
     {
         links = FindObjectOfType<Links>();
@@ -21,6 +22,11 @@ public class Music : MonoBehaviour
     public void NightMusic()
     {
         StartCoroutine(FadeOut(nightMusic));
+    }
+
+    public void AreaMusic(AudioClip clip)
+    {
+        StartCoroutine(FadeOut(clip));
     }
 
     IEnumerator FadeOut(AudioClip clip)

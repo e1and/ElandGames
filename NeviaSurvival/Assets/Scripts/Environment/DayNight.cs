@@ -13,7 +13,7 @@ public class DayNight : MonoBehaviour
     [SerializeField] GameObject sun;
     [SerializeField] GameObject moon;
 
-    [SerializeField] bool isDay;
+    public bool isDay;
     TimeSpan time;
     public float temperature;
     public float dayTemperature = 25;
@@ -179,7 +179,7 @@ public class DayNight : MonoBehaviour
     {
         isDay = true;
 
-        if (links.music.music.clip != links.music.dayMusic) links.music.DayMusic();
+        if (links.music.music.clip != links.music.dayMusic && !links.music.isAreaMusic) links.music.DayMusic();
 
         if (!links.player.isDead) 
         { 
@@ -204,7 +204,7 @@ public class DayNight : MonoBehaviour
     {
         isDay = false;
 
-        if (links.music.music.clip != links.music.nightMusic) links.music.NightMusic();
+        if (links.music.music.clip != links.music.nightMusic && !links.music.isAreaMusic) links.music.NightMusic();
 
         links.ui.temperatureStatusIcon.itemComment = "Холодает";
         while ((hour > startNightTime || hour < startDayTime) && temperature > nightTemperature)
