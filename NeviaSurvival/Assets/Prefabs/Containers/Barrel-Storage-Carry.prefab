@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 474230942228629253}
   - component: {fileID: 474230942229595589}
   - component: {fileID: 6503340308883773402}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: barrel_cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,7 +137,7 @@ Transform:
   m_GameObject: {fileID: 474230942231862023}
   m_LocalRotation: {x: 0.000000021855694, y: 0.000000014901161, z: -0.00000004470349, w: 1}
   m_LocalPosition: {x: 1567, y: 214, z: 6226}
-  m_LocalScale: {x: 450.6667, y: 450.6667, z: 450.6667}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 474230942232020773}
@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 2864003449987281746}
   - component: {fileID: 2135294023752943002}
   - component: {fileID: 1451682570794243360}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: barrel_cap (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

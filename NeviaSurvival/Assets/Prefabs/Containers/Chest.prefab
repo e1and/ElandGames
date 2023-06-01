@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4405952128622052}
   - component: {fileID: 33857258493279260}
   - component: {fileID: 23022890680774352}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Chest_01_Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,7 +115,7 @@ Transform:
   m_GameObject: {fileID: 1654766839871344}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.67, y: 0, z: -15.29}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4405952128622052}
@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: 33230834403043148}
   - component: {fileID: 23878908538256388}
   - component: {fileID: 584562712}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Chest_01_Top
   m_TagString: Untagged
   m_Icon: {fileID: 0}

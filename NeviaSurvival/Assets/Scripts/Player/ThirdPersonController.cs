@@ -4,7 +4,6 @@ using UnityEditor;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
-using Cysharp.Threading.Tasks;
 #endif
 
 	[RequireComponent(typeof(CharacterController))]
@@ -130,8 +129,6 @@ public class ThirdPersonController : MonoBehaviour
 		_jumpTimeoutDelta = JumpTimeout;
 		_fallTimeoutDelta = FallTimeout;
 		Cursor.visible = true;
-
-        _ = CameraRotate();
 	}
 
 	private void Update()
@@ -159,20 +156,6 @@ public class ThirdPersonController : MonoBehaviour
 			Cursor.visible = true; 
 			isLook = false; 
 		}
-	}
-
-	async UniTask CameraRotate()
-	{
-        while (true)
-        {
-            //CameraRotation();
-            await UniTask.DelayFrame(1);
-        }
-    }
-
-    private void FixedUpdate()
-    {
-		//CameraRotation();
 	}
 
 	private void LateUpdate()
@@ -215,8 +198,8 @@ public class ThirdPersonController : MonoBehaviour
 			}
 		}
 
-		// clamp our rotations so our values are limited 360 degrees
-		_cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+// clamp our rotations so our values are limited 360 degrees
+_cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
 		_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
 		// Cinemachine will follow this target

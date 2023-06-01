@@ -9,7 +9,7 @@ public class MusicZone : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out Player player))
+        if (other.TryGetComponent(out PlayerWarmCollider player))
         {
             links.music.isAreaMusic = true;
             links.music.AreaMusic(soundtrack);
@@ -19,9 +19,10 @@ public class MusicZone : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent(out Player player))
+        if (other.TryGetComponent(out PlayerWarmCollider player))
         {
             ExitZone();
+            Debug.Log("Exit");
         }
     }
 
@@ -30,6 +31,5 @@ public class MusicZone : MonoBehaviour
         links.music.isAreaMusic = false;
         if (links.dayNight.isDay) links.music.DayMusic();
         else links.music.NightMusic();
-        Debug.Log("EnterExit");
     }
 }
