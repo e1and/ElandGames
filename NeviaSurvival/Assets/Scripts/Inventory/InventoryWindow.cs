@@ -75,11 +75,10 @@ public class InventoryWindow : MonoBehaviour
     public Item HeadItem;
     public GameObject Head;
 
+    public Weapon rightHandWeapon;
+
     public List<GameObject> Clothes = new List<GameObject>(7);
     public List<Item> ClothesItems = new List<Item>(7);
-
-    [Space]
-    //public Player player;
 
     [SerializeField] Item itemToAdd;
 
@@ -117,6 +116,9 @@ public class InventoryWindow : MonoBehaviour
         links.questWindow.QuestItemsRecount();
         UpdateClothes();
         RecountWood();
+
+        if (RightHandObject != null && RightHandObject.TryGetComponent(out Weapon weapon)) rightHandWeapon = weapon;
+        else rightHandWeapon = null;
 
         if (Backpack != null)
         {

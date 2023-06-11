@@ -198,8 +198,8 @@ public class ThirdPersonController : MonoBehaviour
 			}
 		}
 
-// clamp our rotations so our values are limited 360 degrees
-_cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+		// clamp our rotations so our values are limited 360 degrees
+		_cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
 		_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
 		// Cinemachine will follow this target
@@ -282,6 +282,7 @@ _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.
 		speedOffset = 0.1f;
 		inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
+
 		// accelerate or decelerate to target speed
 		if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
 		{
@@ -318,7 +319,9 @@ _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.
 
 		// move the player
 		if (!isLookLocked) lastSpeed = _speed;
-		_controller.Move((targetDirection.normalized * lastSpeed + slopingVelocity) * Time.deltaTime + 
+
+		if (links.player.isControl)
+			_controller.Move((targetDirection.normalized * lastSpeed + slopingVelocity) * Time.deltaTime + 
 			new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime + swimVerticalVelocity);
 
 		// update animator if using character

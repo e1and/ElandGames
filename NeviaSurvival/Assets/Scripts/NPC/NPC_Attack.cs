@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class NPC_Attack : MonoBehaviour
 {
-    public GameObject damageTrigger;
+    public Damage damageTrigger;
     
     public void Damage(int a)
     {
-        if (a == 1) damageTrigger.SetActive(true);
-        else damageTrigger.SetActive(false);
+        if (a == 1) damageTrigger.box.enabled = true;
+        else damageTrigger.box.enabled = false;
     }
 }

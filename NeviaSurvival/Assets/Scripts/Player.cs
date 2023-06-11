@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     public bool isAbleToCollectWater;
     public bool isDead;
     public bool isControl;
+    public bool isAttacking;
     [Header("“екущие параметры игрока")]
     public int Health = 100;
     public int Cold = 100;
@@ -124,6 +125,27 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
         mousePoint = GetComponent<MousePoint>();
         gameObject.SetActive(false);
+    }
+
+    public void AttackState(int isAttack)
+    {
+        if (isAttack == 1)
+        {
+            isAttacking = true;
+            isControl = false;
+            WeaponActive(true);
+        }
+        else
+        {
+            isAttacking = false;
+            isControl = true;
+            WeaponActive(false);
+        }
+    }
+
+    void WeaponActive(bool isActive)
+    {
+        if (inventoryWindow.rightHandWeapon != null) inventoryWindow.rightHandWeapon.weaponCollider.SetActive(isActive);
     }
 
     float fpsTime;
@@ -489,22 +511,17 @@ public class Player : MonoBehaviour
                 Stamina--;
                 staminaTimer = 0;
             }
-            //if (isSwim && Stamina == 0 && staminaTimer > 1f) // ≈сли при плавании заканчиваетс€ стамина, то тратитс€ тепло, затем здоровье
-            //{
-            //    if (Cold > 0)
-            //    {
-            //        Cold--;
-            //        isCold = true;
-            //        if (!isFreezeInWater) mousePoint.Comment("’олодно! ƒолго в такой воде не поплаваешь!");
-            //        isFreezeInWater = true;
-            //    }
-            //    else
-            //    {
-            //        Health--;
-            //        deltaHealth = -0.1f;
-            //    }
-            //    staminaTimer = 0;
-            //}
+            if (isSwim && Stamina == 0 && staminaTimer > 1f) // ≈сли при плавании заканчиваетс€ стамина, то тратитс€ тепло, затем здоровье
+            {
+                if (Cold > 0)
+                {
+                    Cold--;
+                    isCold = true;
+                    if (!isFreezeInWater) mousePoint.Comment("’олодно! ƒолго в такой воде не поплаваешь!");
+                    isFreezeInWater = true;
+                }
+                staminaTimer = 0;
+            }
         }
         else if (Stamina < maxStamina)
         {
@@ -589,6 +606,7 @@ public class Player : MonoBehaviour
 
         isLay = true;
         isSleep = false;
+        isAttacking = false;
 
         animator.SetTrigger("Lay");
 

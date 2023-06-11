@@ -121,7 +121,7 @@ public class MousePoint : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)) scrollPanel.SetActive(false);
 
         // Атака правой рукой
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F) && !links.player.isAttacking)
         {
             Animator.SetTrigger("Attack");
         }

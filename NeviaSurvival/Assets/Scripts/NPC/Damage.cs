@@ -5,6 +5,12 @@ using UnityEngine;
 public class Damage : MonoBehaviour
 {
     public int damage = 35;
+    public BoxCollider box;
+
+    private void Start()
+    {
+        box = GetComponent<BoxCollider>();
+    }
 
     public int SingleDamage()
     {

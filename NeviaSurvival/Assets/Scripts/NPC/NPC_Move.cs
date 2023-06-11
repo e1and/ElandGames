@@ -306,7 +306,7 @@ public class NPC_Move : MonoBehaviour
         agent.speed = runSpeed;
 
 
-        while ((loseTimer < 2 && loseHeightTimer < 5) && !player.isSwim)
+        while ((loseTimer < 2 && loseHeightTimer < 5) && !player.isSwim && agent.enabled)
         {
             if (player.isCampfire) { _isAttack = false; break; }
             if (_isEscape) break;
