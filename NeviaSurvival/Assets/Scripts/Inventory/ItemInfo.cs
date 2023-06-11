@@ -19,6 +19,7 @@ public class ItemInfo : MonoBehaviour
     public bool isFirePlace;
     public bool isTorch;
     public bool isBed;
+    public bool isLamp;
     [Space]
     public bool isMovable;
     public Vector3 savePosition;

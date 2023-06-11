@@ -20,6 +20,7 @@ public class StepSound : MonoBehaviour
     AudioClip[] steps;
     public void Step()
     {
+        Debug.Log("step");
         if (animator.GetFloat("Speed") > 0.1f || animator.GetFloat("Velocity") > 0.1f)
         audioSource.PlayOneShot(steps[Random.Range(0, steps.Length)]);
     }

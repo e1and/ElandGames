@@ -99,8 +99,13 @@ public class ThirdPersonController : MonoBehaviour
 	Vector3 targetDirection;
 	public Vector3 slopingVelocity;
 	float lastSpeed;
+	float currentSpeed;
+	float animationSpeed;
 
 	float targetSpeed = 0;
+
+	float smoothMoveX;
+	float smoothMoveY;
 
 	Links links;
 
@@ -133,6 +138,10 @@ public class ThirdPersonController : MonoBehaviour
 
 	private void Update()
 	{
+		currentSpeed = Mathf.MoveTowards(currentSpeed, lastSpeed, Time.deltaTime * 8);
+		animationSpeed = Mathf.MoveTowards(animationSpeed, lastSpeed, Time.deltaTime * 8f);
+		_animator.SetFloat("Speed", animationSpeed);
+
 		if (!_player.isSwim)
 		{
 			JumpAndGravity();
@@ -305,29 +314,57 @@ public class ThirdPersonController : MonoBehaviour
 
 		// note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
 		// if there is a move input rotate player when the player is moving
-		if (_input.move != Vector2.zero && !_player.isLay && !_player.isSit && _player.isControl)
+		if (_input.move != Vector2.zero && !_player.isLay && !_player.isSit && _player.isControl && !Input.GetMouseButton(1))
 		{
 			_targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg + _mainCamera.transform.eulerAngles.y;
 			float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
 
 			// rotate to face input direction relative to camera position
 			transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+			targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+
+			_animator.SetFloat("MoveInputX", 0);
+			_animator.SetFloat("MoveInputY", 1);
+		}
+        else
+        {
+			smoothMoveX = Mathf.MoveTowards(smoothMoveX, _input.move.x, Time.deltaTime * 0.5f);
+			smoothMoveY = Mathf.MoveTowards(smoothMoveY, _input.move.y, Time.deltaTime * 0.5f);
+			_animator.SetFloat("MoveInputX", smoothMoveX);
+			_animator.SetFloat("MoveInputY", smoothMoveY);
 		}
 
-		targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+		
 		if (isLookLocked) targetDirection = lastDirection;
+
+		if (Input.GetMouseButton(1))
+        {
+			if (_input.move != Vector2.zero && !isLookLocked)
+			{
+				float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _mainCamera.transform.eulerAngles.y, ref _rotationVelocity, RotationSmoothTime);
+				targetDirection = Quaternion.Euler(0.0f, _mainCamera.transform.eulerAngles.y, 0.0f) * inputDirection;
+				transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+				smoothMoveX = Mathf.MoveTowards(smoothMoveX, _input.move.x, Time.deltaTime * 4);
+				smoothMoveY = Mathf.MoveTowards(smoothMoveY, _input.move.y, Time.deltaTime * 4);
+				_animator.SetFloat("MoveInputX", smoothMoveX);
+				_animator.SetFloat("MoveInputY", smoothMoveY);
+			}
+		}
+
 
 		// move the player
 		if (!isLookLocked) lastSpeed = _speed;
 
 		if (links.player.isControl)
-			_controller.Move((targetDirection.normalized * lastSpeed + slopingVelocity) * Time.deltaTime + 
+			_controller.Move((targetDirection.normalized * currentSpeed + slopingVelocity) * Time.deltaTime + 
 			new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime + swimVerticalVelocity);
 
 		// update animator if using character
 		if (_hasAnimator)
 		{
-			_animator.SetFloat(_animIDSpeed, _animationBlend);
+			//_animator.SetFloat(_animIDSpeed, _animationBlend);
 			_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
 		}
 
@@ -407,7 +444,7 @@ public class ThirdPersonController : MonoBehaviour
 		//if (isSprint) targetSpeed = SprintSpeed;
 		//else targetSpeed = MoveSpeed;
 		targetSpeed = _speed;
-		lastSpeed = targetSpeed;
+		lastSpeed = _speed;
 		isLookLocked = true;
 		//_player.Stamina -= _player.staminaForJump;
 		Debug.Log("Coroutine JumpSpeed");

@@ -12,6 +12,12 @@ public class NPC_Move : MonoBehaviour
     Vector3 SpawnPoint;
     Vector3 Steering;
 
+    public DamageTrigger damageTrigger;
+    public NPC_Attack attackTrigger;
+    public int maxHP = 30;
+    public int currentHP = 30;
+    public int coolDown = 60;
+    float timer = 0;
     [SerializeField] bool _isDrawLines;
     public bool _isFearOfFire;
     [SerializeField] Item itemTorch;
@@ -98,6 +104,46 @@ public class NPC_Move : MonoBehaviour
     {
         if (b == 1) { _isAttack = true; }
         else _isAttack = false;
+    }
+
+    public void GetDamage(WeaponCollider weaponCollider)
+    {
+        currentHP -= weaponCollider.weapon.damage;
+        attackTrigger.attackTrigger.enabled = false;
+        agent.velocity = Vector3.zero;
+
+        if (currentHP > 0) Animator.SetTrigger("Damage");
+        else Death();
+        Animator.ResetTrigger("Damage");
+    }
+
+    public void Death()
+    {
+        damageTrigger.box.enabled = false;
+
+        Animator.SetTrigger("Death");
+        enabled = false;
+        agent.enabled = false;
+        StopAllCoroutines();
+        StartCoroutine(MonsterCoolDown());
+    }
+
+    IEnumerator MonsterCoolDown()
+    {
+        timer = 0;
+        while (timer < coolDown)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        Animator.SetTrigger("GetUp");
+        enabled = true;
+        agent.enabled = true;
+        currentHP = maxHP;
+        _isAttack = false;
+        _isSeek = false;
+        _isFollowing = false;
+        damageTrigger.box.enabled = true;
     }
 
     //public void StopMove()

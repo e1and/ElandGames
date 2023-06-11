@@ -177,8 +177,8 @@ MonoBehaviour:
   savePosition: {x: 0, y: 0, z: 0}
   saveRotation: {x: 0, y: 0, z: 0, w: 0}
   isSaveItemActive: 0
-  carryPosition: {x: 0.289, y: -0.366, z: 0.355}
-  carryRotation: {x: 0.4651135, y: -0.15807948, z: 0.6593207, w: 0.5691893}
+  carryPosition: {x: -0.134, y: 0.194, z: 0.003}
+  carryRotation: {x: 0.08645266, y: 0.39536768, z: 0.05771774, w: -0.9126221}
   item: {fileID: 0}
   type: 0
 --- !u!114 &474230942229595613

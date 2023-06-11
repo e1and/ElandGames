@@ -620,7 +620,7 @@ public class Player : MonoBehaviour
 
         inventoryWindow.RecountWood();
 
-        links.mousePoint.Comment("Присниться же такое!");
+        links.mousePoint.Comment("Приснится же такое!");
     }
 
     private void OnTriggerEnter(Collider other)
