@@ -29,17 +29,38 @@ public class Storage : MonoBehaviour
         inventoryWindow = links.inventoryWindow;
         mousePoint = links.mousePoint;
 
-        for (int i = 0; i < startItems.Count; i++)
-        {
-            if (startItems[i] != null)
-            storageItems[i] = startItems[i];
-        }
+        AddStartItems();
 
         onOpenStorage += AutoClose;
         for (int i = 0; i < 9; i++)
         {
             storageItemObjects.Add(null);
         }
+    }
+
+    private void Start()
+    {
+        CheckSaveList();
+    }
+
+    void AddStartItems()
+    {
+        if (!links.dayNight.isLoadGame)
+            for (int i = 0; i < startItems.Count; i++)
+            {
+                if (startItems[i] != null)
+                    storageItems[i] = startItems[i];
+            }
+    }
+
+    void CheckSaveList()
+    {
+        // Если это заспавнившийся котелок, то его надо добавить в список хранилищ и при загрузке кго создавать
+        if (!links.saveObjects.storages.Contains(this) && TryGetComponent(out Cauldron cauldron))
+            links.saveObjects.storages.Add(this);
+
+        if (!links.saveObjects.storages.Contains(this)) 
+            Debug.LogError($"Контейнер { gameObject.name } из { gameObject.transform.parent.name } не добавлен в список сохраняемых объектов!");
     }
 
     public void SelectStorage()
@@ -50,7 +71,7 @@ public class Storage : MonoBehaviour
     public void OpenStorage()
     {
         Debug.Log("Open");
-        onOpenStorage.Invoke();
+        onOpenStorage?.Invoke();
         storageWindow.gameObject.SetActive(true);
         links.ui.inventoryPanel.SetActive(true);
         storageWindow.Redraw();

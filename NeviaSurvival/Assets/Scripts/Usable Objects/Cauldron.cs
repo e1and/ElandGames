@@ -35,8 +35,6 @@ public class Cauldron : MonoBehaviour
         StartRandom();
     }
 
-
-
     void StartRandom()
     {
         if (!isSoup && !isWater && cauldron.storageItems[0] == null) cauldron.storageItems[0] = links.cooking.randomFood[Random.Range(0, 9)];

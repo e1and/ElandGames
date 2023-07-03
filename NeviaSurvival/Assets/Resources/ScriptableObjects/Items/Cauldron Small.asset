@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82157b2877980e84f8cc049a002167ff, type: 3}
+  m_Name: Cauldron Small
+  m_EditorClassIdentifier: 
+  Name: "\u041A\u043E\u0442\u0435\u043B\u043E\u043A"
+  id: cauldronsmall
+  Description: "\u041F\u043E\u0445\u043E\u0434\u043D\u044B\u0439 \u043A\u043E\u0442\u0435\u043B\u043E\u043A"
+  Type: 204
+  Icon: {fileID: 21300000, guid: ea6f0d4c2427eab4281781dee0a97c7d, type: 3}
+  Prefab: {fileID: 596621412107208678, guid: a91730aa2f5131240bf419e9aae2ea8c, type: 3}
+  rarity: 20
+  weight: 2
+  durability: 100
+  isFood: 0
+  foodValue: 0
+  poisonValue: 0
+  isLiquid: 0
+  warmBonus: 0
+  armor: 0
+  clothType: 0

@@ -16,6 +16,7 @@ public class Sounds : MonoBehaviour
     public AudioClip[] stepSounds;
     public AudioClip landing;
     public AudioClip[] skeletonSteps;
+    public AudioClip[] keyOpenDoor;
     void Start()
     {
         links = FindObjectOfType<Links>();

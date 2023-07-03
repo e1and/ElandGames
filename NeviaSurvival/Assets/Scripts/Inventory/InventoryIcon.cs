@@ -683,6 +683,7 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             item3dObject.SetActive(true);
         }
         item3dObject.transform.position = links.player.transform.position + links.player.transform.forward + new Vector3(0, 1, 0);
+        item3dObject.transform.eulerAngles = new Vector3(-45, links.player.transform.rotation.y, -45);
         RemoveFromInventory();
         DropItem?.Invoke();
         Destroy(gameObject, 0);

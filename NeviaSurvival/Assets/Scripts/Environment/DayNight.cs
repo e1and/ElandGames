@@ -20,7 +20,7 @@ public class DayNight : MonoBehaviour
     public float nightTemperature = 0;
     public float freezeTemperature = 17;
     public float hotTemperature = 40;
-    public float thisDay = 1;
+    public int thisDay = 1;
     public TMP_Text dayIndicator;
     [SerializeField] Material daySkyBoxMaterial;
     [SerializeField] Material nightSkyBoxMaterial;
@@ -174,7 +174,7 @@ public class DayNight : MonoBehaviour
         if (hour > startDayTime && hour < startNightTime && !isDay) { StartCoroutine(StartDay()); isDay = true; Debug.Log("Start Day"); }
         if (hour > startNightTime && isDay) { StartCoroutine(StartNight()); isDay = false; Debug.Log("Start Night"); }
     }  
-
+    public bool isLoadGame;
     IEnumerator StartDay()
     {
         isDay = true;
@@ -183,9 +183,10 @@ public class DayNight : MonoBehaviour
 
         if (!links.player.isDead) 
         { 
-            thisDay++;
+            if (!isLoadGame) thisDay++;
             if (!isDungeon) ShowDay();
             links.questWindow.QuestEventRecount();
+            isLoadGame = false;
         }
         else links.player.isDead = false;
 

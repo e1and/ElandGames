@@ -173,6 +173,7 @@ MonoBehaviour:
   isFirePlace: 0
   isTorch: 0
   isBed: 0
+  isLamp: 0
   isMovable: 0
   savePosition: {x: 0, y: 0, z: 0}
   saveRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -337,7 +338,7 @@ LODGroup:
   m_AnimateCrossFading: 0
   m_LastLODIsBillboard: 0
   m_LODs:
-  - screenRelativeHeight: 0.037484564
+  - screenRelativeHeight: 0.017513832
     fadeTransitionWidth: 0
     renderers:
     - renderer: {fileID: 474230942229595591}

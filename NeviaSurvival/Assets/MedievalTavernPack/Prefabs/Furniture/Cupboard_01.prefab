@@ -14,6 +14,9 @@ GameObject:
   - component: {fileID: 95986085476636774}
   - component: {fileID: 65205335199306782}
   - component: {fileID: 3531664864117387305}
+  - component: {fileID: 3881689901497927725}
+  - component: {fileID: 3294784428571673496}
+  - component: {fileID: 7271674386755735209}
   m_Layer: 0
   m_Name: Cupboard_01
   m_TagString: Untagged
@@ -144,6 +147,83 @@ LODGroup:
     renderers:
     - renderer: {fileID: 23984964350785798}
   m_Enabled: 1
+--- !u!114 &3881689901497927725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458342421300234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7fbb520248e70a42bbbb06bc6763467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animator: {fileID: 0}
+  isOpen: 0
+  openingTime: 0
+--- !u!114 &3294784428571673496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458342421300234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 401e0b512a5df5d44882ad14120ea783, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startItems: []
+  isOpen: 0
+  storageItems:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  storageItemObjects: []
+  size: 6
+  filledSlots: 0
+  isSmallCauldron: 0
+--- !u!114 &7271674386755735209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1458342421300234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d8fa262facc23d4eb93478bd6362284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: "\u041A\u0443\u0445\u043E\u043D\u043D\u044B\u0439 \u0448\u043A\u0430\u0444"
+  itemDescription: "\u0425\u0440\u0430\u043D\u0438\u043B\u0438\u0449\u0435"
+  itemComment: 
+  durability: 0
+  weight: 0
+  isUnique: 0
+  isUsable: 0
+  isOpenable: 0
+  isCollectible: 0
+  isCarrying: 0
+  isFirePlace: 0
+  isTorch: 0
+  isBed: 0
+  isLamp: 0
+  isMovable: 0
+  savePosition: {x: 0, y: 0, z: 0}
+  saveRotation: {x: 0, y: 0, z: 0, w: 0}
+  isSaveItemActive: 0
+  carryPosition: {x: 0, y: 0, z: 0}
+  carryRotation: {x: 0, y: 0, z: 0, w: 0}
+  item: {fileID: 0}
+  type: 0
 --- !u!1 &1513383092194746
 GameObject:
   m_ObjectHideFlags: 0

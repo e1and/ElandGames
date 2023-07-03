@@ -50,6 +50,8 @@ public class MousePoint : MonoBehaviour
     public TMP_Text itemDescriptionPanelText;
     public TMP_Text itemCommentPanelText;
     public TMP_Text itemActionPanelText;
+    public TMP_Text itemDurabilityPanelText;
+    public TMP_Text itemWeightPanelText;
     [Space]
     public GameObject item3dInfoPanel;
     public TMP_Text item3dNamePanelText;
@@ -140,7 +142,10 @@ public class MousePoint : MonoBehaviour
         if (Input.GetMouseButton(1) && !links.player.isAttacking)
         {
             if (Input.GetMouseButtonDown(0))
-            Animator.SetTrigger("Attack");
+                Animator.SetTrigger("Attack");
+
+            if (Input.GetKeyDown(KeyCode.F))
+                Animator.SetTrigger("Hack");
         }
 
         // Перетаскивание больших предметов (отпускание)
@@ -155,7 +160,7 @@ public class MousePoint : MonoBehaviour
     }
 
     void MousePoint3D()
-    {      
+    {
         if (!Input.GetMouseButton(1))
         {
             ray = _camera.ScreenPointToRay(Input.mousePosition);
@@ -163,6 +168,7 @@ public class MousePoint : MonoBehaviour
             if (!isPointUI && !player.isLay && Physics.Raycast(ray, out hit, raycastLength, 3))
             {
                 building.buildingPlace = hit.point;
+                building.buildingNormal = hit.normal;
 
                 itemInfoPanel.SetActive(false);
 
@@ -181,10 +187,10 @@ public class MousePoint : MonoBehaviour
                     // По нажатию кнопки мыши комментируем предмет
                     if (Input.GetMouseButtonDown(0))
                     {
-                        if (item.TryGetComponent(out Campfire campfire) && _distanceToTarget > useDistance) 
+                        if (item.TryGetComponent(out Campfire campfire) && _distanceToTarget > useDistance)
                             Comment(campfire.burningTimeText);
                         else if ((item.isCollectible || item.isCarrying) && _distanceToTarget > grabDistance
-                            || _distanceToTarget > useDistance) 
+                            || _distanceToTarget > useDistance)
                             Comment(item.itemComment);
                     }
 
@@ -197,19 +203,7 @@ public class MousePoint : MonoBehaviour
 
                         if (Input.GetKeyDown(KeyCode.E))
                         {
-                            if (lamp.isOn) { lamp.Switch(false); Animator.SetTrigger("Use"); }
-                            else
-                            {
-                                if ((inventoryWindow.RightHandItem != null &&
-                                    inventoryWindow.RightHandObject.TryGetComponent(out Torchlight torch) && torch.isBurn) ||
-                                    (inventoryWindow.LeftHandItem != null &&
-                                    inventoryWindow.LeftHandObject.TryGetComponent(out Torchlight torch2) && torch2.isBurn))
-                                {
-                                    lamp.Switch(true);
-                                    Animator.SetTrigger("Use");
-                                }
-                                else Comment("Мне нужен горящий факел, чтобы зажечь фонарь!");
-                            }
+                            openingCoroutine = StartCoroutine(LampIgnition(lamp));
                         }
                     }
                     // Нажатие рычага/кнопки
@@ -236,18 +230,29 @@ public class MousePoint : MonoBehaviour
 
                         if (Input.GetKeyDown(KeyCode.E))
                         {
-                            if (_distanceToTarget <= 3 && openingCoroutine == null)
+                            if (openingCoroutine == null)
                             {
                                 Animator.SetTrigger("Use");
                                 openingCoroutine = StartCoroutine(OpeningContainer(container));
                             }
+                        }
+
+                        if (Input.GetMouseButtonDown(0) && hit.collider.TryGetComponent(out Cauldron cauldron))
+                        {
+                            TryCollect(item, hit.collider.gameObject);
+                        }
+
+                        // Перетаскивание сундуков в 2 руках
+                        if (Input.GetKeyDown(KeyCode.G))
+                        {
+                            TryCarry(item);
                         }
                     }
                     // Открытие двери
                     else if (hit.collider.TryGetComponent(out Door door) && _distanceToTarget < useDistance)
                     {
                         if (item.isOpenable) Descripion3d(hit, item);
-                    
+
                         Cursor.SetCursor(cursorAction, Vector2.zero, CursorMode.Auto);
 
                         if (Input.GetKeyDown(KeyCode.E))
@@ -274,29 +279,15 @@ public class MousePoint : MonoBehaviour
 
                         ShowDescription3D(item);
 
-                        if (Input.GetMouseButtonDown(0) && item.isCollectible) // Если предмет собираемый, то запускаем корутину подбора
+                        if (Input.GetMouseButtonDown(0)) // Если предмет собираемый, то запускаем корутину подбора
                         {
-                            if (!isCarry) Collect(item, hit.collider.gameObject);
-                            else Comment("Вот бы у меня была третья рука!");
+                            TryCollect(item, hit.collider.gameObject);
                         }
 
                         // Перетаскивание больших предметов в 2 руках
                         if (Input.GetKeyDown(KeyCode.G))
                         {
-                            if (player.isAbleCarry)
-                            {
-                                if (inventoryWindow.LeftHandItem == null && inventoryWindow.RightHandItem == null)
-                                {
-                                    Carry(item);
-                                    if (item.type == ItemType.Cauldron && !item.isCollectible) item.GetComponent<Cauldron>().GrabCauldron();
-                                }
-                                else Comment("Чтобы что-то поднять двумя руками, надо чтобы в них ничего не было!");
-                            }
-                            else
-                            {
-                                player.animator.SetTrigger("Tired");
-                                Comment("Я так устал, что ничего тяжелого поднять уже не могу!");
-                            }
+                            TryCarry(item);
                         }
 
                         // Установка котелка на костёр и подкладывание дров в костёр
@@ -411,7 +402,8 @@ public class MousePoint : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 // Поедание еды
-                if (pointedIcon != null && pointedIcon.item != null && pointedIcon.item.isFood && pointedIcon.gameObject.TryGetComponent(out InventoryIcon icon))
+                if (pointedIcon != null && pointedIcon.item != null && pointedIcon.item.isFood && 
+                    pointedIcon.gameObject.TryGetComponent(out InventoryIcon icon) && !player.isSleep && !player.isLay && !player.isSwim)
                 {
                     Debug.Log("Eat Food");
                     if (pointedIcon.item.foodValue > player.maxFood - player.Food && player.Food > player.maxFood - 5)
@@ -424,7 +416,7 @@ public class MousePoint : MonoBehaviour
                         icon.RemoveFromInventory();
                         icon.item3dObject.SetActive(false);
                         icon.item3dObject.transform.parent = links.objectPool;
-                        Destroy(pointedIcon.gameObject);
+                        pointedIcon.gameObject.SetActive(false);
                     }
                 }
 
@@ -491,6 +483,33 @@ public class MousePoint : MonoBehaviour
         }
     }
 
+    void TryCollect(ItemInfo item, GameObject itemObject)
+    {
+        if (item.isCollectible)
+        {
+            if (!isCarry) Collect(item, itemObject);
+            else Comment("Вот бы у меня была третья рука!");
+        }
+    }
+
+    void TryCarry(ItemInfo item)
+    {
+        if (player.isAbleCarry)
+        {
+            if (inventoryWindow.LeftHandItem == null && inventoryWindow.RightHandItem == null)
+            {
+                Carry(item);
+                if (item.type == ItemType.Cauldron && !item.isCollectible) item.GetComponent<Cauldron>().GrabCauldron();
+            }
+            else Comment("Чтобы что-то поднять двумя руками, надо чтобы в них ничего не было!");
+        }
+        else
+        {
+            player.animator.SetTrigger("Tired");
+            Comment("Я так устал, что ничего тяжелого поднять уже не могу!");
+        }
+    }
+
     public void Carry(ItemInfo item)
     {
         if (carryCoolDown <= 0 && item.isCarrying && !isCarry)
@@ -513,7 +532,7 @@ public class MousePoint : MonoBehaviour
             Player.GetComponent<CharacterController>().center = new Vector3(0, 0.94f, 0.49f);
             links.ui.pressToDrop.gameObject.SetActive(true);
         }
-    }    
+    }
 
     public void CarryRelease()
     {
@@ -545,8 +564,8 @@ public class MousePoint : MonoBehaviour
 
     public void OpenContainer(Container container)
     {
-         openingCoroutine = StartCoroutine(OpeningContainer(container));
-    }    
+        openingCoroutine = StartCoroutine(OpeningContainer(container));
+    }
 
     IEnumerator OpeningContainer(Container container)
     {
@@ -570,11 +589,50 @@ public class MousePoint : MonoBehaviour
         player.PlayerControl(true);
     }
 
+    IEnumerator LampIgnition(Lamp lamp)
+    {
+        player.PlayerControl(false);
+        float time = 0;
+        bool isTorch = false;
+
+        if ((inventoryWindow.RightHandItem != null &&
+            inventoryWindow.RightHandObject.TryGetComponent(out Torchlight torch) && torch.isBurn) ||
+            (inventoryWindow.LeftHandItem != null &&
+             inventoryWindow.LeftHandObject.TryGetComponent(out Torchlight torch2) && torch2.isBurn))
+        {
+            isTorch = true;
+        }
+
+        if (!lamp.isOn && !isTorch)
+        {
+            Comment("Мне нужен горящий факел, чтобы зажечь фонарь!");
+            player.PlayerControl(true);
+            yield break;
+        }
+
+        progressIndicator.transform.parent.gameObject.SetActive(true);
+        if (isTorch || lamp.isOn) Animator.SetTrigger("Use");
+
+        while (time < 1)
+        {
+            time += Time.deltaTime * links.time.timeFactor / 60;
+            progressIndicator.fillAmount = time / 1;
+            yield return null;
+        }
+
+        if (lamp.isOn) lamp.Switch(false);
+        else lamp.Switch(true);
+
+        player.PlayerControl(true);
+        progressIndicator.transform.parent.gameObject.SetActive(false);
+    }
+
     IEnumerator OpeningDoor(Door door)
     {
         float time = 0;
         progressIndicator.transform.parent.gameObject.SetActive(true);
         player.PlayerControl(false);
+        door.PlayKeySound();
         while (time < door.openingTime && Input.GetKey(KeyCode.E))
         {
             if (!door.isLocked) { player.PlayerControl(true); break; }
@@ -582,6 +640,7 @@ public class MousePoint : MonoBehaviour
             progressIndicator.fillAmount = time / door.openingTime;
             yield return null;
         }
+        door.StopSound();
         if (time >= door.openingTime || !door.isLocked)
         { 
             door.isLocked = false;

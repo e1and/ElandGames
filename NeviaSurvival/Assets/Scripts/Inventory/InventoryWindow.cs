@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,11 +23,15 @@ public enum ItemType
     Scroll,
     GrassStack,
     Torch,
-    Axe
+    Axe,
+    Cloth
 }
 
 public class InventoryWindow : MonoBehaviour
 {
+    public List<Item> allItems;
+    public Dictionary<string, Item> ItemsList;
+
     public Inventory inventory;
     public RectTransform[] slots;
     public GameObject inventoryCellTemplate;
@@ -76,6 +81,7 @@ public class InventoryWindow : MonoBehaviour
     public GameObject Head;
 
     public Weapon rightHandWeapon;
+    public Weapon leftHandWeapon;
 
     public List<GameObject> Clothes = new List<GameObject>(7);
     public List<Item> ClothesItems = new List<Item>(7);
@@ -90,6 +96,15 @@ public class InventoryWindow : MonoBehaviour
     {
         links = FindObjectOfType<Links>();
 
+        ItemsList = new Dictionary<string, Item>();
+        allItems.AddRange(Resources.LoadAll<Item>("ScriptableObjects"));
+        foreach (Item item in allItems)
+        {
+            if (ItemsList.ContainsKey(item.id) || item.id.Length == 0) item.id = item.name.ToLower().Replace(" ", "");
+            ItemsList.Add(item.id, item);
+        }
+
+
         if (Backpack != null) inventory = Backpack.GetComponent<Inventory>();
         else inventory = null;
     }
@@ -97,12 +112,198 @@ public class InventoryWindow : MonoBehaviour
     {
         if (inventory != null) inventory.onItemAdded += OnItemAdded;
         Redraw();
-        links.ui.inventoryPanel.SetActive(false);
+        //if (links.player.isStart) links.ui.inventoryPanel.SetActive(false);
         links.ui.equipmentPanel.SetActive(false);
 
     }
 
+    public int ItemCount(string id)
+    {
+        int itemCount = 0;
+        if (inventory != null)
+            foreach (Item item in inventory.inventoryItems)
+            {
+                if (item != null && item.id == id) itemCount++;
+            }
+
+        if (RightHandItem != null && RightHandItem.id == id) itemCount++;
+        if (LeftHandItem != null && LeftHandItem.id == id) itemCount++;
+
+        if (LeftHandItem != null && LeftHandItem.Type == ItemType.Bag)
+        {
+            foreach (Item item in LeftHandObject.GetComponent<Inventory>().inventoryItems)
+            {
+                if (item != null && item.id == id) itemCount++;
+            }
+        }
+        Debug.Log(itemCount);
+        return itemCount;
+    }
+
     void OnItemAdded(Item obj) => Redraw();
+
+    Item ItemById(string id)
+    {
+        if (id == null) return null;
+        else return ItemsList[id];
+    }
+
+    public void LoadInventory(PlayerData data)
+    {
+        if (Backpack != null)
+        {
+            inventory = Backpack.GetComponent<Inventory>();
+            Backpack.SetActive(true);
+
+            for (int i = 0; i < inventory.inventoryItems.Count; i++)
+            {
+                inventory.inventoryItems[i] = ItemById(data.itemID[i]);
+            }
+            
+        }
+        else inventory = null;
+
+        BeltItem = ItemById(data.clothesID[0]);
+        if (BeltItem != null)
+        {
+            Belt = Instantiate(BeltItem.Prefab);
+            Belt.GetComponent<ItemInfo>().durability = data.clothesDurability[0];
+        }
+
+        FeetItem = ItemById(data.clothesID[1]);
+        if (FeetItem != null)
+        {
+            Feet = Instantiate(FeetItem.Prefab);
+            Feet.GetComponent<ItemInfo>().durability = data.clothesDurability[1];
+        }
+
+        LegsItem = ItemById(data.clothesID[2]);
+        if (LegsItem != null)
+        {
+            Legs = Instantiate(LegsItem.Prefab);
+            Legs.GetComponent<ItemInfo>().durability = data.clothesDurability[2];
+        }
+
+        ArmsItem = ItemById(data.clothesID[3]);
+        if (ArmsItem != null)
+        {
+            Arms = Instantiate(ArmsItem.Prefab);
+            Arms.GetComponent<ItemInfo>().durability = data.clothesDurability[3];
+        }
+
+        BodyItem = ItemById(data.clothesID[4]);
+        if (BodyItem != null)
+        {
+            Body = Instantiate(BodyItem.Prefab);
+            Body.GetComponent<ItemInfo>().durability = data.clothesDurability[4];
+        }
+
+        ShouldersItem = ItemById(data.clothesID[5]);
+        if (ShouldersItem != null)
+        {
+            Shoulders = Instantiate(ShouldersItem.Prefab);
+            Shoulders.GetComponent<ItemInfo>().durability = data.clothesDurability[5];
+        }
+
+        HeadItem = ItemById(data.clothesID[6]);
+        if (HeadItem != null)
+        {
+            Head = Instantiate(HeadItem.Prefab);
+            Head.GetComponent<ItemInfo>().durability = data.clothesDurability[6];
+        }
+
+        UpdateClothesVisual();
+
+        RightHandItem = ItemById(data.rightHandID);
+        if (RightHandItem != null)
+        {
+            RightHandObject = Instantiate(RightHandItem.Prefab);
+            RightHandObject.GetComponent<ItemInfo>().durability = data.rightHandDurability;
+            RightHandObject.SetActive(true);
+        }
+        
+        LeftHandItem = ItemById(data.leftHandID);
+        if (LeftHandItem != null)
+        {
+            LeftHandObject = Instantiate(LeftHandItem.Prefab);
+            LeftHandObject.GetComponent<ItemInfo>().durability = data.leftHandDurability;
+            LeftHandObject.SetActive(true);
+        }
+
+        if (data.isRightHandBag && RightHandObject.TryGetComponent(out Inventory rightBag))
+        {
+            for (int i = 0; i < rightBag.inventoryItems.Count; i++)
+            {
+                rightBag.inventoryItems[i] = ItemById(data.rightHandItemID[i]);
+                if (rightBag.inventoryItems[i] != null)
+                rightBag.inventoryItemObjects[i] = Instantiate(rightBag.inventoryItems[i].Prefab);
+            }
+        }
+
+        if (data.isLeftHandBag && LeftHandObject.TryGetComponent(out Inventory leftBag))
+        {
+            for (int i = 0; i < leftBag.inventoryItems.Count; i++)
+            {
+                leftBag.inventoryItems[i] = ItemById(data.leftHandItemID[i]);
+                if (leftBag.inventoryItems[i] != null)
+                    leftBag.inventoryItemObjects[i] = Instantiate(leftBag.inventoryItems[i].Prefab);
+            }
+        }
+
+        Redraw();
+
+        StartCoroutine(LoadDelay(data));
+    }
+    
+    IEnumerator LoadDelay(PlayerData data)
+    {
+        yield return null;
+        if (inventory != null)
+        {
+            for (int i = 0; i < inventory.inventoryItems.Count; i++)
+            {
+                if (inventory.inventoryItemObjects[i] != null)
+                {
+                    inventory.inventoryItemObjects[i].GetComponent<ItemInfo>().durability = data.itemDurability[i];
+                    inventory.inventoryItemObjects[i].SetActive(false);
+                }
+            }
+        }
+
+        if (data.isRightHandBag && RightHandObject.TryGetComponent(out Inventory rightBag))
+        {
+            for (int i = 0; i < rightBag.inventoryItems.Count; i++)
+            {
+                if (rightBag.inventoryItemObjects[i] != null)
+                {
+
+                    rightBag.inventoryItemObjects[i].GetComponent<ItemInfo>().durability = data.rightHandItemsDurability[i];
+                    rightBag.inventoryItemObjects[i].SetActive(false);
+                }
+            }
+        }
+
+        if (data.isLeftHandBag && LeftHandObject.TryGetComponent(out Inventory leftBag))
+        {
+            for (int i = 0; i < leftBag.inventoryItems.Count; i++)
+            {
+                if (leftBag.inventoryItemObjects[i] != null)
+                {
+                    leftBag.inventoryItemObjects[i].GetComponent<ItemInfo>().durability = data.leftHandItemsDurability[i];
+                    leftBag.inventoryItemObjects[i].SetActive(false);
+                }
+            }
+        }
+
+        for (int i = 0; i < Clothes.Count; i++)
+        {
+            if (Clothes[i] != null)
+            {
+                Clothes[i].GetComponent<ItemInfo>().durability = data.clothesDurability[i];
+                Clothes[i].SetActive(true);
+            }
+        }
+    }
 
     void Update()
     {
@@ -117,8 +318,19 @@ public class InventoryWindow : MonoBehaviour
         UpdateClothes();
         RecountWood();
 
-        if (RightHandObject != null && RightHandObject.TryGetComponent(out Weapon weapon)) rightHandWeapon = weapon;
+        if (RightHandObject != null && RightHandObject.TryGetComponent(out Weapon weapon))
+        { 
+            rightHandWeapon = weapon; 
+            weapon.isRightHand = true; 
+        }
         else rightHandWeapon = null;
+
+        if (LeftHandObject != null && LeftHandObject.TryGetComponent(out Weapon weapon2))
+        {
+            leftHandWeapon = weapon2;
+            weapon2.isRightHand = false;
+        }
+        else leftHandWeapon = null;
 
         if (Backpack != null)
         {
@@ -222,6 +434,8 @@ public class InventoryWindow : MonoBehaviour
 
         iconGameObject.GetComponent<ItemInfo>().item = item;
         iconGameObject.GetComponent<ItemInfo>().type = item.Type;
+        iconGameObject.GetComponent<ItemInfo>().weight = item.weight;
+        iconGameObject.GetComponent<ItemInfo>().durability = item.durability;
     }
 
     void ClearDrawn()
@@ -269,6 +483,7 @@ public class InventoryWindow : MonoBehaviour
 
         UpdateClothesWarm();
         UpdateClothesVisual();
+        UpdateClothesArmor();
     }
 
     public void UpdateClothesWarm()
@@ -278,6 +493,58 @@ public class InventoryWindow : MonoBehaviour
         {
             if (ClothesItems[i] != null) links.player.clothesTemperature += ClothesItems[i].warmBonus
                     * Clothes[i].GetComponent<ItemInfo>().durability * 0.01f;
+        }
+    }
+
+    float _armor;
+    public void UpdateClothesArmor()
+    {
+        _armor = 0;
+        existClothes.Clear();
+        for (int i = 0; i < Clothes.Count; i++)
+        {
+            if (ClothesItems[i] != null)
+            {
+                _armor += ClothesItems[i].armor
+                      * Clothes[i].GetComponent<ItemInfo>().durability * 0.01f;
+                existClothes.Add(Clothes[i]);
+            }
+        }
+        links.player.armor = (int)Mathf.Round(_armor);
+        links.ui.armorIndicator.text = _armor.ToString("0.0");
+    }
+
+    public List<GameObject> existClothes;
+
+    public void ArmorRandomDamage()
+    {
+        if (existClothes.Count > 0)
+        {
+            existClothes[Random.Range(0, existClothes.Count)].GetComponent<ItemInfo>().durability -= Random.Range(1, 10);
+            UpdateClothesArmor();
+        }
+    }
+    
+    public void WeaponRandomDamage(Weapon weapon)
+    {
+        weapon.GetComponent<ItemInfo>().durability -= Random.Range(0, 3);
+        Debug.LogError("weapon damage");
+        if (weapon.GetComponent<ItemInfo>().durability <= 0)
+        {
+            weapon.gameObject.SetActive(false);
+            if (weapon.isRightHand)
+            {
+                rightHandWeapon = null;
+                if (rightHandSlot.childCount > 0) Destroy(rightHandSlot.GetChild(0).gameObject);
+                Destroy(RightHandObject);
+            }
+            else
+            {
+                leftHandWeapon = null;
+                if (leftHandSlot.childCount > 0) Destroy(leftHandSlot.GetChild(0).gameObject);
+                Destroy(LeftHandObject);
+            }
+            links.mousePoint.Comment("Оружие сломалось!");
         }
     }
 

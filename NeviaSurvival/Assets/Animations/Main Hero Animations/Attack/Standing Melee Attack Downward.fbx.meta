@@ -57,15 +57,29 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.009831467
-        functionName: AttackState
+      - time: 0
+        functionName: RightHandAttackState
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: b78efc7dd7bd5014ba8ef6ca02f69cb8, type: 3}
         floatParameter: 0
         intParameter: 1
         messageOptions: 0
-      - time: 0.921576
-        functionName: AttackState
+      - time: 0.32705203
+        functionName: RightHandWeaponActive
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: b78efc7dd7bd5014ba8ef6ca02f69cb8, type: 3}
+        floatParameter: 0
+        intParameter: 1
+        messageOptions: 0
+      - time: 0.6315458
+        functionName: RightHandWeaponActive
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: b78efc7dd7bd5014ba8ef6ca02f69cb8, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.7734139
+        functionName: RightHandAttackState
         data: 
         objectReferenceParameter: {fileID: 11500000, guid: b78efc7dd7bd5014ba8ef6ca02f69cb8, type: 3}
         floatParameter: 0

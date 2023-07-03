@@ -1,31 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Lamp : MonoBehaviour
 {
+    Links links;
     [SerializeField] MeshRenderer lampOn;
     [SerializeField] MeshRenderer lampOff;
     [SerializeField] Light _light;
     public bool isOn;
-    bool isProcess;
 
     private void Start()
     {
+        links = FindObjectOfType<Links>();
+        ConfigureLamp();
+        CheckSaveList();
+    }
+
+    public void ConfigureLamp()
+    {
         if (isOn) TurnOn(); else TurnOff();
+    }
+    
+    void CheckSaveList()
+    {
+        if (!links.saveObjects.lamps.Contains(this))
+            Debug.LogError($"Фонарь { gameObject.name } не добавлен в список сохраняемых объектов!");
     }
 
     public void Switch(bool isOn)
     {
-        if (!isProcess) StartCoroutine(Switching(isOn));
-    }
-
-    IEnumerator Switching(bool isOn)
-    {
-        isProcess = true;
-        yield return new WaitForSeconds(1);
         if (isOn) TurnOn(); else TurnOff();
-        isProcess = false;
     }
     
     public void TurnOn()

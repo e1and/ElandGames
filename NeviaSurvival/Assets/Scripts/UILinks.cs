@@ -24,6 +24,7 @@ public class UILinks : MonoBehaviour
     public TMP_Text statsTimeIndicator;
     public Text nightmaresIndicator;
     public Text newSkillPointsIndicator;
+    public Text armorIndicator;
     public GameObject upgradeButtons;
     [Space]
     public TMP_Text fpsIndicator;
@@ -51,6 +52,7 @@ public class UILinks : MonoBehaviour
     public GameObject mainMenuPanel;
     public GameObject startMenuPanel;
 
+    public GameObject savingGameText;
     public GameObject pauseText;
     public GameObject thisDayIndicator;
     public GameObject questCompleteSign;

@@ -138,8 +138,16 @@ public class ThirdPersonController : MonoBehaviour
 
 	private void Update()
 	{
-		currentSpeed = Mathf.MoveTowards(currentSpeed, lastSpeed, Time.deltaTime * 8);
-		animationSpeed = Mathf.MoveTowards(animationSpeed, lastSpeed, Time.deltaTime * 8f);
+		if (links.player.isControl)
+		{
+			currentSpeed = Mathf.MoveTowards(currentSpeed, lastSpeed, Time.deltaTime * 16);
+			animationSpeed = Mathf.MoveTowards(animationSpeed, lastSpeed, Time.deltaTime * 8f);	
+		}
+        else
+        {
+			animationSpeed = 0;
+
+		}
 		_animator.SetFloat("Speed", animationSpeed);
 
 		if (!_player.isSwim)
@@ -338,7 +346,7 @@ public class ThirdPersonController : MonoBehaviour
 		
 		if (isLookLocked) targetDirection = lastDirection;
 
-		if (Input.GetMouseButton(1))
+		if (Input.GetMouseButton(1) && _player.isControl)
         {
 			if (_input.move != Vector2.zero && !isLookLocked)
 			{

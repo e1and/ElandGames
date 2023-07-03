@@ -18,12 +18,35 @@ public class Door : MonoBehaviour
     public float openingTime;
     public string doorInfo;
     public MusicZone musicZone;
+    public AudioSource audioSource;
+    public AudioClip openSound;
+    public AudioClip closeSound;
+    public AudioClip closedDoorSound;
+    
     Links links;
 
     private void Start()
     {
         animator = GetComponentInParent<Animator>();
         links = mousePoint.links;
+        CheckSaveList();
+        ConfigureDoor();
+    }
+
+    public void ConfigureDoor()
+    {
+        if (isOpen)
+        {
+            if (isOpenMirror) animator.SetTrigger("OpenedMirror");
+            else animator.SetTrigger("Opened");
+            animator.SetBool("Open", true);
+        }
+    }
+
+    void CheckSaveList()
+    {
+        if (!links.saveObjects.doors.Contains(this))
+            Debug.LogError($"Дверь { gameObject.name } не добавлена в список сохраняемых объектов!");
     }
 
     public void OpenClose()
@@ -32,6 +55,7 @@ public class Door : MonoBehaviour
         {
             if (isExit) ExitDoor(); 
             else EnterDoor();
+            audioSource.PlayOneShot(closeSound);
             
         }
         else
@@ -39,6 +63,9 @@ public class Door : MonoBehaviour
             if (!isLocked && !isBlocked)
             {
                 isOpen = !isOpen;
+                
+                if (isOpen) audioSource.PlayOneShot(openSound);
+                else audioSource.PlayOneShot(closeSound);
 
                 if (isOpenMirror) animator.SetBool("OpenMirror", !animator.GetBool("OpenMirror"));
                 else animator.SetBool("Open", !animator.GetBool("Open"));
@@ -67,6 +94,7 @@ public class Door : MonoBehaviour
                 if (isLocked)
                 {
                     mousePoint.Comment("Ключ подошёл!");
+                    
                     if (inventoryWindow.LeftHandItem == key)
                         inventoryWindow.LeftHandObject.GetComponent<ItemInfo>().itemDescription = "Ключ открыл " + doorInfo;
                     else inventoryWindow.RightHandObject.GetComponent<ItemInfo>().itemDescription = "Ключ открыл " + doorInfo;
@@ -79,12 +107,23 @@ public class Door : MonoBehaviour
             if (isLocked)
             {
                 mousePoint.Comment("Дверь заперта. Нужен ключ!");
+                audioSource.PlayOneShot(closedDoorSound);
                 gameObject.GetComponent<ItemInfo>().itemComment = "Интересно что за этой дверью и как ее открыть?";
                 return false;
             }
             else return true;
         }
         else return false;
+    }
+
+    public void PlayKeySound()
+    {
+        audioSource.PlayOneShot(links.sounds.keyOpenDoor[Random.Range(0, links.sounds.keyOpenDoor.Length)]);
+    }
+
+    public void StopSound()
+    {
+        audioSource.Stop();
     }
 
     public void EnterDoor()

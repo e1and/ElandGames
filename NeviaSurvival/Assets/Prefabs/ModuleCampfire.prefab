@@ -20631,6 +20631,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1494975643318565456}
+  - component: {fileID: 7523404848543377917}
   - component: {fileID: 1494975643318565459}
   - component: {fileID: 1494975643318565421}
   - component: {fileID: 1494975643318565458}
@@ -20672,6 +20673,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7523404848543377917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494975643318565420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3432d4f96a67ec4d81c69ef0667694b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildData: {fileID: 11400000, guid: 51244f16f8dbaa0478448aa4de15341e, type: 2}
 --- !u!114 &1494975643318565459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20742,6 +20756,7 @@ MonoBehaviour:
   isFirePlace: 1
   isTorch: 0
   isBed: 0
+  isLamp: 0
   isMovable: 0
   savePosition: {x: 0, y: 0, z: 0}
   saveRotation: {x: 0, y: 0, z: 0, w: 0}

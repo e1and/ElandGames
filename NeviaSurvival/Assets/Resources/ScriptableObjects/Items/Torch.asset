@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82157b2877980e84f8cc049a002167ff, type: 3}
+  m_Name: Torch
+  m_EditorClassIdentifier: 
+  Name: "\u0424\u0430\u043A\u0435\u043B"
+  id: torch
+  Description: "\u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u0441\u0432\u0435\u0442\u0430"
+  Type: 207
+  Icon: {fileID: 21300000, guid: 71208001f509e2e429ed727699286c05, type: 3}
+  Prefab: {fileID: 100000, guid: 1e5c742accdc1824fb01f98f446fa63c, type: 3}
+  rarity: 85
+  weight: 0.5
+  durability: 50
+  isFood: 0
+  foodValue: 0
+  poisonValue: 0
+  isLiquid: 0
+  warmBonus: 0
+  armor: 0
+  clothType: 0

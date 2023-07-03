@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 2848162618095795912}
   - component: {fileID: 769502233434399377}
   - component: {fileID: 3893718531216904489}
+  - component: {fileID: -6590138308792265751}
   m_Layer: 0
   m_Name: Chest
   m_TagString: Item
@@ -192,6 +193,7 @@ MonoBehaviour:
   isFirePlace: 0
   isTorch: 0
   isBed: 0
+  isLamp: 0
   isMovable: 0
   savePosition: {x: 0, y: 0, z: 0}
   saveRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -268,6 +270,26 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!205 &-6590138308792265751
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654766839871344}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 1
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.017513832
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 23022890680774352}
+    - renderer: {fileID: 23878908538256388}
+  m_Enabled: 1
 --- !u!1 &1753468799525924
 GameObject:
   m_ObjectHideFlags: 0

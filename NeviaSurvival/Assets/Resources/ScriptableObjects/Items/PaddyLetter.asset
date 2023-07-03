@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82157b2877980e84f8cc049a002167ff, type: 3}
+  m_Name: PaddyLetter
+  m_EditorClassIdentifier: 
+  Name: "\u041F\u0438\u0441\u044C\u043C\u043E \u041F\u0430\u0434\u0434\u0438"
+  id: paddyletter
+  Description: 
+  Type: 205
+  Icon: {fileID: 21300000, guid: 50a947e39c924a34190e2127f6d76ebb, type: 3}
+  Prefab: {fileID: 8148401951471268683, guid: e4337c12539704b4eb414947b2766987, type: 3}
+  rarity: 0
+  weight: 0
+  durability: 30
+  isFood: 0
+  foodValue: 0
+  poisonValue: 0
+  isLiquid: 0
+  warmBonus: 0
+  armor: 0
+  clothType: 0

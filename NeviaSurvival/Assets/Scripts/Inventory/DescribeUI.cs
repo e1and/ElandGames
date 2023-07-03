@@ -27,8 +27,20 @@ public class DescribeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             mousePoint.isUIDescription = true;
             if (TryGetComponent(out InventoryIcon icon))
             {
+                mousePoint.itemDurabilityPanelText.enabled = true;
+                mousePoint.itemWeightPanelText.enabled = true;
+
+
                 mousePoint.itemNamePanelText.text = itemInfo.itemName;
                 mousePoint.itemDescriptionPanelText.text = itemInfo.itemDescription;
+                mousePoint.itemWeightPanelText.text = itemInfo.weight + "ךד";
+                if (icon.item3dObject != null)
+                {
+                    mousePoint.itemDurabilityPanelText.text = icon.item3dObject.GetComponent<ItemInfo>().durability + "%";
+                }
+                else
+                mousePoint.itemDurabilityPanelText.text = itemInfo.durability + "%";
+
                 mousePoint.itemCommentPanelText.text = "";
 
                 if (icon.item.isFood) mousePoint.itemActionPanelText.text = "E - סתוסעü";
@@ -71,6 +83,9 @@ public class DescribeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             }
             else
             {
+                mousePoint.itemDurabilityPanelText.enabled = false;
+                mousePoint.itemWeightPanelText.enabled = false;
+
                 mousePoint.itemNamePanelText.text = itemInfo.itemName;
                 mousePoint.itemDescriptionPanelText.text = itemInfo.itemDescription;
                 mousePoint.itemActionPanelText.text = itemInfo.itemComment;

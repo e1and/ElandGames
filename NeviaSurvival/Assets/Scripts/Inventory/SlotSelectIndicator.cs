@@ -11,7 +11,6 @@ public class SlotSelectIndicator : MonoBehaviour, IPointerEnterHandler, IPointer
 
     private void Start()
     {
-        mousePoint = FindAnyObjectByType<MousePoint>();
         image = mousePoint.IconHighLight.GetComponent<Image>();
     }
 

@@ -56,10 +56,13 @@ public class ItemSpawner : MonoBehaviour
     {
         for (int i = 0; i < trees.Count; i++)
         {
-            int randomItem = Random.Range(0, items.Count);
-            GameObject newItem = Instantiate(items[randomItem].Prefab, links.spawnItemsParent);
-            newItem.transform.Rotate(0, Random.Range(0, 360), 0);
-            newItem.transform.position = trees[i].transform.position + newItem.transform.forward * Random.Range(4f, 6f) + newItem.transform.up * 2;
+            if (trees[i].activeSelf)
+            {
+                int randomItem = Random.Range(0, items.Count);
+                GameObject newItem = Instantiate(items[randomItem].Prefab, links.spawnItemsParent);
+                newItem.transform.Rotate(0, Random.Range(0, 360), 0);
+                newItem.transform.position = trees[i].transform.position + newItem.transform.forward * Random.Range(4f, 6f) + newItem.transform.up * 2;
+            }
         }
     }
 

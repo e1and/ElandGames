@@ -9,6 +9,9 @@ public class QuestWindow : MonoBehaviour
 {
     public Action onCollectItem;
 
+    public List<Quest> allQuests = new List<Quest>();
+    public Dictionary<string, Quest> allQuestList = new Dictionary<string, Quest>();
+
     public QuestInfo OpenedQuest;
     public QuestInfo FollowingQuest;
 
@@ -48,6 +51,17 @@ public class QuestWindow : MonoBehaviour
     private void Awake()
     {
         links = FindObjectOfType<Links>();
+
+        var quests = Resources.LoadAll("", typeof(Quest));
+
+        allQuests.Clear();
+        allQuests.AddRange(Resources.LoadAll<Quest>("ScriptableObjects"));
+
+        foreach (Quest quest in allQuests)
+        {
+            if (allQuestList.ContainsKey(quest.id) || quest.id.Length == 0) quest.id = quest.name.Replace(" ", "");
+            allQuestList.Add(quest.id, quest);
+        }
     }
     void Start()
     {

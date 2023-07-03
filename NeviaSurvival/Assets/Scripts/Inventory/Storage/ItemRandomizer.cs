@@ -25,10 +25,9 @@ public class ItemRandomizer : MonoBehaviour
             if (links.containersParent.GetChild(i).TryGetComponent(out Storage storage) && !storage.isSmallCauldron)
                 storages.Add(storage);
         }
-        StorageItemRandomizer();
     }
 
-    public void StorageItemRandomizer()
+    public void SpawnRandomItemsInStorages()
     {
         for (int i = 0; i < storages.Count; i++)
         {
@@ -36,7 +35,7 @@ public class ItemRandomizer : MonoBehaviour
             for (int j = 0; j <= itemsCount; j++)
             {
                 int randomItem = Random.Range(0, randomItems.Count);
-                if (Random.Range(0, 100) < randomItems[randomItem].rarity)
+                if (Random.Range(0, 101) < randomItems[randomItem].rarity)
                 storages[i].AddItem(randomItems[randomItem]);
             }
         }

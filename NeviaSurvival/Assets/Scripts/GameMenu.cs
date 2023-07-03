@@ -24,12 +24,31 @@ public class GameMenu : MonoBehaviour
 
     public void StartGame()
     {
+        links.itemRandomizer.SpawnRandomItemsInStorages();
         links.player.gameObject.SetActive(true);
         links.ScottyCamera.gameObject.SetActive(false);
         ui.startMenuPanel.SetActive(false);
         ui.statusPanel.SetActive(true);
+        if (isRandomSpawnPoint) links.player.RandomSpawnPoint();
         links.player.Death();
 
+    }
+
+    public void ContinueGame()
+    {
+        links.player.isStart = false;
+        links.dayNight.isLoadGame = true;
+        links.saveLoad.LoadPlayer();
+        
+        ui.startMenuPanel.SetActive(false);
+        ui.statusPanel.SetActive(true);
+        
+        links.player.ConfigureGame();
+    }
+
+    public void SaveGame()
+    {
+        links.saveLoad.SavePlayer();
     }
 
     public void ExitGame()
@@ -41,6 +60,13 @@ public class GameMenu : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public bool isRandomSpawnPoint;
+    public void RandomSpawnPoint()
+    {
+        if (isRandomSpawnPoint) isRandomSpawnPoint = false;
+        else isRandomSpawnPoint = true;
     }
 
     public void MainMenu()

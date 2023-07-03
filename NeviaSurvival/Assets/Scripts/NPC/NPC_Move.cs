@@ -12,6 +12,7 @@ public class NPC_Move : MonoBehaviour
     Vector3 SpawnPoint;
     Vector3 Steering;
 
+    public bool isNeutral;
     public DamageTrigger damageTrigger;
     public NPC_Attack attackTrigger;
     public int maxHP = 30;
@@ -85,6 +86,12 @@ public class NPC_Move : MonoBehaviour
     [SerializeField] Vector3 EscapePoint = Vector3.zero;
     [SerializeField] GameObject escapePointNew;
 
+    public AudioSource audioSource;
+    public AudioClip hitSound;
+    public AudioClip deathSound;
+    public AudioClip followSound;
+    public AudioClip awakeSound;
+
 
 
     private void Start()
@@ -108,6 +115,8 @@ public class NPC_Move : MonoBehaviour
 
     public void GetDamage(WeaponCollider weaponCollider)
     {
+        audioSource.PlayOneShot(hitSound);
+        
         currentHP -= weaponCollider.weapon.damage;
         attackTrigger.attackTrigger.enabled = false;
         agent.velocity = Vector3.zero;
@@ -119,6 +128,9 @@ public class NPC_Move : MonoBehaviour
 
     public void Death()
     {
+        audioSource.PlayOneShot(deathSound);
+        damageTrigger.PlayFallSound();
+        
         damageTrigger.box.enabled = false;
 
         Animator.SetTrigger("Death");
@@ -144,6 +156,8 @@ public class NPC_Move : MonoBehaviour
         _isSeek = false;
         _isFollowing = false;
         damageTrigger.box.enabled = true;
+        
+        audioSource.PlayOneShot(awakeSound);
     }
 
     //public void StopMove()
@@ -226,7 +240,7 @@ public class NPC_Move : MonoBehaviour
         //{ _isFlee = false; _isWander = true; }
 
         // Преследование
-        if (!_isSeek)
+        if (!_isSeek && !isNeutral)
         {
             if ((_distanceToTarget < _maxFollowDistance && _distanceToTarget > _minFollowDistance && _heightToTarget < 1)
                 && (!_isFlee || !_isEscape || !isFire || !player.isCampfire))
@@ -271,7 +285,7 @@ public class NPC_Move : MonoBehaviour
         }
         
         // Атака
-        if (_distanceToTarget < _attackDistance && !_isAttack && _heightToTarget < 1 && !isFire && !player.isDead)
+        if (!isNeutral && _distanceToTarget < _attackDistance && !_isAttack && _heightToTarget < 1 && !isFire && !player.isDead)
         {
             if (player.Health <= 0)
             {
@@ -343,6 +357,8 @@ public class NPC_Move : MonoBehaviour
 
     IEnumerator NavMeshFollow(GameObject target)
     {
+        audioSource.PlayOneShot(followSound);
+        
         _isFollowing = true;
         Debug.Log("NavMeshFollow");
         activeFollowCoroutines++;
@@ -386,29 +402,21 @@ public class NPC_Move : MonoBehaviour
         
         //StopCoroutine("EscapeCoroutine");
 
-        float timer = 0;
         agent.speed = walkSpeed;
+
+        if (!agent.CalculatePath(target, agent.path)) _isWalk = false;
 
         while (Vector3.Distance(transform.position, target) > 1)
         {
             Debug.Log("Walk111 " + agent.isOnNavMesh);
             yield return null;
 
-            if (_isSeek)
+            if (agent.velocity.magnitude < 0.1f) break;
+            
+            if (_isSeek || !_isWalk)
             {
                 break;
             }
-
-            //if (agent.velocity.magnitude < 0.1f)
-            //{
-            //    timer += Time.deltaTime;
-            //    if (timer > 2)
-            //    {
-            //        Debug.Log("Obstacle break NavMeshWalk");
-            //        NewWayPoint();
-            //        break;
-            //    }
-            //}
 
             if (_isEscape) break;
         }

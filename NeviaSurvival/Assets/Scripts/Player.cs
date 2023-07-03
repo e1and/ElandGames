@@ -6,7 +6,7 @@ using TMPro;
 
 public class Player : MonoBehaviour
 {
-    [Header("Состояния игрока")]
+    [Header("РЎРѕСЃС‚РѕСЏРЅРёСЏ РёРіСЂРѕРєР°")]
     public float feelingTemperature;
     public float clothesTemperature;
     public float buildingTemperature;
@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     public bool isRun;
     public bool isSleep;
     public bool isStart = true;
-    [Header("Ограничения игрока")]
+    [Header("РћРіСЂР°РЅРёС‡РµРЅРёСЏ РёРіСЂРѕРєР°")]
     public float runCoolDown;
     public bool isAbleJump;
     public bool isAbleRun;
@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
     public bool isDead;
     public bool isControl;
     public bool isAttacking;
-    [Header("Текущие параметры игрока")]
+    [Header("РўРµРєСѓС‰РёРµ РїР°СЂР°РјРµС‚СЂС‹ РёРіСЂРѕРєР°")]
     public int Health = 100;
     public int Cold = 100;
     public int Food = 100;
@@ -41,28 +41,30 @@ public class Player : MonoBehaviour
     public int Stamina = 100;
     public int Oxygen = 100;
     public int Wood = 0;
-    [Header("Развиваемые параметры")]
+    [Header("Р Р°Р·РІРёРІР°РµРјС‹Рµ РїР°СЂР°РјРµС‚СЂС‹")]
     public int maxHealth = 100;
     public int maxCold = 100;
     public int maxFood = 100;
     public int maxEnergy = 100;
     public int maxStamina = 100;
     public int maxOxygen = 100;
+    public int armor = 0;
     public int staminaForJump = 10;
     public int runningSkill = 1;
     public int swimmingSkill = 1;
     public int maxCarryWeight = 150;
-    [Header("Скорость восстановления параментров")]
-    public int restoreEnergy = 1;  // Скорость восстановления энергии
-    [Header("Очки прокачки")]
+    [Header("РЎРєРѕСЂРѕСЃС‚СЊ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РїР°СЂР°РјРµРЅС‚СЂРѕРІ")]
+    public int restoreEnergy = 1;  // РЎРєРѕСЂРѕСЃС‚СЊ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ СЌРЅРµСЂРіРёРё
+    [Header("РћС‡РєРё РїСЂРѕРєР°С‡РєРё")]
     public int survivalPoint;
-    [Header("Статистика")]
+    [Header("РЎС‚Р°С‚РёСЃС‚РёРєР°")]
     public int nighmares = 0;
     [Space]
     public UILinks ui;
     public Links links;
     [Space]
     public GameObject spawnPoint;
+    public List<GameObject> spawnpoints;
     public GameObject sleepPlace;
     public Vector3 deathPlace;
     public GameObject PlayerFollowCamera;
@@ -83,12 +85,12 @@ public class Player : MonoBehaviour
 
     TOD_Sky time;
 
-    [Header("Сохраняемые параметры")]
+    [Header("РЎРѕС…СЂР°РЅСЏРµРјС‹Рµ РїР°СЂР°РјРµС‚СЂС‹")]
     public float saveTime;
     public int saveDay;
     public int savetMonth;
     public int saveYear;
-    public float saveDayNumber;
+    public int saveDayNumber;
     public int saveHealth;
     public int saveCold;
     public int saveFood;
@@ -102,11 +104,20 @@ public class Player : MonoBehaviour
     public InventoryWindow inventoryWindow;
     public GameObject grassStack;
 
+    
+
+    public void RandomSpawnPoint()
+    {
+        if (links.gameMenu.isRandomSpawnPoint)
+            spawnPoint = spawnpoints[Random.Range(0, spawnpoints.Count)];
+    }
 
 
     void Start()
     {
         links = FindObjectOfType<Links>();
+
+        Debug.Log(Application.persistentDataPath);
 
         Cursor.visible = true;
         time = DayTime.gameObject.GetComponent<TOD_Sky>();
@@ -127,25 +138,49 @@ public class Player : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void AttackState(int isAttack)
+    public void RightHandAttackState(int isAttack)
     {
         if (isAttack == 1)
         {
             isAttacking = true;
             isControl = false;
-            WeaponActive(true);
         }
         else
         {
             isAttacking = false;
             isControl = true;
-            WeaponActive(false);
+        }
+    }
+    
+    public void BothHandAttackState(int isAttack)
+    {
+        if (isAttack == 1)
+        {
+            isAttacking = true;
+            isControl = false;
+        }
+        else
+        {
+            isAttacking = false;
+            isControl = true;
         }
     }
 
-    void WeaponActive(bool isActive)
+    public void RightHandWeaponActive(int isDamage)
     {
+        bool isActive;
+        if (isDamage == 1) isActive = true;
+        else isActive = false;
         if (inventoryWindow.rightHandWeapon != null) inventoryWindow.rightHandWeapon.weaponCollider.SetActive(isActive);
+    }
+    
+    public void BothWeaponActive(int isDamage)
+    {
+        bool isActive;
+        if (isDamage == 1) isActive = true;
+        else isActive = false;
+        if (inventoryWindow.rightHandWeapon != null) inventoryWindow.rightHandWeapon.weaponCollider.SetActive(isActive);
+        if (inventoryWindow.leftHandWeapon != null) inventoryWindow.leftHandWeapon.weaponCollider.SetActive(isActive);
     }
 
     float fpsTime;
@@ -179,36 +214,36 @@ public class Player : MonoBehaviour
 
         gameMinute = links.time.timeFactor / 60;
 
-        // Ограничения при усталости
+        // РћРіСЂР°РЅРёС‡РµРЅРёСЏ РїСЂРё СѓСЃС‚Р°Р»РѕСЃС‚Рё
         if (Energy < 30) isAbleJump = false; else isAbleJump = true;
         if (Energy < 20) isAbleCarry = false; else isAbleCarry = true;
         if (Energy < 10) isAbleRun = false; else if (runCoolDown <= 0) isAbleRun = true;
 
-        // Восстановление энергии лежа
+        // Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ СЌРЅРµСЂРіРёРё Р»РµР¶Р°
         if (isLay)
         {
-            restTimer += Time.deltaTime * gameMinute / 4;       // Умножаем на коэффициент игрового времени
-            if (restTimer > restoreEnergy && Energy <= 35)  // Вместо реальных минут используем игровые
+            restTimer += Time.deltaTime * gameMinute / 4;       // РЈРјРЅРѕР¶Р°РµРј РЅР° РєРѕСЌС„С„РёС†РёРµРЅС‚ РёРіСЂРѕРІРѕРіРѕ РІСЂРµРјРµРЅРё
+            if (restTimer > restoreEnergy && Energy <= 35)  // Р’РјРµСЃС‚Рѕ СЂРµР°Р»СЊРЅС‹С… РјРёРЅСѓС‚ РёСЃРїРѕР»СЊР·СѓРµРј РёРіСЂРѕРІС‹Рµ
             {
                 Energy += 1;
                 restTimer = 0;
             }
         }
 
-        // Бонус тепла от горящего факела
+        // Р‘РѕРЅСѓСЃ С‚РµРїР»Р° РѕС‚ РіРѕСЂСЏС‰РµРіРѕ С„Р°РєРµР»Р°
         torchTemperature = 0;
         if (inventoryWindow.RightHandItem != null && inventoryWindow.RightHandItem.Type == ItemType.Torch)
         {    
-            if (inventoryWindow.RightHandObject.TryGetComponent(out Torchlight torch) && torch.isBurn)
+            if (inventoryWindow.RightHandObject != null && inventoryWindow.RightHandObject.TryGetComponent(out Torchlight torch) && torch.isBurn)
                 torchTemperature += 2 * torch.IntensityLight;
         }
         if (inventoryWindow.LeftHandItem != null && inventoryWindow.LeftHandItem.Type == ItemType.Torch)
         { 
-            if (inventoryWindow.LeftHandObject.TryGetComponent(out Torchlight torch) && torch.isBurn)
+            if (inventoryWindow.LeftHandObject != null && inventoryWindow.LeftHandObject.TryGetComponent(out Torchlight torch) && torch.isBurn)
                 torchTemperature += 2 * torch.IntensityLight;
         }
 
-        // Температура по ощущениям
+        // РўРµРјРїРµСЂР°С‚СѓСЂР° РїРѕ РѕС‰СѓС‰РµРЅРёСЏРј
         if (isSwim)
         {
             feelingTemperature = DayTime.temperature - 5;
@@ -218,11 +253,11 @@ public class Player : MonoBehaviour
         else
         feelingTemperature = DayTime.temperature + clothesTemperature + buildingTemperature + torchTemperature + campfireTemperature;
 
-        // Замерзание при температуре меньше coldTemperature градусов или при плавании когда закончится стамина
+        // Р—Р°РјРµСЂР·Р°РЅРёРµ РїСЂРё С‚РµРјРїРµСЂР°С‚СѓСЂРµ РјРµРЅСЊС€Рµ coldTemperature РіСЂР°РґСѓСЃРѕРІ РёР»Рё РїСЂРё РїР»Р°РІР°РЅРёРё РєРѕРіРґР° Р·Р°РєРѕРЅС‡РёС‚СЃСЏ СЃС‚Р°РјРёРЅР°
         if (feelingTemperature < DayTime.freezeTemperature) isCold = true;
         else isCold = false;
 
-        // Постепенное согревание при температуре больше freezeTemperature градусов
+        // РџРѕСЃС‚РµРїРµРЅРЅРѕРµ СЃРѕРіСЂРµРІР°РЅРёРµ РїСЂРё С‚РµРјРїРµСЂР°С‚СѓСЂРµ Р±РѕР»СЊС€Рµ freezeTemperature РіСЂР°РґСѓСЃРѕРІ
         if (feelingTemperature > DayTime.freezeTemperature && !isSwim)
         {
             if (Cold < maxCold)
@@ -234,7 +269,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if (Cold > 0)  // Потеря тепла при низких температурах
+            if (Cold > 0)  // РџРѕС‚РµСЂСЏ С‚РµРїР»Р° РїСЂРё РЅРёР·РєРёС… С‚РµРјРїРµСЂР°С‚СѓСЂР°С…
             {
                 
                 deltaWarm += Time.deltaTime * (DayTime.freezeTemperature - feelingTemperature) * gameMinute * 0.2f;
@@ -244,7 +279,7 @@ public class Player : MonoBehaviour
                     deltaWarm = 0;
                 }
             }
-            else  // Потеря здоровья от замерзания
+            else  // РџРѕС‚РµСЂСЏ Р·РґРѕСЂРѕРІСЊСЏ РѕС‚ Р·Р°РјРµСЂР·Р°РЅРёСЏ
             {
                 deltaHealth -= Time.deltaTime * (DayTime.freezeTemperature - feelingTemperature) * gameMinute * 0.02f;
                 if (deltaHealth < -1)
@@ -252,19 +287,19 @@ public class Player : MonoBehaviour
             }
         }
 
-        // Потеря здоровья при перегреве
+        // РџРѕС‚РµСЂСЏ Р·РґРѕСЂРѕРІСЊСЏ РїСЂРё РїРµСЂРµРіСЂРµРІРµ
         if (feelingTemperature > DayTime.hotTemperature)
         {
             deltaHealth -= Time.deltaTime * (feelingTemperature - DayTime.hotTemperature) * gameMinute * 0.05f;
             if (deltaHealth < -1)
             { 
                 Health--; deltaHealth = 0;
-                if (!isDead) mousePoint.Comment("Как же жарко!");
+                if (!isDead) mousePoint.Comment("РљР°Рє Р¶Рµ Р¶Р°СЂРєРѕ!");
             }
             
         }
 
-        // Расход энергии
+        // Р Р°СЃС…РѕРґ СЌРЅРµСЂРіРёРё
         if (Energy > 0 && !isOnBed)
         {
             deltaEnergy += Time.deltaTime * 0.04f * hungerFactor * freezeFactor * runFactor * swimfactor * carryFactor * gameMinute;
@@ -277,7 +312,7 @@ public class Player : MonoBehaviour
             }
         }
         
-        // Множители влияющие на скорость траты энергии
+        // РњРЅРѕР¶РёС‚РµР»Рё РІР»РёСЏСЋС‰РёРµ РЅР° СЃРєРѕСЂРѕСЃС‚СЊ С‚СЂР°С‚С‹ СЌРЅРµСЂРіРёРё
         if (mousePoint.isCarry) carryFactor = 1 + mousePoint.carryWeight * 10 / 100; else carryFactor = 1;
         if (isRun) runFactor = 5; else runFactor = 1;
         if (isSwim) swimfactor = 3; else swimfactor = 1;
@@ -286,7 +321,7 @@ public class Player : MonoBehaviour
         if (Energy < 20) tirednessFactor = 1.5f; else tirednessFactor = 1;
         if (Food < 20) hungerFactor = 1.5f; else hungerFactor = 1;
 
-        //Расход сытости
+        //Р Р°СЃС…РѕРґ СЃС‹С‚РѕСЃС‚Рё
         if (Food > 0)
         {
             deltaFood += Time.deltaTime * 0.1f * freezeFactor * tirednessFactor * gameMinute;
@@ -302,7 +337,7 @@ public class Player : MonoBehaviour
             Death();
         }
 
-        // Переключение иконок при состоянии замерзания/согревания
+        // РџРµСЂРµРєР»СЋС‡РµРЅРёРµ РёРєРѕРЅРѕРє РїСЂРё СЃРѕСЃС‚РѕСЏРЅРёРё Р·Р°РјРµСЂР·Р°РЅРёСЏ/СЃРѕРіСЂРµРІР°РЅРёСЏ
         if (isCold)
         {
             ui.ColdIcon.enabled = true;
@@ -319,9 +354,10 @@ public class Player : MonoBehaviour
         ui.FoodIndicator.text = "" + Food;
         ui.EnergyIndicator.text = "" + Energy;
         ui.WoodIndicator.text = "" + Wood;
-        ui.TemperatureIndicator.text = Mathf.Round(feelingTemperature) + "°C";
+        ui.TemperatureIndicator.text = Mathf.Round(feelingTemperature) + "В°C";
 
         if (Input.GetKeyDown(KeyCode.P)) Death();
+        if (Input.GetKeyDown(KeyCode.L)) inventoryWindow.Redraw();
 
         if (Input.GetKeyDown(KeyCode.Q) && (isLay || isSit) && !isSleep)
         {
@@ -336,12 +372,12 @@ public class Player : MonoBehaviour
         if (isOnBed && !isSleep && Input.GetKeyDown(KeyCode.R))
         {
             if (isAbleToSleep) StartCoroutine(Sleep());
-            else if (Energy >= maxEnergy) { links.mousePoint.Comment("Я слишком полон энергии, чтобы спать!"); }
-            else if (Cold == 0) { links.mousePoint.Comment("Мне слишком холодно, чтобы уснуть!"); }
-            else if (Food == 0) { links.mousePoint.Comment("На пустой желудок я не усну!"); }
+            else if (Energy >= maxEnergy) { links.mousePoint.Comment("РЇ СЃР»РёС€РєРѕРј РїРѕР»РѕРЅ СЌРЅРµСЂРіРёРё, С‡С‚РѕР±С‹ СЃРїР°С‚СЊ!"); }
+            else if (Cold == 0) { links.mousePoint.Comment("РњРЅРµ СЃР»РёС€РєРѕРј С…РѕР»РѕРґРЅРѕ, С‡С‚РѕР±С‹ СѓСЃРЅСѓС‚СЊ!"); }
+            else if (Food == 0) { links.mousePoint.Comment("РќР° РїСѓСЃС‚РѕР№ Р¶РµР»СѓРґРѕРє СЏ РЅРµ СѓСЃРЅСѓ!"); }
         }
 
-        // Ограничения сна
+        // РћРіСЂР°РЅРёС‡РµРЅРёСЏ СЃРЅР°
         if (Energy < maxEnergy && Food > 0 && Cold > 0) isAbleToSleep = true; else isAbleToSleep = false;
 
     }
@@ -434,13 +470,13 @@ public class Player : MonoBehaviour
         {   
             sleepFactor = 3;
             if (Input.GetKeyDown(KeyCode.Space)) break;
-            if (Energy == maxEnergy) { links.mousePoint.Comment("Не могу спать, когда во мне столько энергии - надо чем-то заняться!"); break; }
-            if (Food == 0) { links.mousePoint.Comment("Не могу нормально спать, когда в желудке так пусто!"); GetUp(); isGetUp = true; break; }
-            if (Cold == 0) { links.mousePoint.Comment("Слишком холодно, чтобы дальше спать!"); GetUp(); isGetUp = true; break; }
+            if (Energy == maxEnergy) { links.mousePoint.Comment("РќРµ РјРѕРіСѓ СЃРїР°С‚СЊ, РєРѕРіРґР° РІРѕ РјРЅРµ СЃС‚РѕР»СЊРєРѕ СЌРЅРµСЂРіРёРё - РЅР°РґРѕ С‡РµРј-С‚Рѕ Р·Р°РЅСЏС‚СЊСЃСЏ!"); break; }
+            if (Food == 0) { links.mousePoint.Comment("РќРµ РјРѕРіСѓ РЅРѕСЂРјР°Р»СЊРЅРѕ СЃРїР°С‚СЊ, РєРѕРіРґР° РІ Р¶РµР»СѓРґРєРµ С‚Р°Рє РїСѓСЃС‚Рѕ!"); GetUp(); isGetUp = true; break; }
+            if (Cold == 0) { links.mousePoint.Comment("РЎР»РёС€РєРѕРј С…РѕР»РѕРґРЅРѕ, С‡С‚РѕР±С‹ РґР°Р»СЊС€Рµ СЃРїР°С‚СЊ!"); GetUp(); isGetUp = true; break; }
             sleepTime += Time.deltaTime * links.time.timeFactor / 3600;
-            if (sleepTime > awakeTime) { links.mousePoint.Comment($"Я выспался! Кажется я проспал часов {Mathf.Round(awakeTime)}!"); break; }
+            if (sleepTime > awakeTime) { links.mousePoint.Comment($"РЇ РІС‹СЃРїР°Р»СЃСЏ! РљР°Р¶РµС‚СЃСЏ СЏ РїСЂРѕСЃРїР°Р» С‡Р°СЃРѕРІ {Mathf.Round(awakeTime)}!"); break; }
 
-            // Восстановление здоровья во время сна при достаточной сытости
+            // Р’РѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёРµ Р·РґРѕСЂРѕРІСЊСЏ РІРѕ РІСЂРµРјСЏ СЃРЅР° РїСЂРё РґРѕСЃС‚Р°С‚РѕС‡РЅРѕР№ СЃС‹С‚РѕСЃС‚Рё
             if (Food >= 20)
             {
                 deltaHealth += Time.deltaTime * 0.5f;
@@ -511,13 +547,13 @@ public class Player : MonoBehaviour
                 Stamina--;
                 staminaTimer = 0;
             }
-            if (isSwim && Stamina == 0 && staminaTimer > 1f) // Если при плавании заканчивается стамина, то тратится тепло, затем здоровье
+            if (isSwim && Stamina == 0 && staminaTimer > 1f) // Р•СЃР»Рё РїСЂРё РїР»Р°РІР°РЅРёРё Р·Р°РєР°РЅС‡РёРІР°РµС‚СЃСЏ СЃС‚Р°РјРёРЅР°, С‚Рѕ С‚СЂР°С‚РёС‚СЃСЏ С‚РµРїР»Рѕ, Р·Р°С‚РµРј Р·РґРѕСЂРѕРІСЊРµ
             {
                 if (Cold > 0)
                 {
                     Cold--;
                     isCold = true;
-                    if (!isFreezeInWater) mousePoint.Comment("Холодно! Долго в такой воде не поплаваешь!");
+                    if (!isFreezeInWater) mousePoint.Comment("РҐРѕР»РѕРґРЅРѕ! Р”РѕР»РіРѕ РІ С‚Р°РєРѕР№ РІРѕРґРµ РЅРµ РїРѕРїР»Р°РІР°РµС€СЊ!");
                     isFreezeInWater = true;
                 }
                 staminaTimer = 0;
@@ -620,14 +656,32 @@ public class Player : MonoBehaviour
 
         inventoryWindow.RecountWood();
 
-        links.mousePoint.Comment("Приснится же такое!");
+        links.mousePoint.Comment("РџСЂРёСЃРЅРёС‚СЃСЏ Р¶Рµ С‚Р°РєРѕРµ!");
     }
 
+    public void ConfigureGame()
+    {
+        if (saveTime >= 6 && saveTime < 18) DayTime.Day(); else DayTime.Night();
+
+        links.dayNight.ShowDay();
+
+        isLay = false;
+        isSleep = false;
+        isAttacking = false;
+        inventoryWindow.RecountWood();
+        ui.nightmaresIndicator.text = "" + nighmares;
+    }
+
+    int currendDamage;
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out Damage damage))
         {
-            Health -= damage.SingleDamage();
+            currendDamage = damage.SingleDamage();
+            currendDamage = currendDamage - armor;
+            if (currendDamage <= 0) currendDamage = 1;
+            Health -= currendDamage;
+            inventoryWindow.ArmorRandomDamage();
         }
     }
 
@@ -683,17 +737,17 @@ public class Player : MonoBehaviour
     {
             if (Health == 20 && healthAmountForMessage == Health)
             {
-                mousePoint.Comment("Что-то мне не хорошо!");
+                mousePoint.Comment("Р§С‚Рѕ-С‚Рѕ РјРЅРµ РЅРµ С…РѕСЂРѕС€Рѕ!");
                 healthAmountForMessage = 10;
             }
             if (Health == 10 && healthAmountForMessage == Health)
             {
-                mousePoint.Comment("Очень плохо себя чувствую!");
+                mousePoint.Comment("РћС‡РµРЅСЊ РїР»РѕС…Рѕ СЃРµР±СЏ С‡СѓРІСЃС‚РІСѓСЋ!");
                 healthAmountForMessage = maxHealth;
             }
             if (Health == maxHealth && healthAmountForMessage == Health)
             {
-                mousePoint.Comment("Самочувствие как будто заново родился!");
+                mousePoint.Comment("РЎР°РјРѕС‡СѓРІСЃС‚РІРёРµ РєР°Рє Р±СѓРґС‚Рѕ Р·Р°РЅРѕРІРѕ СЂРѕРґРёР»СЃСЏ!");
                 healthAmountForMessage = 20;
             }
     }
@@ -703,17 +757,17 @@ public class Player : MonoBehaviour
     {
         if (Food == 30 && foodAmountForMessage == Food)
         {
-            mousePoint.Comment("Перекусить бы чего-нибудь");
+            mousePoint.Comment("РџРµСЂРµРєСѓСЃРёС‚СЊ Р±С‹ С‡РµРіРѕ-РЅРёР±СѓРґСЊ");
             foodAmountForMessage = 15;
         }
         if (Food == 15 && foodAmountForMessage == Food)
         {
-            mousePoint.Comment("Как же хочется есть!");
+            mousePoint.Comment("РљР°Рє Р¶Рµ С…РѕС‡РµС‚СЃСЏ РµСЃС‚СЊ!");
             foodAmountForMessage = 0;
         }
         if (Food == 0 && foodAmountForMessage == Food)
         {
-            mousePoint.Comment("В животе совсем пусто! Я теряю силы!");
+            mousePoint.Comment("Р’ Р¶РёРІРѕС‚Рµ СЃРѕРІСЃРµРј РїСѓСЃС‚Рѕ! РЇ С‚РµСЂСЏСЋ СЃРёР»С‹!");
             foodAmountForMessage = 30;
         }
     }
@@ -724,28 +778,28 @@ public class Player : MonoBehaviour
     {
         if (Cold == maxCold && warmAmountForMessage == Cold)
         {
-            if (isCampfire) mousePoint.Comment("Я полностью согрелся!");
+            if (isCampfire) mousePoint.Comment("РЇ РїРѕР»РЅРѕСЃС‚СЊСЋ СЃРѕРіСЂРµР»СЃСЏ!");
             warmAmountForMessage = 50;
         }
         if (Cold == 50 && warmAmountForMessage == Cold)
         {
-            mousePoint.Comment("Прохладно!");
+            mousePoint.Comment("РџСЂРѕС…Р»Р°РґРЅРѕ!");
             warmAmountForMessage = maxCold;
         }
 
         if (Cold == 40 && coldAmountForMessage == Cold)
         {
-            mousePoint.Comment("Холодает!");
+            mousePoint.Comment("РҐРѕР»РѕРґР°РµС‚!");
             coldAmountForMessage = 20;
         }
         if (Cold == 20 && coldAmountForMessage == Cold)
         {
-            mousePoint.Comment("Что-то холодновато! Надо бы согреться!");
+            mousePoint.Comment("Р§С‚Рѕ-С‚Рѕ С…РѕР»РѕРґРЅРѕРІР°С‚Рѕ! РќР°РґРѕ Р±С‹ СЃРѕРіСЂРµС‚СЊСЃСЏ!");
             coldAmountForMessage = 0;
         }
         if (Cold == 0 && coldAmountForMessage == Cold)
         {
-            mousePoint.Comment("Я совсем замёрз! Холод забирает мои жизненные силы!");
+            mousePoint.Comment("РЇ СЃРѕРІСЃРµРј Р·Р°РјС‘СЂР·! РҐРѕР»РѕРґ Р·Р°Р±РёСЂР°РµС‚ РјРѕРё Р¶РёР·РЅРµРЅРЅС‹Рµ СЃРёР»С‹!");
             coldAmountForMessage = 40;
         }
     }
@@ -755,22 +809,22 @@ public class Player : MonoBehaviour
     {
         if (Energy == 30 && energyAmountForMessage == Energy)
         {
-            mousePoint.Comment("Что-то я подустал! Неплохо бы найти место для отдыха!");
+            mousePoint.Comment("Р§С‚Рѕ-С‚Рѕ СЏ РїРѕРґСѓСЃС‚Р°Р»! РќРµРїР»РѕС…Рѕ Р±С‹ РЅР°Р№С‚Рё РјРµСЃС‚Рѕ РґР»СЏ РѕС‚РґС‹С…Р°!");
             energyAmountForMessage = 25;
         }
         if (Energy == 25 && energyAmountForMessage == Energy)
         {
-            mousePoint.Comment("Усталость меня одолевает!");
+            mousePoint.Comment("РЈСЃС‚Р°Р»РѕСЃС‚СЊ РјРµРЅСЏ РѕРґРѕР»РµРІР°РµС‚!");
             energyAmountForMessage = 20;
         }
         if (Energy == 20 && energyAmountForMessage == Energy)
         {
-            mousePoint.Comment("Ноги уже еле держат!");
+            mousePoint.Comment("РќРѕРіРё СѓР¶Рµ РµР»Рµ РґРµСЂР¶Р°С‚!");
             energyAmountForMessage = 0;
         }
         if (Energy == 0 && energyAmountForMessage == Energy)
         {
-            mousePoint.Comment("Сил совсем нет! Готов упасть прямо здесь!");
+            mousePoint.Comment("РЎРёР» СЃРѕРІСЃРµРј РЅРµС‚! Р“РѕС‚РѕРІ СѓРїР°СЃС‚СЊ РїСЂСЏРјРѕ Р·РґРµСЃСЊ!");
             energyAmountForMessage = 30;
         }
     }
@@ -783,35 +837,35 @@ public class Player : MonoBehaviour
 
     void StatusUpdate()
     {
-        if (Health >= 90) healthStatus = "Отличное самочувствие";
-        else if (Health < 90 && Health >= 60) healthStatus = "Нормальное самочувствие";
-        else if (Health < 60 && Health >= 30) healthStatus = "Самочувствие средней паршивости";
-        else healthStatus = "Очень плохо";
+        if (Health >= 90) healthStatus = "РћС‚Р»РёС‡РЅРѕРµ СЃР°РјРѕС‡СѓРІСЃС‚РІРёРµ";
+        else if (Health < 90 && Health >= 60) healthStatus = "РќРѕСЂРјР°Р»СЊРЅРѕРµ СЃР°РјРѕС‡СѓРІСЃС‚РІРёРµ";
+        else if (Health < 60 && Health >= 30) healthStatus = "РЎР°РјРѕС‡СѓРІСЃС‚РІРёРµ СЃСЂРµРґРЅРµР№ РїР°СЂС€РёРІРѕСЃС‚Рё";
+        else healthStatus = "РћС‡РµРЅСЊ РїР»РѕС…Рѕ";
         ui.healthStatusIcon.itemDescription = healthStatus;
-        ui.healthStatusIcon.itemComment = Health + " из " + maxHealth;
+        ui.healthStatusIcon.itemComment = Health + " РёР· " + maxHealth;
 
-        if (Cold >= 90) coldStatus = "Очень тепло";
-        else if (Cold < 90 && Cold >= 60) coldStatus = "Комфортно";
-        else if (Cold < 60 && Cold >= 30) coldStatus = "Прохладно";
-        else if (Cold < 30 && Cold >= 1) coldStatus = "Очень холодно";
-        else coldStatus = "Переохлаждение";
+        if (Cold >= 90) coldStatus = "РћС‡РµРЅСЊ С‚РµРїР»Рѕ";
+        else if (Cold < 90 && Cold >= 60) coldStatus = "РљРѕРјС„РѕСЂС‚РЅРѕ";
+        else if (Cold < 60 && Cold >= 30) coldStatus = "РџСЂРѕС…Р»Р°РґРЅРѕ";
+        else if (Cold < 30 && Cold >= 1) coldStatus = "РћС‡РµРЅСЊ С…РѕР»РѕРґРЅРѕ";
+        else coldStatus = "РџРµСЂРµРѕС…Р»Р°Р¶РґРµРЅРёРµ";
         ui.coldStatusIcon.itemDescription = coldStatus;
-        ui.coldStatusIcon.itemComment = Cold + " из " + maxCold;
+        ui.coldStatusIcon.itemComment = Cold + " РёР· " + maxCold;
 
-        if (Food >= 80) foodStatus = "Полная сытость";
-        else if (Food < 80 && Food > 20) foodStatus = "Легкий голод";
-        else foodStatus = "Истощение";
+        if (Food >= 80) foodStatus = "РџРѕР»РЅР°СЏ СЃС‹С‚РѕСЃС‚СЊ";
+        else if (Food < 80 && Food > 20) foodStatus = "Р›РµРіРєРёР№ РіРѕР»РѕРґ";
+        else foodStatus = "РСЃС‚РѕС‰РµРЅРёРµ";
         ui.foodStatusIcon.itemDescription = foodStatus;
-        ui.foodStatusIcon.itemComment = Food + " из " + maxFood;
+        ui.foodStatusIcon.itemComment = Food + " РёР· " + maxFood;
 
-        if (Energy >= 80) energyStatus = "Полон сил";
-        else if (Energy < 80 && Energy >= 40) energyStatus = "Легкая усталость";
-        else if (Energy < 40 && Energy >= 20) energyStatus = "Сильная усталость";
-        else energyStatus = "Изнемождение";
+        if (Energy >= 80) energyStatus = "РџРѕР»РѕРЅ СЃРёР»";
+        else if (Energy < 80 && Energy >= 40) energyStatus = "Р›РµРіРєР°СЏ СѓСЃС‚Р°Р»РѕСЃС‚СЊ";
+        else if (Energy < 40 && Energy >= 20) energyStatus = "РЎРёР»СЊРЅР°СЏ СѓСЃС‚Р°Р»РѕСЃС‚СЊ";
+        else energyStatus = "РР·РЅРµРјРѕР¶РґРµРЅРёРµ";
         ui.energyStatusIcon.itemDescription = energyStatus;
-        ui.energyStatusIcon.itemComment = Energy + " из " + maxEnergy;
+        ui.energyStatusIcon.itemComment = Energy + " РёР· " + maxEnergy;
 
-        ui.temperatureStatusIcon.itemDescription = "Температура воздуха: " + Mathf.Round(DayTime.temperature);
+        ui.temperatureStatusIcon.itemDescription = "РўРµРјРїРµСЂР°С‚СѓСЂР° РІРѕР·РґСѓС…Р°: " + Mathf.Round(DayTime.temperature);
         
 
     }

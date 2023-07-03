@@ -6,4 +6,5 @@ public class Weapon : MonoBehaviour
 {
     public int damage;
     public GameObject weaponCollider;
+    public bool isRightHand;
 }

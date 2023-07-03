@@ -6,6 +6,7 @@ using UnityEngine;
 public class Quest : ScriptableObject
 {
     public string Name;
+    public string id;
     public string Briefing;
     [TextArea(10, 5)]
     public string Description;
