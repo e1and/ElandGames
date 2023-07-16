@@ -11,6 +11,7 @@ public class Links : MonoBehaviour
     public Cooking cooking;
     public SaveInventory saveInventory;
     public SaveObjects saveObjects;
+    public QuestHandler questHandler;
     public QuestWindow questWindow;
     public ItemSpawner itemSpawner;
     public ItemRandomizer itemRandomizer;
@@ -35,11 +36,13 @@ public class Links : MonoBehaviour
     public Transform objectPool;
     public Transform playerBuildings;
 
+    public GameObject PlayerMesh;
     public Camera ScottyCamera;
 
     void Awake()
     {
         Game.links = this;
+        Game.Player = player;
         mainCamera = Camera.main;
     }
 }

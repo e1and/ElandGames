@@ -18,11 +18,20 @@ public class StepSound : MonoBehaviour
     }
 
     AudioClip[] steps;
+    private Coroutine stepTime;
     public void Step()
+    {
+        if (stepTime == null)
+        stepTime = StartCoroutine(StepTime());
+    }
+
+    IEnumerator StepTime()
     {
         Debug.Log("step");
         if (animator.GetFloat("Speed") > 0.1f || animator.GetFloat("Velocity") > 0.1f)
-        audioSource.PlayOneShot(steps[Random.Range(0, steps.Length)]);
+            audioSource.PlayOneShot(steps[Random.Range(0, steps.Length)]);
+        yield return new WaitForSeconds(0.05f);
+        stepTime = null;
     }
 
     public void Landing()

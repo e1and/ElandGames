@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b54e4cc01c86934da1ad6f354880c8d, type: 3}
   m_Name: Level1-1-Wood
   m_EditorClassIdentifier: 
-  Name: "\u0414\u0440\u043E\u0432\u0430"
+  questName: "\u0414\u0440\u043E\u0432\u0430"
   id: wood
+  questType: 0
+  questImageType: 0
+  questTarget: {fileID: 0}
+  questAreaRadius: 0
   Briefing: "\u041D\u0430\u0439\u0442\u0438 \u0434\u0440\u043E\u0432\u0430 \u0434\u043B\u044F
     \u043A\u043E\u0441\u0442\u0440\u0430"
   Description: "\u041D\u043E\u0447\u044C\u044E \u0432 \u043C\u0438\u0440\u0435 \u041D\u044D\u0432\u0438\u0438
@@ -33,7 +37,7 @@ MonoBehaviour:
   RewardText: "\u0427\u0435\u0440\u0442\u0451\u0436 \u043A\u043E\u0441\u0442\u0440\u0430,
     \u043A\u0440\u0430\u0441\u043D\u044B\u0439 \u0433\u0440\u0438\u0431, 1 \u043E\u0447\u043A\u043E
     \u0432\u044B\u0436\u0438\u0432\u0430\u043D\u0438\u044F"
-  RewardNextQuest: {fileID: 11400000, guid: 21bc3438ff0dabf47af3e988a92af167, type: 2}
+  rewardNextQuestData: {fileID: 11400000, guid: 21bc3438ff0dabf47af3e988a92af167, type: 2}
   RewardItem: {fileID: 11400000, guid: 5540ad73f9ddcd94cb8b01afd512cf9e, type: 2}
   RewardSkillPoint: 1
   RewardNewBlueprint: 1
@@ -49,3 +53,10 @@ MonoBehaviour:
   days: 0
   isOpenDoor: 0
   door: 0
+  enemyType: 0
+  questUnits: 0
+  playerCompleteQuestPhrase: 
+  questChain: []
+  playerCompleteQuestPhrases: []
+  isRepeatable: 0
+  timeToRepeat: 0

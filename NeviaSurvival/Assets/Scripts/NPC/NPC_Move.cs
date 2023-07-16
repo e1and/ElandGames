@@ -101,7 +101,7 @@ public class NPC_Move : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
         inventoryWindow = FindObjectOfType<InventoryWindow>();
-        player.GetComponent<Player>();
+        player = Game.Player;
 
         Animator.ResetTrigger("GetUp");
 
@@ -200,8 +200,8 @@ public class NPC_Move : MonoBehaviour
         //    obstacleHits = 0;
         //}
 
-        _distanceToTarget = Vector3.Distance(transform.position, Player.transform.position);
-        _heightToTarget = Mathf.Abs(transform.position.y - Player.transform.position.y);
+        _distanceToTarget = Vector3.Distance(transform.position, Game.Player.transform.position);
+        _heightToTarget = Mathf.Abs(transform.position.y - Game.Player.transform.position.y);
         _distanceToWanderPoint = Vector3.Distance(transform.position, WanderPoint);
 
         // Страх огня
@@ -299,7 +299,7 @@ public class NPC_Move : MonoBehaviour
         // Ускоренный поворот к цели на ближней дистанции
         if (_distanceToTarget < _minFollowDistance + 0.5f && _heightToTarget < 1 && !isFire)
         {
-            RotateToTarget(Player);
+            RotateToTarget(Game.Player.gameObject);
         }
     }
 
@@ -337,9 +337,10 @@ public class NPC_Move : MonoBehaviour
 
                 Debug.Log("Walk");
 
-                agent.SetDestination(WanderPoint);
+                
                 _isWalk = true;
                 StartCoroutine(NavMeshWalk(WanderPoint));
+                agent.SetDestination(WanderPoint);
             }
             else
             {
@@ -411,7 +412,7 @@ public class NPC_Move : MonoBehaviour
             Debug.Log("Walk111 " + agent.isOnNavMesh);
             yield return null;
 
-            if (agent.velocity.magnitude < 0.1f) break;
+            //if (agent.velocity.magnitude < 0.1f) break;
             
             if (_isSeek || !_isWalk)
             {
@@ -509,6 +510,20 @@ public class NPC_Move : MonoBehaviour
        _isStay = false;
 
         activeStayCoroutines--;
+    }
+
+    private Vector3 lastDestination;
+    public void StopMove()
+    {
+        lastDestination = agent.destination;
+        agent.SetDestination(transform.position);
+        _isStay = true;
+    }
+
+    public void ContinueMove()
+    {
+        _isStay = false;
+        if (lastDestination != Vector3.zero) agent.SetDestination(lastDestination);
     }
 
     public enum AiMoveType : byte

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b54e4cc01c86934da1ad6f354880c8d, type: 3}
   m_Name: BakerHouse
   m_EditorClassIdentifier: 
-  Name: "\u0414\u043E\u043C \u043F\u0435\u043A\u0430\u0440\u044F"
+  questName: "\u0414\u043E\u043C \u043F\u0435\u043A\u0430\u0440\u044F"
   id: bakerHouse
   Briefing: "\u041D\u0430\u0439\u0442\u0438 \u0438 \u043E\u0442\u043A\u0440\u044B\u0442\u044C
     \u0434\u043E\u043C \u043F\u0435\u043A\u0430\u0440\u044F"
@@ -34,3 +34,14 @@ MonoBehaviour:
   days: 0
   isOpenDoor: 1
   door: 1
+  questType: 0
+  questImageType: 0
+  questTarget: {fileID: 0}
+  questAreaRadius: 0
+  enemyType: 0
+  questUnits: 0
+  playerCompleteQuestPhrase: 
+  questChain: []
+  playerCompleteQuestPhrases: []
+  isRepeatable: 0
+  timeToRepeat: 0

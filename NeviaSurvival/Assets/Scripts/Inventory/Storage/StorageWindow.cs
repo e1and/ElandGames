@@ -80,6 +80,7 @@ public class StorageWindow : MonoBehaviour
                     icon.GetComponent<ItemInfo>().itemName = targetStorage.storageItemObjects[i].GetComponent<ItemInfo>().itemName;
                 icon.GetComponent<ItemInfo>().itemDescription = item.Description;
                 icon.GetComponent<InventoryIcon>().Name.text = item.Name;
+                icon.GetComponent<ItemInfo>().isCollectible = true;
             }
         }
 

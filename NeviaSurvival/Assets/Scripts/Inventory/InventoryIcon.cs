@@ -682,8 +682,9 @@ public class InventoryIcon : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             item3dObject.layer = 0;
             item3dObject.SetActive(true);
         }
-        item3dObject.transform.position = links.player.transform.position + links.player.transform.forward + new Vector3(0, 1, 0);
+        item3dObject.transform.position = links.player.transform.position + links.player.transform.forward * 0.5f + new Vector3(0, 1.5f, 0);
         item3dObject.transform.eulerAngles = new Vector3(-45, links.player.transform.rotation.y, -45);
+        item3dObject.GetComponent<Rigidbody>().AddForce(links.player.transform.forward + links.player.transform.up * 2, ForceMode.Impulse);
         RemoveFromInventory();
         DropItem?.Invoke();
         Destroy(gameObject, 0);

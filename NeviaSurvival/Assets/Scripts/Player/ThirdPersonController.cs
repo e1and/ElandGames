@@ -237,7 +237,7 @@ public class ThirdPersonController : MonoBehaviour
 	{
 		slopingVelocity = Vector3.zero;
 
-		if (_input.jump && _player.gameObject.transform.position.y < _swimming.waterY - 1.3f)
+		if (_input.jump && _player.isUnderWater)
 		{
 			swimUp = Vector3.up * MoveSpeed * Time.deltaTime;
 		}

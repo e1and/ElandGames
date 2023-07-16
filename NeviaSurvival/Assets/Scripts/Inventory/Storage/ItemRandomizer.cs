@@ -17,7 +17,7 @@ public class ItemRandomizer : MonoBehaviour
     {
         links = FindObjectOfType<Links>();
 
-        allStorages = links.containersParent.GetComponentsInChildren<Storage>();
+        allStorages = FindObjectsOfType<Storage>();
         storages.AddRange(allStorages);
 
         for (int i = 0; i < links.containersParent.childCount; i++)

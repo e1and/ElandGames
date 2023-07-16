@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b54e4cc01c86934da1ad6f354880c8d, type: 3}
   m_Name: SunkenChest
   m_EditorClassIdentifier: 
-  Name: "\u0423\u0442\u043E\u043D\u0443\u0432\u0448\u0438\u0439 \u0441\u0443\u043D\u0434\u0443\u043A"
+  questName: "\u0423\u0442\u043E\u043D\u0443\u0432\u0448\u0438\u0439 \u0441\u0443\u043D\u0434\u0443\u043A"
   id: sunkenChest
+  questType: 0
+  questImageType: 0
+  questTarget: {fileID: 0}
+  questAreaRadius: 0
   Briefing: "\u041D\u0430\u0439\u0442\u0438 \u043A\u043B\u044E\u0447 \u0432 \u0437\u0430\u0442\u043E\u043D\u0443\u0432\u0448\u0435\u043C
     \u0441\u0443\u043D\u0434\u0443\u043A\u0435"
   Description: "\u0412 \u0437\u0430\u043F\u0438\u0441\u043A\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E\u0439
@@ -27,7 +31,7 @@ MonoBehaviour:
   QuestItemNeed: 1
   RewardText: "+2 \u043E\u0447\u043A\u0430 \u043D\u0430\u0432\u044B\u043A\u043E\u0432\n+1
     \u0436\u0430\u0440\u0435\u043D\u0430\u044F \u043A\u0443\u0440\u0438\u0446\u0430"
-  RewardNextQuest: {fileID: 0}
+  rewardNextQuestData: {fileID: 11400000, guid: 7e540af05533b0841827462d9ff331a7, type: 2}
   RewardItem: {fileID: 11400000, guid: 1734ffb0fa7746848bca5ef48da5e285, type: 2}
   RewardSkillPoint: 2
   RewardNewBlueprint: 0
@@ -36,3 +40,10 @@ MonoBehaviour:
   days: 0
   isOpenDoor: 0
   door: 0
+  enemyType: 0
+  questUnits: 0
+  playerCompleteQuestPhrase: 
+  questChain: []
+  playerCompleteQuestPhrases: []
+  isRepeatable: 0
+  timeToRepeat: 0

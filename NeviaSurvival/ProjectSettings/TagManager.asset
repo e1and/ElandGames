@@ -23,11 +23,11 @@ TagManager:
   - PostProcess
   - Bounce
   - NoCameraCollision
-  - 
-  - 
-  - 
-  - 
-  - 
+  - MiniMap
+  - Terrain
+  - BigMap
+  - FogOfWarMask
+  - Floor
   - 
   - 
   - 

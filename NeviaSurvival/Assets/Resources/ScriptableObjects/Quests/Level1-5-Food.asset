@@ -12,8 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b54e4cc01c86934da1ad6f354880c8d, type: 3}
   m_Name: Level1-5-Food
   m_EditorClassIdentifier: 
-  Name: "\u0427\u0442\u043E \u0431\u044B \u0442\u0430\u043A\u043E\u0433\u043E \u0441\u044A\u0435\u0441\u0442\u044C?"
+  questName: "\u0427\u0442\u043E \u0431\u044B \u0442\u0430\u043A\u043E\u0433\u043E
+    \u0441\u044A\u0435\u0441\u0442\u044C?"
   id: food
+  questType: 0
+  questImageType: 0
+  questTarget: {fileID: 0}
+  questAreaRadius: 0
   Briefing: "\u041D\u0430\u0439\u0442\u0438 \u0447\u0442\u043E-\u043D\u0438\u0431\u0443\u0434\u044C
     \u0441\u044A\u0435\u0434\u043E\u0431\u043D\u043E\u0435"
   Description: "\u0413\u043E\u043B\u043E\u0434 - \u0448\u0442\u0443\u043A\u0430 \u043D\u0435
@@ -36,7 +41,7 @@ MonoBehaviour:
   QuestItem: {fileID: 11400000, guid: 5540ad73f9ddcd94cb8b01afd512cf9e, type: 2}
   QuestItemNeed: 3
   RewardText: "\u0424\u0430\u043A\u0435\u043B \u0438 1 \u043E\u0447\u043A\u043E \u0432\u044B\u0436\u0438\u0432\u0430\u043D\u0438\u044F"
-  RewardNextQuest: {fileID: 11400000, guid: 91955c894391aea428c3427e8e673c5b, type: 2}
+  rewardNextQuestData: {fileID: 11400000, guid: 91955c894391aea428c3427e8e673c5b, type: 2}
   RewardItem: {fileID: 11400000, guid: e60b0685d27a3f5409060463b5e6b9e8, type: 2}
   RewardSkillPoint: 1
   RewardNewBlueprint: 0
@@ -56,3 +61,10 @@ MonoBehaviour:
   days: 0
   isOpenDoor: 0
   door: 0
+  enemyType: 0
+  questUnits: 0
+  playerCompleteQuestPhrase: 
+  questChain: []
+  playerCompleteQuestPhrases: []
+  isRepeatable: 0
+  timeToRepeat: 0

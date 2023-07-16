@@ -10,18 +10,29 @@ public class BlueprintLogic : MonoBehaviour
     public MeshRenderer[] parts;
     public Material ableToBuildMaterial;
     public Material disableToBuildMaterial;
-    public Building building;
+    private Building building;
+
+    private void Start()
+    {
+        building = Game.links.building;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        ChangeColor(disableToBuildMaterial);
-        building.isAbleToBuild = false;
+        if (!building.isConstructing)
+        {
+            ChangeColor(disableToBuildMaterial);
+            building.isAbleToBuild = false;
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        ChangeColor(ableToBuildMaterial);
-        building.isAbleToBuild = true;
+        if (!building.isConstructing)
+        {
+            ChangeColor(ableToBuildMaterial);
+            building.isAbleToBuild = true;
+        }
     }
 
     void ChangeColor(Material material)

@@ -26,19 +26,19 @@ public class Building : MonoBehaviour
 	public GameObject campFireBluePrint;
 	public GameObject campFirePrefab;
 	public int sticksNeedForCampfire;
-	public Quest campFireQuest;
+	public QuestData campFireQuestData;
 	public bool isCampFireBuilding;
 
 	[Header("Настил из травы")]
 	public GameObject grassBedBluePrint;
 	public GameObject grassBedPrefab;
-	public Quest grassBedQuest;
+	public QuestData grassBedQuestData;
 	public bool isGrassBedBuilding;
 	
 	[Header("Ограда")]
 	public GameObject fenceBluePrint;
 	public GameObject fencePrefab;
-	public Quest fenceQuest;
+	public QuestData fenceQuestData;
 	public bool isFenceBuilding;
 
 	[Header("Паренты для строительства")]
@@ -52,9 +52,11 @@ public class Building : MonoBehaviour
 	Vector3 chosenPlace;
 
 	public bool isAbleToBuild;
+	public bool isConstructing;
 
 
 	QuestWindow questWindow;
+	private QuestHandler questHandler;
 	Player player;
 	Inventory inventory;
 	Links links;
@@ -80,6 +82,7 @@ public class Building : MonoBehaviour
 	{
 		inventory = links.inventoryWindow.inventory;
 		questWindow = links.questWindow;
+		questHandler = links.questHandler;
 		player = links.player;
 	}
 
@@ -114,13 +117,13 @@ public class Building : MonoBehaviour
 		}
     }
 
-	void BuildingQuest(Quest quest)
+	void BuildingQuest(QuestData questData)
     {
-		if (questWindow.questList.Contains(quest))
+		if (questHandler.takenQuestList.Contains(questData))
 		{
 			for (int i = 0; i < questWindow.questBlocksList.Count; i++)
 			{
-				if (questWindow.questBlocksList[i].quest == quest)
+				if (questWindow.questBlocksList[i].questData == questData)
 				{
 					questWindow.questBlocksList[i].isComplete = true;
 					questWindow.questBlocksList[i].checkMarkImage.gameObject.SetActive(true);
@@ -132,7 +135,7 @@ public class Building : MonoBehaviour
 	}
 
 	Coroutine buildingCoroutine;
-	IEnumerator BlueprintPlace(GameObject blueprint, GameObject prefab, Quest quest, float buildingTime)
+	IEnumerator BlueprintPlace(GameObject blueprint, GameObject prefab, QuestData questData, float buildingTime)
     {
 		blueprint.SetActive(true);
 		isBlueprintActive = true;
@@ -173,9 +176,11 @@ public class Building : MonoBehaviour
 		}
 
 		player.PlayerControl(false);
+		isConstructing = true;
 		chosenPlace = buildingPlace;
 		float timer = 0;
 		ui.progressIndicator.transform.parent.gameObject.SetActive(true);
+		links.player.gameObject.transform.rotation = Quaternion.LookRotation(chosenPlace - player.transform.position); 
 		links.player.animator.SetBool("CollectGrass", true);
 		while (timer < buildingTime)
 		{
@@ -196,7 +201,8 @@ public class Building : MonoBehaviour
 				yield break;
 			}
 		}
-
+		
+		isConstructing = false;
 		links.player.animator.SetBool("CollectGrass", false);
 		ui.progressIndicator.fillAmount = 0;
 		ui.progressIndicator.transform.parent.gameObject.SetActive(false);
@@ -209,7 +215,7 @@ public class Building : MonoBehaviour
 
 		isBlueprintActive = false;
 
-		BuildingQuest(quest);
+		BuildingQuest(questData);
 
 		if (isCampFireBuilding) CampfireBuild();
 		if (isGrassBedBuilding) GrassBedBuild();
@@ -223,7 +229,7 @@ public class Building : MonoBehaviour
 	public void Campfire()
     {
 		isCampFireBuilding = true;
-		buildingCoroutine = StartCoroutine(BlueprintPlace(campFireBluePrint, campFirePrefab, campFireQuest, 5));
+		buildingCoroutine = StartCoroutine(BlueprintPlace(campFireBluePrint, campFirePrefab, campFireQuestData, 5));
 	}
 
 	void CampfireBuild()
@@ -268,7 +274,7 @@ public class Building : MonoBehaviour
 	public void GrassBed()
 	{
 		isGrassBedBuilding = true;
-		buildingCoroutine = StartCoroutine(BlueprintPlace(grassBedBluePrint, grassBedPrefab, grassBedQuest, 8));
+		buildingCoroutine = StartCoroutine(BlueprintPlace(grassBedBluePrint, grassBedPrefab, grassBedQuestData, 8));
 	}
 
 	void GrassBedBuild()
@@ -281,7 +287,7 @@ public class Building : MonoBehaviour
 	public void Fence()
 	{
 		isFenceBuilding = true;
-		buildingCoroutine = StartCoroutine(BlueprintPlace(fenceBluePrint, fencePrefab, fenceQuest, 8));
+		buildingCoroutine = StartCoroutine(BlueprintPlace(fenceBluePrint, fencePrefab, fenceQuestData, 8));
 	}
 
 	void FenceBuild()

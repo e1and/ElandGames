@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
@@ -22,6 +24,7 @@ public class Player : MonoBehaviour
     public bool isRun;
     public bool isSleep;
     public bool isStart = true;
+    public bool isDungeon;
     [Header("Ограничения игрока")]
     public float runCoolDown;
     public bool isAbleJump;
@@ -69,6 +72,8 @@ public class Player : MonoBehaviour
     public Vector3 deathPlace;
     public GameObject PlayerFollowCamera;
     public GameObject sleepCamera;
+    public string CharacterName;
+    public Sprite CharacterIcon;
 
     float deltaWarm;
     float deltaHealth;
@@ -88,9 +93,10 @@ public class Player : MonoBehaviour
     [Header("Сохраняемые параметры")]
     public float saveTime;
     public int saveDay;
-    public int savetMonth;
+    public int saveMonth;
     public int saveYear;
     public int saveDayNumber;
+    public bool saveDungeon;
     public int saveHealth;
     public int saveCold;
     public int saveFood;
@@ -104,7 +110,10 @@ public class Player : MonoBehaviour
     public InventoryWindow inventoryWindow;
     public GameObject grassStack;
 
-    
+    private void Awake()
+    {
+        Game.Player = this;
+    }
 
     public void RandomSpawnPoint()
     {
@@ -123,7 +132,7 @@ public class Player : MonoBehaviour
         time = DayTime.gameObject.GetComponent<TOD_Sky>();
         saveTime = links.cycle.Hour;
         saveDay = links.cycle.Day;
-        savetMonth = links.cycle.Month;
+        saveMonth = links.cycle.Month;
         saveYear = links.cycle.Year;
         saveDayNumber = DayTime.thisDay;
         saveHealth = Health;
@@ -508,13 +517,14 @@ public class Player : MonoBehaviour
     {
         saveTime = links.dayNight.hour;
         saveDay = links.cycle.Day;
-        savetMonth = links.cycle.Month;
+        saveMonth = links.cycle.Month;
         saveYear = links.cycle.Year;
         saveDayNumber = links.dayNight.thisDay;
         saveHealth = Health;
         saveCold = Cold;
         saveFood = Food;
         saveEnergy = Energy;
+        saveDungeon = isDungeon;
         links.saveInventory.SaveItems();
     }
 
@@ -627,7 +637,7 @@ public class Player : MonoBehaviour
 
         time.Cycle.Hour = saveTime;
         time.Cycle.Day = saveDay;
-        time.Cycle.Month = savetMonth;
+        time.Cycle.Month = saveMonth;
         time.Cycle.Year = saveYear;
         DayTime.thisDay = saveDayNumber;
         if (saveHealth < 20) Health = 20; else Health = saveHealth;
@@ -635,10 +645,12 @@ public class Player : MonoBehaviour
         Food = saveFood;
         Energy = saveEnergy;
         links.saveInventory.LoadItems();
+        isDungeon = saveDungeon;
 
         if (saveTime >= 6 && saveTime < 18) DayTime.Day(); else DayTime.Night();
 
         links.dayNight.ShowDay();
+        Light();
 
         isLay = true;
         isSleep = false;
@@ -670,6 +682,20 @@ public class Player : MonoBehaviour
         isAttacking = false;
         inventoryWindow.RecountWood();
         ui.nightmaresIndicator.text = "" + nighmares;
+    }
+
+    public void Light()
+    {
+        if (isDungeon)
+        {
+            links.dayNight.isDungeon = true;
+            links.dayNight.Dungeon();
+        }
+        else
+        {
+            links.dayNight.isDungeon = false;
+            links.dayNight.SetDaySettings();  
+        }
     }
 
     int currendDamage;

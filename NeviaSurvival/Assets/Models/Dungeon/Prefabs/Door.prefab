@@ -99,7 +99,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.526
+  m_Volume: 0.394
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -241,3 +241,6 @@ MonoBehaviour:
   openSound: {fileID: 8300000, guid: 7a2b815c8f9712e4fb1cc58304eab6a7, type: 3}
   closeSound: {fileID: 8300000, guid: 097d5a17fe56cf349b3fa73c113c98e8, type: 3}
   closedDoorSound: {fileID: 8300000, guid: dfdd07470cb4bea4a9b40fddb9c5e72d, type: 3}
+  miniMapIcon: {fileID: 0}
+  openedDoorMaterial: {fileID: 2100000, guid: 765187c746fb04042ac8ca2e8477f273, type: 2}
+  closedDoorMaterial: {fileID: 2100000, guid: fb01f833aad9f9c469ad66b53611cb64, type: 2}

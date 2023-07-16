@@ -33,21 +33,21 @@ public class Destructable : MonoBehaviour
         DropLoot();
         if (isDropItems) DropRandomLoot();
         yield return new WaitForSeconds(2);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 
     void DropLoot()
     {
         for (int i = 0; i < lootAmount; i++)
         {
-            GameObject loot = Instantiate(dropLoot);
+            GameObject loot = Instantiate(dropLoot, Game.links.spawnItemsParent);
             RandomPlaceAround(loot);
         }
     }
     
     void RandomPlaceAround(GameObject item)
     {
-        item.transform.position = transform.position + new Vector3(Random.Range(-1.5f, 1.5f), 0.5f, Random.Range(-1.5f, 1.5f));
+        item.transform.position = transform.position + new Vector3(Random.Range(-1.5f, 1.5f), 1f, Random.Range(-1.5f, 1.5f));
         item.transform.eulerAngles = new Vector3(Random.Range(-90, 90f), Random.Range(-90, 90f), Random.Range(-90, 90f));
     }
 
@@ -60,7 +60,7 @@ public class Destructable : MonoBehaviour
                 .randomItems[Random.Range(0, Game.links.itemRandomizer.randomItems.Count)];
             if (randomItem.rarity > Random.Range(0, 101))
             {
-                GameObject item = Instantiate(randomItem.Prefab);
+                GameObject item = Instantiate(randomItem.Prefab, Game.links.spawnItemsParent);
                 RandomPlaceAround(item);
             }
         }

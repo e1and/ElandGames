@@ -9,15 +9,13 @@ public class QuestWindow : MonoBehaviour
 {
     public Action onCollectItem;
 
-    public List<Quest> allQuests = new List<Quest>();
-    public Dictionary<string, Quest> allQuestList = new Dictionary<string, Quest>();
+    public List<QuestData> allQuests = new List<QuestData>();
+    public Dictionary<string, QuestData> allQuestList = new Dictionary<string, QuestData>();
 
-    public QuestInfo OpenedQuest;
-    public QuestInfo FollowingQuest;
-
-    public List<Quest> questList = new List<Quest>();
-    public List<Quest> completedQuests = new List<Quest>();
-    public List<QuestInfo> questBlocksList = new List<QuestInfo>();
+    public Quest OpenedQuest;
+    public Quest FollowingQuest;
+    
+    public List<Quest> questBlocksList = new List<Quest>();
     public GameObject questPrefab;
     public Transform questParent;
 
@@ -41,23 +39,26 @@ public class QuestWindow : MonoBehaviour
     public Text FinalRewards;
     public Text FinalText;
 
-    public Quest Survive1Day;
-    public Quest Survive3Day;
-    public Quest Survive7Day;
+    public QuestData Survive1Day;
+    public QuestData Survive3Day;
+    public QuestData Survive7Day;
 
-    //[SerializeField] InventoryWindow inventoryWindow;
-    Links links;
+    public Links links;
+    private QuestHandler questHandler;
 
     private void Awake()
     {
         links = FindObjectOfType<Links>();
-
-        var quests = Resources.LoadAll("", typeof(Quest));
-
+        questHandler = links.questHandler;
+        
+        var quests = Resources.LoadAll("", typeof(QuestData));
+        
+        // Добавление всех квестов в список
         allQuests.Clear();
-        allQuests.AddRange(Resources.LoadAll<Quest>("ScriptableObjects"));
+        allQuests.AddRange(Resources.LoadAll<QuestData>("ScriptableObjects"));
 
-        foreach (Quest quest in allQuests)
+        // Если у квеста нет ID или он повторяется, то создаем его на основе названия квеста
+        foreach (QuestData quest in allQuests)
         {
             if (allQuestList.ContainsKey(quest.id) || quest.id.Length == 0) quest.id = quest.name.Replace(" ", "");
             allQuestList.Add(quest.id, quest);
@@ -71,6 +72,7 @@ public class QuestWindow : MonoBehaviour
 
     void OnCollectItem()
     {
+        // Проверка квестовых предметов
         QuestItemsRecount(); 
     }
 
@@ -78,10 +80,13 @@ public class QuestWindow : MonoBehaviour
     {
         for (int i = 0; i < questBlocksList.Count; i++)
         {
-            if (questBlocksList[i].quest.isTime && questBlocksList[i].quest.days < links.dayNight.thisDay)
-            QuestDone(questBlocksList[i].quest);
-            if (questBlocksList[i].quest.isOpenDoor && !QuestDoors[(int)questBlocksList[i].quest.door].isLocked)
-                QuestDone(questBlocksList[i].quest);
+            // Проверка квеста прожитого времени
+            if (questBlocksList[i].questData.isTime && questBlocksList[i].questData.days < links.dayNight.thisDay)
+            QuestDone(questBlocksList[i].questData);
+            
+            // Проверка квеста открытой двери
+            if (questBlocksList[i].questData.isOpenDoor && !QuestDoors[(int)questBlocksList[i].questData.door].isLocked)
+                QuestDone(questBlocksList[i].questData);
         }
     }
 
@@ -89,21 +94,21 @@ public class QuestWindow : MonoBehaviour
     {
         for (int i = 0; i < questBlocksList.Count; i++)
         {
-            questBlocksList[i].QuestItemCount = 0;
+            questBlocksList[i].QuestUnitsDone = 0;
             if (links.inventoryWindow.inventory != null)
             for (int j = 0; j < links.inventoryWindow.inventory.inventoryItems.Count; j++)
             {
-                if (questList[i].QuestItem == links.inventoryWindow.inventory.inventoryItems[j])
+                if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.inventory.inventoryItems[j])
                 {
-                    questBlocksList[i].QuestItemCount++;
+                    questBlocksList[i].QuestUnitsDone++;
                 }
             }
-            if (questList[i].QuestItem == links.inventoryWindow.LeftHandItem) questBlocksList[i].QuestItemCount++;
-            if (questList[i].QuestItem == links.inventoryWindow.RightHandItem) questBlocksList[i].QuestItemCount++;
+            if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.LeftHandItem) questBlocksList[i].QuestUnitsDone++;
+            if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.RightHandItem) questBlocksList[i].QuestUnitsDone++;
 
             if (questBlocksList[i].QuestItem != null)
             {
-                if (questBlocksList[i].QuestItemCount >= questBlocksList[i].QuestItemNeed)
+                if (questBlocksList[i].QuestUnitsDone >= questBlocksList[i].QuestUnitsNeed)
                 {
                     questBlocksList[i].isComplete = true;
                     questBlocksList[i].checkMarkImage.gameObject.SetActive(true);
@@ -118,7 +123,7 @@ public class QuestWindow : MonoBehaviour
     public void QuestItemsCountRedraw()
     {
         if (OpenedQuest != null && OpenedQuest.QuestItem != null)
-        QuestItemCountText.text = OpenedQuest.QuestItem.Name + " - " + OpenedQuest.QuestItemCount + "/" + OpenedQuest.QuestItemNeed;
+        QuestItemCountText.text = OpenedQuest.QuestItem.Name + " - " + OpenedQuest.QuestUnitsDone + "/" + OpenedQuest.QuestUnitsNeed;
 
         if (FollowingQuest != null) UpdateFollowingQuest();
 
@@ -142,31 +147,31 @@ public class QuestWindow : MonoBehaviour
         {
             for (int i = 0; i < questParent.childCount; i++)
             {
-                questBlocksList.Remove(questParent.GetChild(i).GetComponent<QuestInfo>());
+                questBlocksList.Remove(questParent.GetChild(i).GetComponent<Quest>());
                 Destroy(questParent.GetChild(i).gameObject);
             }
         }
 
-        for (int i = 0; i < questList.Count; i++)
+        for (int i = 0; i < questHandler.takenQuestList.Count; i++)
         {
             var quest = Instantiate(questPrefab, questParent);
-            quest.name = questList[i].Name;
+            quest.name = questHandler.takenQuestList[i].questName;
 
-            var questInfo = quest.GetComponent<QuestInfo>();
+            var questInfo = quest.GetComponent<Quest>();
             questBlocksList.Add(questInfo);
 
-            questInfo.quest = questList[i];
+            questInfo.questData = questHandler.takenQuestList[i];
 
-            questInfo.questNameButtonText.text = questList[i].Name;
+            questInfo.questNameButtonText.text = questHandler.takenQuestList[i].questName;
 
-            questInfo.QuestItem = questList[i].QuestItem;
-            questInfo.QuestItemNeed = questList[i].QuestItemNeed;
+            questInfo.QuestItem = questHandler.takenQuestList[i].QuestItem;
+            questInfo.QuestUnitsNeed = questHandler.takenQuestList[i].QuestItemNeed;
 
             questInfo.questWindow = this;
         }
 
-        links.ui.activeQuestCount.text = questList.Count.ToString();
-        if (questList.Count > 0) links.ui.activeQuestCount.enabled = true;
+        links.ui.activeQuestCount.text = questHandler.takenQuestList.Count.ToString();
+        if (questHandler.takenQuestList.Count > 0) links.ui.activeQuestCount.enabled = true;
         else links.ui.activeQuestCount.enabled = false;
         QuestItemsRecount();
         QuestItemsCountRedraw();
@@ -177,7 +182,7 @@ public class QuestWindow : MonoBehaviour
     {
         for (int i = 0; i < questBlocksList.Count; i++)
         {
-            if (questBlocksList[i].isComplete == true)
+            if (questBlocksList[i].isComplete)
             {
                 links.ui.questCompleteSign.SetActive(true);
                 return;
@@ -200,29 +205,29 @@ public class QuestWindow : MonoBehaviour
 
     public void UpdateFollowingQuest()
     {
-        FollowQuestNameText.text = OpenedQuest.quest.Name;
-        FollowQuestBriefingText.text = OpenedQuest.quest.Briefing;
+        FollowQuestNameText.text = OpenedQuest.questData.questName;
+        FollowQuestBriefingText.text = OpenedQuest.questData.Briefing;
         if (FollowingQuest.QuestItem != null)
             FollowQuestBriefingText.text =
-                FollowingQuest.quest.Briefing + "\n\n" + FollowingQuest.QuestItem.Name + ": "
-                + FollowingQuest.QuestItemCount + "/" + FollowingQuest.QuestItemNeed;
+                FollowingQuest.questData.Briefing + "\n\n" + FollowingQuest.QuestItem.Name + ": "
+                + FollowingQuest.QuestUnitsDone + "/" + FollowingQuest.QuestUnitsNeed;
     }  
     
     public void CompleteQuest()
     {
-        if (OpenedQuest.quest.RewardItem != null && links.inventoryWindow.inventory != null)
+        if (OpenedQuest.questData.RewardItem != null && links.inventoryWindow.inventory != null)
         {
             if (links.inventoryWindow.inventory.filledSlots < links.inventoryWindow.inventory.size)
             {
-                links.inventoryWindow.inventory.AddItem(OpenedQuest.quest.RewardItem);
+                links.inventoryWindow.inventory.AddItem(OpenedQuest.questData.RewardItem);
             }
             else if (links.inventoryWindow.RightHandItem == null)
             {
-                links.inventoryWindow.RightHandItem = OpenedQuest.quest.RewardItem;
+                links.inventoryWindow.RightHandItem = OpenedQuest.questData.RewardItem;
             }
             else if (links.inventoryWindow.LeftHandItem == null)
             {
-                links.inventoryWindow.LeftHandItem = OpenedQuest.quest.RewardItem;
+                links.inventoryWindow.LeftHandItem = OpenedQuest.questData.RewardItem;
             }
             else
             {
@@ -232,13 +237,13 @@ public class QuestWindow : MonoBehaviour
 
         }
 
-        links.player.survivalPoint += OpenedQuest.quest.RewardSkillPoint;
+        links.player.survivalPoint += OpenedQuest.questData.RewardSkillPoint;
         links.player.UpdateSkillPoints();
-        if (OpenedQuest.quest.RewardNextQuest != null) questList.Add(OpenedQuest.quest.RewardNextQuest);
-        if (OpenedQuest.quest.RewardNewBlueprint != Blueprint.None) links.building.LearningBlueprint(OpenedQuest.quest.RewardNewBlueprint);
+        if (OpenedQuest.questData.rewardNextQuestData != null) questHandler.takenQuestList.Add(OpenedQuest.questData.rewardNextQuestData);
+        if (OpenedQuest.questData.RewardNewBlueprint != Blueprint.None) links.building.LearningBlueprint(OpenedQuest.questData.RewardNewBlueprint);
 
-        questList.Remove(OpenedQuest.quest);
-        completedQuests.Add(OpenedQuest.quest);
+        questHandler.takenQuestList.Remove(OpenedQuest.questData);
+        questHandler.completedQuests.Add(OpenedQuest.questData);
         OpenedQuest.isComplete = false;
 
         QuestUpdate();
@@ -248,17 +253,17 @@ public class QuestWindow : MonoBehaviour
         FollowQuestButton.interactable = false;
         DescriptionWindow.SetActive(false);
         FinalWindow.SetActive(true);
-        FinalText.text = OpenedQuest.quest.FinalText;
-        FinalRewards.text = OpenedQuest.quest.RewardText;
+        FinalText.text = OpenedQuest.questData.FinalText;
+        FinalRewards.text = OpenedQuest.questData.RewardText;
     }
 
-    public void QuestDone(Quest quest)
+    public void QuestDone(QuestData questData)
     {
-        if (questList.Contains(quest))
+        if (questHandler.takenQuestList.Contains(questData))
         {
             for (int i = 0; i < questBlocksList.Count; i++)
             {
-                if (questBlocksList[i].quest == quest)
+                if (questBlocksList[i].questData == questData)
                 {
                     questBlocksList[i].isComplete = true;
                     questBlocksList[i].checkMarkImage.gameObject.SetActive(true);

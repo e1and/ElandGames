@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b54e4cc01c86934da1ad6f354880c8d, type: 3}
   m_Name: Survive1-3day 1
   m_EditorClassIdentifier: 
-  Name: "\u0422\u0440\u0438 \u0434\u043D\u044F"
+  questName: "\u0422\u0440\u0438 \u0434\u043D\u044F \u0432\u044B\u0436\u0438\u0432\u0430\u043D\u0438\u044F"
   id: survive3
+  questType: 0
+  questImageType: 0
+  questTarget: {fileID: 0}
+  questAreaRadius: 0
   Briefing: "\u0412\u044B\u0436\u0438\u0442\u044C \u0432 \u0442\u0435\u0447\u0435\u043D\u0438\u0438
     \u0442\u0440\u0435\u0445 \u0434\u043D\u0435\u0439"
   Description: "\u041E\u0434\u0438\u043D \u0434\u0435\u043D\u044C \u043F\u0440\u043E\u0436\u0438\u0442.
@@ -33,7 +37,7 @@ MonoBehaviour:
   QuestItemNeed: 0
   RewardText: "+3 \u043E\u0447\u043A\u0430 \u043D\u0430\u0432\u044B\u043A\u043E\u0432,
     +1 \u043A\u0440\u0430\u0441\u043D\u044B\u0439 \u0433\u0440\u0438\u0431"
-  RewardNextQuest: {fileID: 11400000, guid: 59dcafde3bdb66f438e0f667634cb29d, type: 2}
+  rewardNextQuestData: {fileID: 11400000, guid: 59dcafde3bdb66f438e0f667634cb29d, type: 2}
   RewardItem: {fileID: 11400000, guid: 5540ad73f9ddcd94cb8b01afd512cf9e, type: 2}
   RewardSkillPoint: 3
   RewardNewBlueprint: 0
@@ -47,3 +51,10 @@ MonoBehaviour:
   days: 3
   isOpenDoor: 0
   door: 0
+  enemyType: 0
+  questUnits: 0
+  playerCompleteQuestPhrase: 
+  questChain: []
+  playerCompleteQuestPhrases: []
+  isRepeatable: 0
+  timeToRepeat: 0

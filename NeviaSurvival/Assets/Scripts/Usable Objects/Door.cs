@@ -22,6 +22,9 @@ public class Door : MonoBehaviour
     public AudioClip openSound;
     public AudioClip closeSound;
     public AudioClip closedDoorSound;
+    public GameObject miniMapIcon;
+    public Material openedDoorMaterial;
+    public Material closedDoorMaterial;
     
     Links links;
 
@@ -41,6 +44,10 @@ public class Door : MonoBehaviour
             else animator.SetTrigger("Opened");
             animator.SetBool("Open", true);
         }
+        
+        if (miniMapIcon != null)
+            if (isLocked) miniMapIcon.GetComponent<MeshRenderer>().material = closedDoorMaterial;
+            else miniMapIcon.GetComponent<MeshRenderer>().material = openedDoorMaterial;
     }
 
     void CheckSaveList()
@@ -94,7 +101,8 @@ public class Door : MonoBehaviour
                 if (isLocked)
                 {
                     mousePoint.Comment("Ключ подошёл!");
-                    
+
+                    if (miniMapIcon != null) miniMapIcon.GetComponent<MeshRenderer>().material = openedDoorMaterial;
                     if (inventoryWindow.LeftHandItem == key)
                         inventoryWindow.LeftHandObject.GetComponent<ItemInfo>().itemDescription = "Ключ открыл " + doorInfo;
                     else inventoryWindow.RightHandObject.GetComponent<ItemInfo>().itemDescription = "Ключ открыл " + doorInfo;

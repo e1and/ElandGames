@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -21,7 +22,7 @@ public class PlayerData
 
     public int maxCarryWeight;
 
-    public int nighmares;
+    public int nightmares;
     public int survivalPoint;
 
     public bool isCold;
@@ -33,15 +34,18 @@ public class PlayerData
     public bool isUnderWater;
     public bool isRun;
     public bool isSleep;
+    public bool isDungeon;
 
     public bool isControl;
 
     public float[] position;
     public float rotation;
 
+    public float[] spawnPoint;
+
     public float saveTime;
     public int saveDay;
-    public int savetMonth;
+    public int saveMonth;
     public int saveYear;
     public int saveDayNumber;
 
@@ -84,6 +88,7 @@ public class PlayerData
     public List<List<int[]>> storagesBagsItemsDurability;
 
     public List<bool[]> isRandomElement;
+    public List<bool> isDestructableItem;
 
     public string[] buildID;
     public List<float[]> buildPosition;
@@ -100,7 +105,6 @@ public class PlayerData
     public List<float[]> worldBagsRotation;
     public List<string[]> worldBagsItemsID;
     public List<int[]> worldBagsItemsDurability;
-
 
     public PlayerData (Player player)
     {
@@ -120,7 +124,7 @@ public class PlayerData
         maxOxygen = player.maxOxygen;
         maxCarryWeight = player.maxCarryWeight;
 
-        nighmares = player.nighmares;
+        nightmares = player.nighmares;
         survivalPoint = player.survivalPoint;
 
         isCold = player.isCold;
@@ -143,19 +147,25 @@ public class PlayerData
         Vector3 playerRotation = player.transform.rotation.eulerAngles;
         rotation = playerRotation.y;
 
+        spawnPoint = new float[3];
+        Vector3 lastSpawnPoint = player.spawnPoint.transform.position;
+        spawnPoint[0] = lastSpawnPoint.x;
+        spawnPoint[1] = lastSpawnPoint.y;
+        spawnPoint[2] = lastSpawnPoint.z;
+
         saveTime = player.links.dayNight.hour;
         saveDay = player.links.cycle.Day;
-        savetMonth = player.links.cycle.Month;
+        saveMonth = player.links.cycle.Month;
         saveYear = player.links.cycle.Year;
         saveDayNumber = player.links.dayNight.thisDay;
 
         questsID = new List<string>();
         completedQuestsID = new List<string>();
-        foreach (Quest quest in player.links.questWindow.questList)
+        foreach (QuestData quest in player.links.questHandler.takenQuestList)
         {
             questsID.Add(quest.id);
         }
-        foreach (Quest quest in player.links.questWindow.completedQuests)
+        foreach (QuestData quest in player.links.questHandler.completedQuests)
         {
             completedQuestsID.Add(quest.id);
         }
@@ -346,6 +356,13 @@ public class PlayerData
             }
             isRandomElement.Add(elements);
         }
+        
+        isDestructableItem = new List<bool>();
+
+        for (int i = 0; i < player.links.saveObjects.destructableItems.Count; i++)
+        {
+            isDestructableItem.Add(player.links.saveObjects.destructableItems[i].gameObject.activeSelf);
+        }
 
         List<GameObject> builds = new List<GameObject>(); 
         foreach (Build build in player.links.saveObjects.playerBuildings.transform.GetComponentsInChildren<Build>())
@@ -456,5 +473,6 @@ public class PlayerData
             worldBagsItemsID.Add(items);
             worldBagsItemsDurability.Add(durabilities);
         }
+        isDungeon = player.isDungeon;
     }
 }

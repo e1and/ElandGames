@@ -41,6 +41,7 @@ public class InventoryWindow : MonoBehaviour
     public Transform rightHandParent;
     public Transform leftHandParent;
     public Transform backpackParent;
+    public Transform headParent;
     public Transform dropParent;
 
     [Header("Парент для перетаскивания иконок")]
@@ -388,7 +389,7 @@ public class InventoryWindow : MonoBehaviour
         else if (i == 105) slot = legsSlot;
         else if (i == 106) slot = armsSlot;
         else if (i == 107) slot = bodySlot;
-        else if (i == 108) slot = shouldersSlot; 
+        else if (i == 108) slot = shouldersSlot;
         else if (i == 109) slot = headSlot;
 
         GameObject iconGameObject = Instantiate(inventoryCellTemplate, slot);
@@ -403,17 +404,76 @@ public class InventoryWindow : MonoBehaviour
         iconScript.Init(draggingParent);
         iconScript.links = links;
 
-        if (i < 100) iconScript.isInInventory = true;
-        else if (i == 100) iconScript.isInLeftHand = true;
-        else if (i == 101) iconScript.isInRightHand = true;
-        else if (i == 102) iconScript.isInBagSlot = true;
-        else if (i == 103) iconScript.isInBeltSlot = true;
-        else if (i == 104) iconScript.isInFeetSlot = true;
-        else if (i == 105) iconScript.isInLegsSlot = true;
-        else if (i == 106) iconScript.isInHandsSlot = true;
-        else if (i == 107) iconScript.isInBodySlot = true;
-        else if (i == 108) iconScript.isInShouldersSlot = true;
-        else if (i == 109) iconScript.isInHeadSlot = true;
+        if (i < 100 && iconScript.storage == null)
+        {
+            iconScript.isInInventory = true;
+            iconScript.isEquiped = false;
+        }
+        else if (i == 100)
+        {
+            iconScript.isInLeftHand = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else if (i == 101) 
+        {
+            iconScript.isInRightHand = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else if (i == 102) 
+        {
+            iconScript.isInBagSlot = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else if (i == 103) 
+        {
+            iconScript.isInBeltSlot = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else if (i == 104) 
+        {
+            iconScript.isInFeetSlot = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else if (i == 105) 
+        {
+            iconScript.isInLegsSlot = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else if (i == 106) 
+        {
+            iconScript.isInHandsSlot = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else if (i == 107)
+        {
+            iconScript.isInBodySlot = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else if (i == 108)
+        {
+            iconScript.isInShouldersSlot = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else if (i == 109)
+        {
+            iconScript.isInHeadSlot = true;
+            iconScript.isEquiped = true;
+            iconScript.isInInventory = false;
+        }
+        else
+        {
+            iconScript.isEquiped = false;
+            iconScript.isInInventory = false;
+        }
 
         drawnIcons.Add(iconGameObject);
 
@@ -421,6 +481,8 @@ public class InventoryWindow : MonoBehaviour
         iconGameObject.GetComponent<DescribeUI>().mousePoint = links.mousePoint;
         iconGameObject.GetComponent<ItemInfo>().itemName = item.Name;
         iconGameObject.GetComponent<ItemInfo>().itemDescription = item.Description;
+        iconGameObject.GetComponent<ItemInfo>().isCollectible = true;
+        
         if (i == 100 && LeftHandObject != null)
         {
             iconGameObject.GetComponent<ItemInfo>().itemName = LeftHandObject.GetComponent<ItemInfo>().itemName;

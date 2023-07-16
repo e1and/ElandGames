@@ -6,10 +6,12 @@ using UnityEngine;
 
 public class DayNight : MonoBehaviour
 {
+
+    [SerializeField, Range(0f, 1f)] private float timeProgress;
     [SerializeField] TOD_Sky skyScript;
     public float hour;
-    [SerializeField] GameObject sunLight;
-    [SerializeField] GameObject moonLight;
+    [SerializeField] Light sunLight;
+    [SerializeField] Light moonLight;
     [SerializeField] GameObject sun;
     [SerializeField] GameObject moon;
 
@@ -86,8 +88,8 @@ public class DayNight : MonoBehaviour
             isDay = false;
             Night();
         }
-        sunLight.SetActive(true);
-        moonLight.SetActive(true);
+        sunLight.gameObject.SetActive(true);
+        moonLight.gameObject.SetActive(true);
     }
 
     public void Day()
@@ -108,7 +110,7 @@ public class DayNight : MonoBehaviour
        //sunLight.SetActive(false);
         //moonLight.SetActive(true);
         moonLight.GetComponent<Light>().intensity = 1f;
-        sunLight.GetComponent<Light>().intensity = 0;
+        sunLight.GetComponent<Light>().intensity = 0f;
         RenderSettings.ambientSkyColor = nightAmbientColor;
         RenderSettings.ambientEquatorColor = nightAmbientColor2;
         RenderSettings.ambientGroundColor = nightAmbientColor3;
@@ -116,8 +118,8 @@ public class DayNight : MonoBehaviour
 
     public void Dungeon()
     {
-        sunLight.SetActive(false);
-        moonLight.SetActive(false);
+        sunLight.gameObject.SetActive(false);
+        moonLight.gameObject.SetActive(false);
         RenderSettings.ambientSkyColor = nightAmbientColor;
         RenderSettings.ambientEquatorColor = nightAmbientColor2;
         RenderSettings.ambientGroundColor = nightAmbientColor3;
@@ -131,9 +133,17 @@ public class DayNight : MonoBehaviour
     float time1;
 
     public bool isDungeon;
+    
+    [SerializeField] private Gradient sunLightGradient;
+    [SerializeField] private Gradient ambientLightGradient;
+    
     void Update()
     {
         hour = skyScript.hour;
+        timeProgress = hour / 24;
+
+        sunLight.color = sunLightGradient.Evaluate(timeProgress);
+        
         time = TimeSpan.FromHours(hour);
         links.ui.timeIndicator.text = time.Hours.ToString("00") + ":" + time.Minutes.ToString("00");
         links.ui.statsTimeIndicator.text = links.ui.timeIndicator.text;
@@ -149,15 +159,21 @@ public class DayNight : MonoBehaviour
         if (!isDungeon)
         { 
             sunLight.GetComponent<Light>().intensity = timestep * sunLightIntensity;
+            //if (sunLight.GetComponent<Light>().intensity < 1.3f) sunLight.GetComponent<Light>().intensity = 1.3f;
             moonLight.GetComponent<Light>().intensity = timestepMoon * moonLightIntensity;
 
             skyScript.Night.ColorMultiplier = timestepMoon / 2 + 0.5f;
 
             RenderSettings.reflectionIntensity = timestep / 2;
 
-            RenderSettings.ambientSkyColor = Color.Lerp(nightAmbientColor, dayAmbientColor, timestep);
-            RenderSettings.ambientEquatorColor = Color.Lerp(nightAmbientColor2, dayAmbientColor2, timestep);
-            RenderSettings.ambientGroundColor = Color.Lerp(nightAmbientColor3, dayAmbientColor3, timestep);
+            //RenderSettings.ambientSkyColor = Color.Lerp(nightAmbientColor, dayAmbientColor, timestep);
+            //RenderSettings.ambientEquatorColor = Color.Lerp(nightAmbientColor2, dayAmbientColor2, timestep);
+            //RenderSettings.ambientGroundColor = Color.Lerp(nightAmbientColor3, dayAmbientColor3, timestep);
+            
+            RenderSettings.ambientSkyColor = ambientLightGradient.Evaluate(timeProgress);
+            RenderSettings.ambientEquatorColor = ambientLightGradient.Evaluate(timeProgress);
+            RenderSettings.ambientGroundColor = ambientLightGradient.Evaluate(timeProgress);
+            
             RenderSettings.fogColor = Color.Lerp(nightFogColor, dayFogColor, timestep);
 
             if (timestep > 0.2) { RenderSettings.skybox = daySkyBoxMaterial; }

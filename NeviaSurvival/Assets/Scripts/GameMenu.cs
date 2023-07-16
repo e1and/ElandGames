@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro.Examples;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,7 @@ public class GameMenu : MonoBehaviour
 {
     UILinks ui;
     Links links;
+    int cameraMode = 0;
 
     private void Start()
     {
@@ -122,6 +124,12 @@ public class GameMenu : MonoBehaviour
         if (ui.buildingPanel.activeSelf) { ui.buildingPanel.SetActive(false); links.mousePoint.isPointUI = false; }
         else ui.buildingPanel.SetActive(true);
     }
+    
+    public void Map()
+    {
+        if (ui.mapPanel.activeSelf) { ui.mapPanel.SetActive(false); links.mousePoint.isPointUI = false; }
+        else ui.mapPanel.SetActive(true);
+    }
 
     void Update()
     {
@@ -130,6 +138,10 @@ public class GameMenu : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.B))
             {
                 BuildingMenu();
+            }
+            if (Input.GetKeyDown(KeyCode.CapsLock))
+            {
+                Map();
             }
 
             if (Input.GetKeyDown(KeyCode.C))
@@ -171,14 +183,35 @@ public class GameMenu : MonoBehaviour
                     ui.pauseText.SetActive(false);
                 }
             }
-            if (Input.GetKeyDown(KeyCode.N))
+            
+            if (Input.GetKeyDown(KeyCode.F4))
             {
-                QuestPanel();
+                if (cameraMode == 0)
+                {
+                    links.cameraController.CameraMode2();
+                    cameraMode = 1;
+                }
+                else if (cameraMode == 1)
+                {
+                    links.cameraController.CameraMode3();
+                    links.PlayerMesh.SetActive(false);
+                    cameraMode = 2;
+                }
+                else if (cameraMode == 2)
+                {
+                    links.cameraController.CameraMode1();
+                    links.PlayerMesh.SetActive(true);
+                    cameraMode = 0;
+                }
             }
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                MainMenu();
-            }
+        }
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            QuestPanel();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            MainMenu();
         }
     }
 }

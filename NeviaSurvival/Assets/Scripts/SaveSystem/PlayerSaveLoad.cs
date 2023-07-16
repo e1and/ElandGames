@@ -31,7 +31,7 @@ public class PlayerSaveLoad : MonoBehaviour
         player.maxOxygen = data.maxOxygen;
         player.maxCarryWeight = data.maxCarryWeight;
 
-        player.nighmares = data.nighmares;
+        player.nighmares = data.nightmares;
         player.survivalPoint = data.survivalPoint;
         player.UpdateSkillPoints();
 
@@ -48,20 +48,26 @@ public class PlayerSaveLoad : MonoBehaviour
 
         player.links.sky.Cycle.Hour = data.saveTime;
         player.links.sky.Cycle.Day = data.saveDay;
-        player.links.sky.Cycle.Month = data.savetMonth;
+        player.links.sky.Cycle.Month = data.saveMonth;
         player.links.sky.Cycle.Year = data.saveYear;
         player.DayTime.thisDay = data.saveDayNumber;
 
-        player.links.questWindow.questList.Clear();
+        player.saveTime = data.saveTime;
+        player.saveDay = data.saveDay;
+        player.saveMonth = data.saveMonth;
+        player.saveYear = data.saveYear;
+        player.saveDayNumber = data.saveDayNumber;
+
+        player.links.questHandler.questList.Clear();
         for (int i = 0; i < data.questsID.Count; i++)
         {
-            player.links.questWindow.questList.Add(QuestById(data.questsID[i]));
+            player.links.questHandler.takenQuestList.Add(QuestById(data.questsID[i]));
         }
 
-        player.links.questWindow.completedQuests.Clear();
+        player.links.questHandler.completedQuests.Clear();
         for (int i = 0; i < data.completedQuestsID.Count; i++)
         {
-            player.links.questWindow.completedQuests.Add(QuestById(data.questsID[i]));
+            player.links.questHandler.completedQuests.Add(QuestById(data.questsID[i]));
         }
 
         player.links.questWindow.QuestUpdate();
@@ -142,6 +148,11 @@ public class PlayerSaveLoad : MonoBehaviour
             }
         }
 
+        for (int i = 0; i < player.links.saveObjects.destructableItems.Count; i++)
+        {
+            player.links.saveObjects.destructableItems[i].gameObject.SetActive(data.isDestructableItem[i]);
+        }
+
         for (int i = 0; i < data.buildPosition.Count; i++)
         {
             BuildData build = BuildById(data.buildID[i]);
@@ -186,6 +197,9 @@ public class PlayerSaveLoad : MonoBehaviour
                 }
             }
         }
+
+        player.isDungeon = data.isDungeon;
+        player.Light();
     }
 
     IEnumerator LoadDelay(PlayerData data)
@@ -196,6 +210,8 @@ public class PlayerSaveLoad : MonoBehaviour
         player.transform.position = new Vector3(data.position[0], data.position[1], data.position[2]);
         player.transform.rotation = Quaternion.Euler(Vector3.zero);
         player.transform.Rotate(0, data.rotation, 0);
+
+        player.spawnPoint.transform.position = new Vector3(data.spawnPoint[0], data.spawnPoint[1], data.spawnPoint[2]);
         
         player.gameObject.SetActive(true);
         player.links.ScottyCamera.gameObject.SetActive(false);
@@ -214,7 +230,7 @@ public class PlayerSaveLoad : MonoBehaviour
         else return player.links.building.BuildList[id];
     }
 
-    Quest QuestById(string id)
+    QuestData QuestById(string id)
     {
         if (id == null) return null;
         else return player.links.questWindow.allQuestList[id];

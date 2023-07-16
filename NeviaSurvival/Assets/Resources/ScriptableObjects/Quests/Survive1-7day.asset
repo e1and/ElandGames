@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b54e4cc01c86934da1ad6f354880c8d, type: 3}
   m_Name: Survive1-7day
   m_EditorClassIdentifier: 
-  Name: "\u0421\u0435\u043C\u044C \u0434\u043D\u0435\u0439 \u0432\u044B\u0436\u0438\u0432\u0430\u043D\u0438\u044F"
+  questName: "\u0421\u0435\u043C\u044C \u0434\u043D\u0435\u0439 \u0432\u044B\u0436\u0438\u0432\u0430\u043D\u0438\u044F"
   id: survive7
   Briefing: "\u0412\u044B\u0436\u0438\u0442\u044C \u0432 \u0442\u0435\u0447\u0435\u043D\u0438\u0438
     \u0441\u0435\u043C\u0438 \u0434\u043D\u0435\u0439"
@@ -51,3 +51,14 @@ MonoBehaviour:
   days: 7
   isOpenDoor: 0
   door: 0
+  questType: 0
+  questImageType: 0
+  questTarget: {fileID: 0}
+  questAreaRadius: 0
+  enemyType: 0
+  questUnits: 0
+  playerCompleteQuestPhrase: 
+  questChain: []
+  playerCompleteQuestPhrases: []
+  isRepeatable: 0
+  timeToRepeat: 0

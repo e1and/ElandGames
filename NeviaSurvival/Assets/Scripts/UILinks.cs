@@ -51,6 +51,7 @@ public class UILinks : MonoBehaviour
     public GameObject aboutPanel;
     public GameObject mainMenuPanel;
     public GameObject startMenuPanel;
+    public GameObject mapPanel;
 
     public GameObject savingGameText;
     public GameObject pauseText;
