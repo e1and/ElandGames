@@ -35,7 +35,6 @@ MonoBehaviour:
     \u0440\u0430\u0441\u0441\u0432\u0435\u0442\u0430 \u044D\u0442\u043E \u0443\u0436\u0435
     \u043D\u0435\u043C\u0430\u043B\u043E\u0435 \u0434\u043E\u0441\u0442\u0438\u0436\u0435\u043D\u0438\u0435!"
   QuestItem: {fileID: 0}
-  QuestItemNeed: 0
   RewardText: "+2 \u043E\u0447\u043A\u0430 \u043D\u0430\u0432\u044B\u043A\u043E\u0432,
     +1 \u043A\u0440\u0430\u0441\u043D\u044B\u0439 \u0433\u0440\u0438\u0431"
   rewardNextQuestData: {fileID: 11400000, guid: b24dc0f54f6c81e4a9153ed8cafe72b0, type: 2}
@@ -54,7 +53,7 @@ MonoBehaviour:
   isOpenDoor: 0
   door: 0
   enemyType: 0
-  questUnits: 0
+  questUnits: 1
   playerCompleteQuestPhrase: 
   questChain: []
   playerCompleteQuestPhrases: []

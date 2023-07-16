@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 using UnityEngine.UI;
 
 public class QuestWindow : MonoBehaviour
@@ -101,16 +102,33 @@ public class QuestWindow : MonoBehaviour
                 if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.inventory.inventoryItems[j])
                 {
                     questBlocksList[i].QuestUnitsDone++;
+                    if (questHandler.GetQuestByQuestData(questBlocksList[i].questData) != null)
+                    questHandler.GetQuestByQuestData(questBlocksList[i].questData).QuestUnitDone();
                 }
             }
-            if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.LeftHandItem) questBlocksList[i].QuestUnitsDone++;
-            if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.RightHandItem) questBlocksList[i].QuestUnitsDone++;
+
+            if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.LeftHandItem)
+            {
+                questBlocksList[i].QuestUnitsDone++;
+                if (questHandler.GetQuestByQuestData(questBlocksList[i].questData) != null)
+                questHandler.GetQuestByQuestData(questBlocksList[i].questData).QuestUnitDone();
+            }
+
+            if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.RightHandItem) 
+            {
+                questBlocksList[i].QuestUnitsDone++;
+                if (questHandler.GetQuestByQuestData(questBlocksList[i].questData) != null)    
+                questHandler.GetQuestByQuestData(questBlocksList[i].questData).QuestUnitDone();
+            }
 
             if (questBlocksList[i].QuestItem != null)
             {
                 if (questBlocksList[i].QuestUnitsDone >= questBlocksList[i].QuestUnitsNeed)
                 {
                     questBlocksList[i].isComplete = true;
+                    if (questBlocksList[i].questData.questChain.Count > 1)
+                        questBlocksList[i].gameObject.SetActive(false);
+                    
                     questBlocksList[i].checkMarkImage.gameObject.SetActive(true);
                 }
             }
@@ -118,6 +136,40 @@ public class QuestWindow : MonoBehaviour
         }
         QuestItemsCountRedraw();
         QuestStatusUpdate();
+    }
+
+    public Quest GetQuestBlockByQuestData(QuestData questData)
+    {
+        foreach (Quest quest in questBlocksList)
+        {
+            if (quest.questData == questData) return quest;
+        }
+
+        return null;
+    }
+
+    public void ItemsRecount(Quest quest)
+    {
+        quest.QuestUnitsDone = 0;
+        if (links.inventoryWindow.inventory != null)
+            for (int j = 0; j < links.inventoryWindow.inventory.inventoryItems.Count; j++)
+            {
+                if (quest.QuestItem == links.inventoryWindow.inventory.inventoryItems[j])
+                {
+                    quest.QuestUnitsDone++;
+                }
+            }
+        if (quest.QuestItem == links.inventoryWindow.LeftHandItem) quest.QuestUnitsDone++;
+        if (quest.QuestItem == links.inventoryWindow.RightHandItem) quest.QuestUnitsDone++;
+
+        if (quest.QuestItem != null)
+        {
+            if (quest.QuestUnitsDone >= quest.QuestUnitsNeed)
+            {
+                quest.isComplete = true;
+                quest.checkMarkImage.gameObject.SetActive(true);
+            }
+        }
     }
 
     public void QuestItemsCountRedraw()
@@ -165,7 +217,7 @@ public class QuestWindow : MonoBehaviour
             questInfo.questNameButtonText.text = questHandler.takenQuestList[i].questName;
 
             questInfo.QuestItem = questHandler.takenQuestList[i].QuestItem;
-            questInfo.QuestUnitsNeed = questHandler.takenQuestList[i].QuestItemNeed;
+            questInfo.QuestUnitsNeed = questHandler.takenQuestList[i].questUnits;
 
             questInfo.questWindow = this;
         }

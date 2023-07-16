@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class Door : MonoBehaviour
@@ -58,19 +59,19 @@ public class Door : MonoBehaviour
 
     public void OpenClose()
     {
-        if (isDungeon)
+        if (!isLocked && !isBlocked)
         {
-            if (isExit) ExitDoor(); 
-            else EnterDoor();
-            audioSource.PlayOneShot(closeSound);
-            
-        }
-        else
-        {
-            if (!isLocked && !isBlocked)
+            if (isDungeon)
+            {
+                if (isExit) ExitDoor(); 
+                else EnterDoor();
+                audioSource.PlayOneShot(closeSound);
+        
+            }
+            else
             {
                 isOpen = !isOpen;
-                
+
                 if (isOpen) audioSource.PlayOneShot(openSound);
                 else audioSource.PlayOneShot(closeSound);
 
@@ -78,7 +79,6 @@ public class Door : MonoBehaviour
                 else animator.SetBool("Open", !animator.GetBool("Open"));
             }
         }
-
     }
 
     public bool SearchingKey()
@@ -134,23 +134,35 @@ public class Door : MonoBehaviour
         audioSource.Stop();
     }
 
-    public void EnterDoor()
+    public async void EnterDoor()
     {
+        links.cinemachine.enabled = false;
+        links.PlayerCamera.enabled = false;
         links.player.PlayerControl(false);
         mousePoint.Player.transform.position = entrancePoint.transform.position;
+        mousePoint.Player.transform.rotation = entrancePoint.transform.rotation;
         links.dayNight.isDungeon = true;
         links.dayNight.Dungeon();
+        await UniTask.DelayFrame(1);
         links.player.PlayerControl(true);
+        links.cinemachine.enabled = true;
+        links.PlayerCamera.enabled = true;
     }
 
-    public void ExitDoor()
+    public async void ExitDoor()
     {
+        links.cinemachine.enabled = false;
+        links.PlayerCamera.enabled = false;
         links.player.PlayerControl(false); 
         mousePoint.Player.transform.position = entrancePoint.transform.position;
+        mousePoint.Player.transform.rotation = entrancePoint.transform.rotation;
         if (musicZone != null) musicZone.ExitZone();
         links.dayNight.isDungeon = false;
         links.dayNight.SetDaySettings();
+        await UniTask.DelayFrame(1);
         links.player.PlayerControl(true);
+        links.cinemachine.enabled = true;
+        links.PlayerCamera.enabled = true;
 
     }
 }

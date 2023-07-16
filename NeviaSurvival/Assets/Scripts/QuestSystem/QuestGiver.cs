@@ -62,6 +62,7 @@ public class QuestGiver : MonoBehaviour
                 break;
             }
         }
+        questHandler.links.questWindow.QuestUpdate();
     }
 
     public void ContinueQuestChain(QuestData currentQuestData, QuestData startQuestData)
@@ -79,6 +80,7 @@ public class QuestGiver : MonoBehaviour
         questHandler.RewardVFX();
         questHandler.completedQuests.Add(quest.questData);
         questHandler.takenQuestList.Remove(quest.questData);
+        questHandler.links.questWindow.GetQuestBlockByQuestData(quest.questData).gameObject.SetActive(false);
 
         await UniTask.Delay(questHandler.questNotice.GetNoticeTime() * 500);
         questHandler.questNotice.CloseQuestRewardPanel();

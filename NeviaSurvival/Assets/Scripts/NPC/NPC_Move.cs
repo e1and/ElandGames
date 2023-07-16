@@ -200,7 +200,7 @@ public class NPC_Move : MonoBehaviour
         //    obstacleHits = 0;
         //}
 
-        _distanceToTarget = Vector3.Distance(transform.position, Game.Player.transform.position);
+        _distanceToTarget = Vector3.Distance(transform.position, Player.transform.position);
         _heightToTarget = Mathf.Abs(transform.position.y - Game.Player.transform.position.y);
         _distanceToWanderPoint = Vector3.Distance(transform.position, WanderPoint);
 

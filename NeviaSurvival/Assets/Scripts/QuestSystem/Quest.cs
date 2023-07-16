@@ -25,7 +25,7 @@ public class Quest : MonoBehaviour, IPointerClickHandler
     public Image checkMarkImage;
 
     
-    protected QuestUI questUI;
+    public QuestUI questUI;
 
     public List<QuestData> remainQuestChain;
 
@@ -38,7 +38,12 @@ public class Quest : MonoBehaviour, IPointerClickHandler
         
         questWindow.QuestDescriptionWindow.SetActive(true);
         questWindow.QuestNameText.text = questData.questName;
-        questWindow.QuestBriefingText.text = questData.Briefing;
+        if (!isComplete) questWindow.QuestBriefingText.text = questData.Briefing;
+        else
+            questWindow.QuestBriefingText.text = 
+                "Теперь нужно вернуться к " + questWindow.links.questHandler.GetQuestByQuestData(questData)
+                                                     .questGiver.dialogueInterractor.npcName;
+            
         questWindow.QuestDescriptionText.text = questData.Description;
         
         if (QuestItem != null)
@@ -123,7 +128,7 @@ public class Quest : MonoBehaviour, IPointerClickHandler
 
     public virtual void UpdateQuestUnits()
     {
-        questUI.questUnitsText.text = QuestUnitsDone + " / " + questData.questUnits;
+        if (questUI != null) questUI.questUnitsText.text = QuestUnitsDone + " / " + questData.questUnits;
     }
 
     public void QuestUnitDone()
@@ -132,12 +137,14 @@ public class Quest : MonoBehaviour, IPointerClickHandler
         {
             QuestUnitsDone++;
             UpdateQuestUnits();
-            CheckQuestCondition();
+            Debug.Log(questUI);
+            if (questUI != null) CheckQuestCondition();
         }
     }
 
     public virtual void CheckQuestCondition()
     {
+        
         if (QuestUnitsDone >= QuestUnitsNeed)
         {
             isComplete = true;

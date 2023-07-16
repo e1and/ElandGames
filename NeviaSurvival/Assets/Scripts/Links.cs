@@ -38,6 +38,7 @@ public class Links : MonoBehaviour
 
     public GameObject PlayerMesh;
     public Camera ScottyCamera;
+    public Camera PlayerCamera;
 
     void Awake()
     {

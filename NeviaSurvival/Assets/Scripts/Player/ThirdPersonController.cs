@@ -95,6 +95,7 @@ public class ThirdPersonController : MonoBehaviour
 	[SerializeField] bool isLook;
 	[SerializeField] bool isLookLocked;
 
+	private Vector3 velocity;
 	Vector3 lastDirection;
 	Vector3 targetDirection;
 	public Vector3 slopingVelocity;
@@ -365,9 +366,13 @@ public class ThirdPersonController : MonoBehaviour
 		// move the player
 		if (!isLookLocked) lastSpeed = _speed;
 
+		velocity = new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+		
 		if (links.player.isControl)
-			_controller.Move((targetDirection.normalized * currentSpeed + slopingVelocity) * Time.deltaTime + 
-			new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime + swimVerticalVelocity);
+			velocity += (targetDirection.normalized * currentSpeed + slopingVelocity) * Time.deltaTime +
+			            swimVerticalVelocity;
+		
+		_controller.Move(velocity);
 
 		// update animator if using character
 		if (_hasAnimator)

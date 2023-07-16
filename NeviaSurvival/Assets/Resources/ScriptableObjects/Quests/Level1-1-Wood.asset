@@ -33,7 +33,6 @@ MonoBehaviour:
     \u041F\u043E\u044D\u0442\u043E\u043C\u0443 \u0441\u0442\u043E\u0438\u0442 \u043F\u043E\u0438\u0441\u043A\u0430\u0442\u044C
     \u0441\u0443\u0445\u0438\u0435 \u0432\u0435\u0442\u043A\u0438!"
   QuestItem: {fileID: 11400000, guid: 524f6668e6bc9d842a2a76fa33018479, type: 2}
-  QuestItemNeed: 1
   RewardText: "\u0427\u0435\u0440\u0442\u0451\u0436 \u043A\u043E\u0441\u0442\u0440\u0430,
     \u043A\u0440\u0430\u0441\u043D\u044B\u0439 \u0433\u0440\u0438\u0431, 1 \u043E\u0447\u043A\u043E
     \u0432\u044B\u0436\u0438\u0432\u0430\u043D\u0438\u044F"
@@ -54,7 +53,7 @@ MonoBehaviour:
   isOpenDoor: 0
   door: 0
   enemyType: 0
-  questUnits: 0
+  questUnits: 1
   playerCompleteQuestPhrase: 
   questChain: []
   playerCompleteQuestPhrases: []

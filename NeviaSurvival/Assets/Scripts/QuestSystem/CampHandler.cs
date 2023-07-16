@@ -6,7 +6,7 @@ using UnityEngine;
 public class CampHandler : MonoBehaviour
 {
     public Action propDestroyedAction;
-    public Action enemyDestroyedAction;
+    public Action itemFoundAction;
 
     public int PropsCount()
     {

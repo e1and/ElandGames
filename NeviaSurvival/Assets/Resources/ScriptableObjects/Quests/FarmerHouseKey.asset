@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: "\u041A\u043B\u044E\u0447 \u043E\u0442 \u0434\u043E\u043C\u0430 \u0444\u0435\u0440\u043C\u0435\u0440\u0430"
   id: FarmerKey
+  questType: 0
+  questImageType: 0
+  questTarget: {fileID: 0}
+  questAreaRadius: 0
   Briefing: "\u041D\u0430\u0439\u0442\u0438 \u0441\u043F\u0440\u044F\u0442\u0430\u043D\u043D\u044B\u0439
     \u0444\u0435\u0440\u043C\u0435\u0440\u043E\u043C \u043A\u043B\u044E\u0447"
   Description: "\u0415\u0441\u043B\u0438 \u0447\u0435\u0441\u0442\u043D\u043E, \u0442\u043E
@@ -25,10 +29,9 @@ MonoBehaviour:
     \u043E\u043D \u044F\u0440\u043A\u043E \u043A\u0440\u0430\u0441\u043D\u043E\u0433\u043E
     \u0446\u0432\u0435\u0442\u0430!"
   QuestItem: {fileID: 11400000, guid: 0c7771f087a3f6e4a8ef75dbddb67c8e, type: 2}
-  QuestItemNeed: 1
   RewardText: "\u0421\u0430\u043F\u043E\u0433\u0438 \u0444\u0435\u0440\u043C\u0435\u0440\u0430,
     1 \u043E\u0447\u043A\u043E \u0432\u044B\u0436\u0438\u0432\u0430\u043D\u0438\u044F"
-  RewardNextQuest: {fileID: 0}
+  rewardNextQuestData: {fileID: 0}
   RewardItem: {fileID: 11400000, guid: c48acb3e4132fbd449de2ce68996757d, type: 2}
   RewardSkillPoint: 1
   RewardNewBlueprint: 0
@@ -40,12 +43,8 @@ MonoBehaviour:
   days: 0
   isOpenDoor: 0
   door: 0
-  questType: 0
-  questImageType: 0
-  questTarget: {fileID: 0}
-  questAreaRadius: 0
   enemyType: 0
-  questUnits: 0
+  questUnits: 1
   playerCompleteQuestPhrase: 
   questChain: []
   playerCompleteQuestPhrases: []

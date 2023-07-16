@@ -16,7 +16,6 @@ public class QuestData : ScriptableObject
     public string Description;
     [Space]
     public Item QuestItem;
-    public int QuestItemNeed;
     [Space]
     [TextArea()]
     public string RewardText;

@@ -25,7 +25,7 @@ public class QuestEnemies : Quest
 
     public void CheckQuestEnemies()
     {
-        if (questCamp != null) questCamp.enemyDestroyedAction += QuestUnitDone;
+        if (questCamp != null) questCamp.itemFoundAction += QuestUnitDone;
     }
 
     public override void UpdateQuestUnits()
@@ -35,8 +35,8 @@ public class QuestEnemies : Quest
 
     private void OnDisable()
     {
-        if (questCamp != null && questData.questType == QuestType.KickOutEnemies)
-            questCamp.enemyDestroyedAction -= QuestUnitDone;
+        if (questCamp != null && questData.questType == QuestType.Enemies)
+            questCamp.itemFoundAction -= QuestUnitDone;
     }
 
 }

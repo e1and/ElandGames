@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum QuestType { KickOutEnemies, DestroyCamp, ExploreTarget, DestroyTarget }
-public enum QuestImageType { Lumberjack, LumberCamp, Explore }
+public enum QuestType { ExploreTarget, DestroyTarget, FindItem, OpenDoor, Enemies, DestroyObstacle }
+public enum QuestImageType { Explore, Destroy, FindItem, OpenDoor }
 public enum EnemyType { None, Spider, Skeleton, Bear }
 
 public class QuestHandler : MonoBehaviour
@@ -22,8 +22,6 @@ public class QuestHandler : MonoBehaviour
     public QuestNotice questNotice;
 
     [SerializeField] Sprite DefaultQuestImage;
-    [SerializeField] Sprite LumberjackQuestImage;
-    [SerializeField] Sprite LumberCampQuestImage;
     [SerializeField] Sprite ExploreQuestImage;
 
     public GameObject expirienceVfx;
@@ -52,13 +50,13 @@ public class QuestHandler : MonoBehaviour
             {
                 newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestExplore>();
             }
-            else if (questData.questType == QuestType.KickOutEnemies)
+            else if (questData.questType == QuestType.FindItem)
             {
-                newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestEnemies>();
+                newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestFindItem>();
             }
-            else if (questData.questType == QuestType.DestroyCamp)
+            else if (questData.questType == QuestType.OpenDoor)
             {
-                newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestDestroyCamp>();
+                newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestOpenDoor>();
             }
             else if (questData.questType == QuestType.DestroyTarget)
             {
@@ -197,12 +195,6 @@ public class QuestHandler : MonoBehaviour
     {
         switch (questData.questImageType)
         {
-            case QuestImageType.Lumberjack:
-                return LumberjackQuestImage;
-
-            case QuestImageType.LumberCamp:
-                return LumberCampQuestImage;
-
             case QuestImageType.Explore:
                 return ExploreQuestImage;
 

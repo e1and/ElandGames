@@ -63,6 +63,9 @@ public class DialogueInterractor : MonoBehaviour
             isDialogue = true;
             OpenDialogue();
             
+            player.transform.rotation = Quaternion.LookRotation(transform.position - player.transform.position);
+            player.transform.eulerAngles = new Vector3(0, player.transform.eulerAngles.y, 0);
+            
             _ = RotateToPlayer(_player.transform);
         }
     }
@@ -162,7 +165,8 @@ public class DialogueInterractor : MonoBehaviour
                     {
                         branch = selectableQuestBranch;
                         currentQuestData = selectableQuestBranch.questData;
-                        if (nextBranch.questData != null) Debug.LogError("В ветке выбираемого ответа не нужно указывать квест, сработает тот, что указана в isSelectableQuest ветке");
+                        if (nextBranch.questData != null) 
+                            Debug.LogError("В ветке выбираемого ответа не нужно указывать квест, сработает тот, что указана в isSelectableQuest ветке");
                     }
 
                     questGiver.GiveQuest(currentQuestData, null);
