@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.ProBuilder.MeshOperations;
 using UnityEngine.UI;
 
@@ -16,9 +19,10 @@ public class QuestWindow : MonoBehaviour
     public Quest OpenedQuest;
     public Quest FollowingQuest;
     
-    public List<Quest> questBlocksList = new List<Quest>();
-    public GameObject questPrefab;
-    public Transform questParent;
+    //public List<Quest> questBlocksList = new List<Quest>(); // ???
+    public GameObject questBlockPrefab;
+    public Transform questBlocksParent;
+    public Transform hiddenParent;
 
     public TMP_Text FollowQuestNameText;
     public TMP_Text FollowQuestBriefingText;
@@ -67,8 +71,39 @@ public class QuestWindow : MonoBehaviour
     }
     void Start()
     {
-        QuestUpdate();
         onCollectItem += OnCollectItem;
+    }
+
+    public QuestBlock AddQuestBlock(Quest newQuest)
+    {
+        var quest = Instantiate(questBlockPrefab, questBlocksParent);
+        quest.name = newQuest.questData.questName;
+        Debug.Log(quest.name);
+
+        var questBlock = quest.GetComponent<QuestBlock>();
+        //questBlocksList.Add(questInfo);
+
+        questBlock.quest = newQuest;
+        questBlock.questNameButtonText.text = newQuest.questData.questName;
+
+        return questBlock;
+    }
+    
+    public void QuestUpdate()
+    {
+        // Обновляем счётчик активных квестов
+        links.ui.activeQuestCount.text = questHandler.takenQuestList.Count.ToString();
+        if (questHandler.takenQuestList.Count > 0) links.ui.activeQuestCount.enabled = true;
+        else links.ui.activeQuestCount.enabled = false;
+        
+        QuestItemsRecount();
+        QuestItemsCountRedraw();
+    }
+
+    public async void GetQuestBlockDelay(QuestData questData, QuestBlock questBlock)
+    {
+        await UniTask.DelayFrame(1);
+        questHandler.GetQuestByQuestData(questData).questBlock = questBlock;
     }
 
     void OnCollectItem()
@@ -77,99 +112,36 @@ public class QuestWindow : MonoBehaviour
         QuestItemsRecount(); 
     }
 
-    public void QuestEventRecount()
-    {
-        for (int i = 0; i < questBlocksList.Count; i++)
-        {
-            // Проверка квеста прожитого времени
-            if (questBlocksList[i].questData.isTime && questBlocksList[i].questData.days < links.dayNight.thisDay)
-            QuestDone(questBlocksList[i].questData);
-            
-            // Проверка квеста открытой двери
-            if (questBlocksList[i].questData.isOpenDoor && !QuestDoors[(int)questBlocksList[i].questData.door].isLocked)
-                QuestDone(questBlocksList[i].questData);
-        }
-    }
-
     public void QuestItemsRecount()
     {
-        for (int i = 0; i < questBlocksList.Count; i++)
+        for (int i = 0; i < questHandler.questList.Count; i++)
         {
-            questBlocksList[i].QuestUnitsDone = 0;
-            if (links.inventoryWindow.inventory != null)
-            for (int j = 0; j < links.inventoryWindow.inventory.inventoryItems.Count; j++)
+            if (questHandler.questList[i].questData.questType == QuestType.FindItem)
             {
-                if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.inventory.inventoryItems[j])
+                questHandler.questList[i].QuestUnitsDone = 0;
+                
+                if (links.inventoryWindow.inventory != null)
+                    for (int j = 0; j < links.inventoryWindow.inventory.inventoryItems.Count; j++)
+                    {
+                        if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.inventory.inventoryItems[j])
+                        {
+                            if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                        }
+                    }
+
+                if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.LeftHandItem)
                 {
-                    questBlocksList[i].QuestUnitsDone++;
-                    if (questHandler.GetQuestByQuestData(questBlocksList[i].questData) != null)
-                    questHandler.GetQuestByQuestData(questBlocksList[i].questData).QuestUnitDone();
+                    if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                }
+
+                if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.RightHandItem)
+                {
+                    if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
                 }
             }
-
-            if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.LeftHandItem)
-            {
-                questBlocksList[i].QuestUnitsDone++;
-                if (questHandler.GetQuestByQuestData(questBlocksList[i].questData) != null)
-                questHandler.GetQuestByQuestData(questBlocksList[i].questData).QuestUnitDone();
-            }
-
-            if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.RightHandItem) 
-            {
-                questBlocksList[i].QuestUnitsDone++;
-                if (questHandler.GetQuestByQuestData(questBlocksList[i].questData) != null)    
-                questHandler.GetQuestByQuestData(questBlocksList[i].questData).QuestUnitDone();
-            }
-
-            if (questBlocksList[i].QuestItem != null)
-            {
-                if (questBlocksList[i].QuestUnitsDone >= questBlocksList[i].QuestUnitsNeed)
-                {
-                    questBlocksList[i].isComplete = true;
-                    if (questBlocksList[i].questData.questChain.Count > 1)
-                        questBlocksList[i].gameObject.SetActive(false);
-                    
-                    questBlocksList[i].checkMarkImage.gameObject.SetActive(true);
-                }
-            }
-
         }
         QuestItemsCountRedraw();
         QuestStatusUpdate();
-    }
-
-    public Quest GetQuestBlockByQuestData(QuestData questData)
-    {
-        foreach (Quest quest in questBlocksList)
-        {
-            if (quest.questData == questData) return quest;
-        }
-
-        return null;
-    }
-
-    public void ItemsRecount(Quest quest)
-    {
-        quest.QuestUnitsDone = 0;
-        if (links.inventoryWindow.inventory != null)
-            for (int j = 0; j < links.inventoryWindow.inventory.inventoryItems.Count; j++)
-            {
-                if (quest.QuestItem == links.inventoryWindow.inventory.inventoryItems[j])
-                {
-                    quest.QuestUnitsDone++;
-                }
-            }
-        if (quest.QuestItem == links.inventoryWindow.LeftHandItem) quest.QuestUnitsDone++;
-        if (quest.QuestItem == links.inventoryWindow.RightHandItem) quest.QuestUnitsDone++;
-
-        if (quest.QuestItem != null)
-        {
-            if (quest.QuestUnitsDone >= quest.QuestUnitsNeed)
-            {
-                quest.isComplete = true;
-                quest.checkMarkImage.gameObject.SetActive(true);
-            }
-        }
     }
 
     public void QuestItemsCountRedraw()
@@ -190,51 +162,14 @@ public class QuestWindow : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M)) { QuestUpdate();  }
-    }
-
-    public void QuestUpdate()
-    {
-        if (questParent.childCount > 0)
-        {
-            for (int i = 0; i < questParent.childCount; i++)
-            {
-                questBlocksList.Remove(questParent.GetChild(i).GetComponent<Quest>());
-                Destroy(questParent.GetChild(i).gameObject);
-            }
-        }
-
-        for (int i = 0; i < questHandler.takenQuestList.Count; i++)
-        {
-            var quest = Instantiate(questPrefab, questParent);
-            quest.name = questHandler.takenQuestList[i].questName;
-
-            var questInfo = quest.GetComponent<Quest>();
-            questBlocksList.Add(questInfo);
-
-            questInfo.questData = questHandler.takenQuestList[i];
-
-            questInfo.questNameButtonText.text = questHandler.takenQuestList[i].questName;
-
-            questInfo.QuestItem = questHandler.takenQuestList[i].QuestItem;
-            questInfo.QuestUnitsNeed = questHandler.takenQuestList[i].questUnits;
-
-            questInfo.questWindow = this;
-        }
-
-        links.ui.activeQuestCount.text = questHandler.takenQuestList.Count.ToString();
-        if (questHandler.takenQuestList.Count > 0) links.ui.activeQuestCount.enabled = true;
-        else links.ui.activeQuestCount.enabled = false;
-        QuestItemsRecount();
-        QuestItemsCountRedraw();
-        QuestEventRecount();
+        if (Input.GetKeyDown(KeyCode.L)) { QuestUpdate();  }
     }
 
     public void QuestStatusUpdate()
     {
-        for (int i = 0; i < questBlocksList.Count; i++)
+        for (int i = 0; i < questHandler.questList.Count; i++)
         {
-            if (questBlocksList[i].isComplete)
+            if (questHandler.questList[i].isComplete)
             {
                 links.ui.questCompleteSign.SetActive(true);
                 return;
@@ -263,67 +198,88 @@ public class QuestWindow : MonoBehaviour
             FollowQuestBriefingText.text =
                 FollowingQuest.questData.Briefing + "\n\n" + FollowingQuest.QuestItem.Name + ": "
                 + FollowingQuest.QuestUnitsDone + "/" + FollowingQuest.QuestUnitsNeed;
-    }  
-    
-    public void CompleteQuest()
+    }
+
+    public void CompleteOpenedQuest()
     {
-        if (OpenedQuest.questData.RewardItem != null && links.inventoryWindow.inventory != null)
+        CompleteQuest(OpenedQuest);
+    }
+
+    public void FollowOpenedQuest()
+    {
+        if (OpenedQuest.isFollowing)
         {
-            if (links.inventoryWindow.inventory.filledSlots < links.inventoryWindow.inventory.size)
+            OpenedQuest.transform.parent = hiddenParent;
+            OpenedQuest.transform.position = hiddenParent.transform.position;
+            OpenedQuest.isFollowing = false;
+
+        }
+        else
+        {
+            OpenedQuest.transform.parent = questHandler.questBar;
+            OpenedQuest.isFollowing = true;
+        }
+    }
+    
+    public void CompleteQuest(Quest quest)
+    {
+        Debug.Log("Quest Complete");
+        if (quest.questData.RewardItem != null)
+        {
+            if (links.inventoryWindow.inventory != null && links.inventoryWindow.inventory.filledSlots < links.inventoryWindow.inventory.size)
             {
-                links.inventoryWindow.inventory.AddItem(OpenedQuest.questData.RewardItem);
+                links.inventoryWindow.inventory.AddItem(quest.questData.RewardItem);
             }
             else if (links.inventoryWindow.RightHandItem == null)
             {
-                links.inventoryWindow.RightHandItem = OpenedQuest.questData.RewardItem;
+                links.inventoryWindow.RightHandItem = quest.questData.RewardItem;
             }
             else if (links.inventoryWindow.LeftHandItem == null)
             {
-                links.inventoryWindow.LeftHandItem = OpenedQuest.questData.RewardItem;
+                links.inventoryWindow.LeftHandItem = quest.questData.RewardItem;
             }
             else
             {
                 links.mousePoint.Comment("Нет свободного места для награды!");
                 return;
             }
-
         }
 
-        links.player.survivalPoint += OpenedQuest.questData.RewardSkillPoint;
+        // Получение очков навыков
+        links.player.survivalPoint += quest.questData.RewardSkillPoint;
         links.player.UpdateSkillPoints();
-        if (OpenedQuest.questData.rewardNextQuestData != null) questHandler.takenQuestList.Add(OpenedQuest.questData.rewardNextQuestData);
-        if (OpenedQuest.questData.RewardNewBlueprint != Blueprint.None) links.building.LearningBlueprint(OpenedQuest.questData.RewardNewBlueprint);
-
-        questHandler.takenQuestList.Remove(OpenedQuest.questData);
-        questHandler.completedQuests.Add(OpenedQuest.questData);
-        OpenedQuest.isComplete = false;
-
-        QuestUpdate();
-        links.inventoryWindow.Redraw();
-        if (FollowingQuest == OpenedQuest) FollowingQuestPanel.SetActive(false);
+        
+        // Получение нового квеста
+        if (quest.questData.rewardNextQuestData != null) questHandler.AddQuest(quest.questData.rewardNextQuestData);
+        
+        // Получение нового чертежа
+        if (quest.questData.RewardNewBlueprint != Blueprint.None) links.buildingHandler.LearningBlueprint(quest.questData.RewardNewBlueprint);
+        
+        questHandler.questList.Remove(quest);
+        questHandler.takenQuestList.Remove(quest.questData);
+        questHandler.completedQuests.Add(quest.questData);
+        quest.isComplete = false;
+        
+        if (FollowingQuest == quest) FollowingQuestPanel.SetActive(false);
         CompleteQuestButton.interactable = false;
         FollowQuestButton.interactable = false;
         DescriptionWindow.SetActive(false);
         FinalWindow.SetActive(true);
-        FinalText.text = OpenedQuest.questData.FinalText;
-        FinalRewards.text = OpenedQuest.questData.RewardText;
+        FinalText.text = quest.questData.FinalText;
+        FinalRewards.text = quest.questData.RewardText;
+        
+        if (OpenedQuest == quest) OpenedQuest = null;
+        Destroy(quest.questBlock.gameObject);
+        Destroy(quest.gameObject);
+        
+        RedrawDelay();
     }
 
-    public void QuestDone(QuestData questData)
+    async void RedrawDelay()
     {
-        if (questHandler.takenQuestList.Contains(questData))
-        {
-            for (int i = 0; i < questBlocksList.Count; i++)
-            {
-                if (questBlocksList[i].questData == questData)
-                {
-                    questBlocksList[i].isComplete = true;
-                    questBlocksList[i].checkMarkImage.gameObject.SetActive(true);
-                    break;
-                }
-            }
-        }
-        QuestStatusUpdate();
+        await UniTask.DelayFrame(1);
+        links.inventoryWindow.Redraw();
+        QuestUpdate();
     }
 
     public List<Door> QuestDoors = new List<Door>();
@@ -333,5 +289,6 @@ public class QuestWindow : MonoBehaviour
 public enum QuestDoor
 {
     None = 0,
-    BakerHouse = 1
+    BakerHouse = 1,
+    GraveYardDoor = 2
 }

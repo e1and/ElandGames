@@ -122,8 +122,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5656356839414505565}
-        m_TargetAssemblyTypeName: QuestInfo, Assembly-CSharp
+      - m_Target: {fileID: 6170308725873290359}
+        m_TargetAssemblyTypeName: QuestBlock, Assembly-CSharp
         m_MethodName: OpenQuest
         m_Mode: 1
         m_Arguments:
@@ -300,7 +300,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5656356839414505566}
-  - component: {fileID: 5656356839414505565}
+  - component: {fileID: 6170308725873290359}
   m_Layer: 5
   m_Name: QuestBlock
   m_TagString: Untagged
@@ -332,7 +332,7 @@ RectTransform:
   m_AnchoredPosition: {x: 39.8632, y: 238.42174}
   m_SizeDelta: {x: 398.7607, y: 43.1833}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5656356839414505565
+--- !u!114 &6170308725873290359
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -341,16 +341,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5656356839414505567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f57dec573dc5d1d4a9a89277d374fe64, type: 3}
+  m_Script: {fileID: 11500000, guid: 7777923bbea289841a1c609868844168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   quest: {fileID: 0}
-  isComplete: 0
-  isFollowing: 0
-  QuestItem: {fileID: 0}
-  QuestItemCount: 0
-  QuestItemNeed: 0
-  questWindow: {fileID: 0}
   questNameButtonText: {fileID: 5656356839562381510}
   checkMarkImage: {fileID: 3323955225064551185}
 --- !u!1 &5656356839562381504

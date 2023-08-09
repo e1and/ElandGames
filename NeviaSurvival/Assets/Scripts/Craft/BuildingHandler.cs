@@ -11,7 +11,9 @@ public enum Blueprint
 	Fence
 }
 
-public class Building : MonoBehaviour 
+public enum BuildingType { None, Campfire, GrassBed, Fence }
+
+public class BuildingHandler : MonoBehaviour 
 {
 	public List<BuildData> Buildings;
 	public Dictionary<string, BuildData> BuildList;
@@ -54,7 +56,10 @@ public class Building : MonoBehaviour
 	public bool isAbleToBuild;
 	public bool isConstructing;
 
-
+	public Action BuildCampfireAction;
+	public Action BuildGrassBedAction;
+	public Action BuildFenceAction;
+	
 	QuestWindow questWindow;
 	private QuestHandler questHandler;
 	Player player;
@@ -121,12 +126,12 @@ public class Building : MonoBehaviour
     {
 		if (questHandler.takenQuestList.Contains(questData))
 		{
-			for (int i = 0; i < questWindow.questBlocksList.Count; i++)
+			for (int i = 0; i < links.questHandler.questList.Count; i++)
 			{
-				if (questWindow.questBlocksList[i].questData == questData)
+				if (links.questHandler.questList[i].questData == questData)
 				{
-					questWindow.questBlocksList[i].isComplete = true;
-					questWindow.questBlocksList[i].checkMarkImage.gameObject.SetActive(true);
+					links.questHandler.questList[i].isComplete = true;
+					links.questHandler.questList[i].questBlock.checkMarkImage.gameObject.SetActive(true);
 					questWindow.QuestStatusUpdate();
 					break;
 				}
@@ -238,6 +243,7 @@ public class Building : MonoBehaviour
 		isCampFireBuilding = false;
 		SpendWood(sticksNeedForCampfire);
 		links.inventoryWindow.Redraw();
+		BuildCampfireAction?.Invoke();
 	}
 
 	public void SpendWood(int amount)
@@ -282,6 +288,7 @@ public class Building : MonoBehaviour
 		Destroy(links.mousePoint.carryObject);
 		links.mousePoint.CarryRelease();
 		isGrassBedBuilding = false;
+		BuildGrassBedAction?.Invoke();
 	}	
 	
 	public void Fence()
@@ -295,6 +302,7 @@ public class Building : MonoBehaviour
 		isGrassBedBuilding = false;
 		SpendItemByID("woodplank", 6);
 		links.inventoryWindow.Redraw();
+		BuildFenceAction?.Invoke();
 	}
 	
 	public void SpendItemByID(string id, int amount)

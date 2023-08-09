@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum QuestType { ExploreTarget, DestroyTarget, FindItem, OpenDoor, Enemies, DestroyObstacle }
+public enum QuestType { ExploreTarget, DestroyTarget, FindItem, OpenDoor, Enemies, DestroyObstacle, SurviveDays, Building }
 public enum QuestImageType { Explore, Destroy, FindItem, OpenDoor }
 public enum EnemyType { None, Spider, Skeleton, Bear }
 
@@ -14,6 +14,7 @@ public class QuestHandler : MonoBehaviour
     public List<Quest> questList;
     public List<QuestData> completedQuests; 
     public List<QuestData> takenQuestList;
+    public List<QuestData> startQuestList;
     public List<QuestTarget> targetList;
     public Quest activeQuest;
     public Player player;
@@ -38,7 +39,17 @@ public class QuestHandler : MonoBehaviour
         questWindow = links.questWindow;
     }
 
-    public Quest AddQuest(QuestData questData)
+    public async void AddStartQuests()
+    {
+        await UniTask.Delay(20000);
+        foreach (QuestData questData in startQuestList)
+        {
+            AddQuest(questData);
+            await UniTask.Delay(60000);
+        }
+    }
+
+    public void AddQuest(QuestData questData)
     {
         if (!takenQuestList.Contains(questData))
         {
@@ -62,17 +73,31 @@ public class QuestHandler : MonoBehaviour
             {
                 newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestDestroyTarget>();
             }
+            else if (questData.questType == QuestType.SurviveDays)
+            {
+                newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestSurviveDays>();
+            }
+            else if (questData.questType == QuestType.Building)
+            {
+                newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestBuilding>();
+            }
 
+            newQuest.questHandler = this;
+            newQuest.questWindow = questWindow;
             newQuest.LinkUI();
+
             questList.Add(newQuest);
+            newQuest.isFollowing = true;
+
             newQuest.SetQuestData(questData);
             newQuest.SetQuestImage(QuestImage(questData));
 
+            newQuest.questBlock = questWindow.AddQuestBlock(newQuest);
+            
             questNotice.ShowQuestNotice(questData);
-
-            return newQuest;
+            
+            questWindow.QuestUpdate();
         }
-        return null;
     }
 
     public void SetActiveQuest(Quest quest)
@@ -80,7 +105,13 @@ public class QuestHandler : MonoBehaviour
         activeQuest = quest;
         foreach (Quest _quest in questList) _quest.ActiveQuestVisual(false);
         quest.ActiveQuestVisual(true);
-        SetMiniMapTarget(quest);
+        if (quest.QuestTarget() != null && quest.QuestGiver() != null) SetMiniMapTarget(quest);
+        else
+        {
+            miniMapTarget.SetActive(false);
+            miniMapArrow.SetActive(false);
+            miniMapQuestArea.SetActive(false);
+        }
     }
 
     public void SetMiniMapTarget(Quest quest)
@@ -121,6 +152,8 @@ public class QuestHandler : MonoBehaviour
         while ((!activeQuest.isComplete && target == activeQuest.QuestTarget() ||
             !activeQuest.isRewarded && target == activeQuest.QuestGiver()) && activeQuest == quest)
         {
+            if (activeQuest == null) break;
+            
             distance = Vector3.Distance(player.transform.position, target.position);
             if (distance > 1f)
             {

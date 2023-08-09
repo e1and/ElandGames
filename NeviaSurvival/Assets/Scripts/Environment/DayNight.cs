@@ -48,6 +48,8 @@ public class DayNight : MonoBehaviour
     [SerializeField] float sunSetPos;
     [SerializeField] float fullExposurePos;
 
+    public Action NewDayAction;
+
     Links links;
     ShowDayNumber showDayNumber;
 
@@ -198,10 +200,13 @@ public class DayNight : MonoBehaviour
         if (links.music.music.clip != links.music.dayMusic && !links.music.isAreaMusic) links.music.DayMusic();
 
         if (!links.player.isDead) 
-        { 
-            if (!isLoadGame) thisDay++;
+        {
+            if (!isLoadGame)
+            {
+                thisDay++;
+                NewDayAction?.Invoke();
+            }
             if (!isDungeon) ShowDay();
-            links.questWindow.QuestEventRecount();
             isLoadGame = false;
         }
         else links.player.isDead = false;

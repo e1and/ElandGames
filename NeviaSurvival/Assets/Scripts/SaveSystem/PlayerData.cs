@@ -171,9 +171,9 @@ public class PlayerData
         }
 
         buildIconsState = new List<bool>();
-        for (int i = 0; i < player.links.building.allBuildIcons.Count; i++)
+        for (int i = 0; i < player.links.buildingHandler.allBuildIcons.Count; i++)
         {
-            buildIconsState.Add(player.links.building.allBuildIcons[i].activeSelf);
+            buildIconsState.Add(player.links.buildingHandler.allBuildIcons[i].activeSelf);
         }
         
 

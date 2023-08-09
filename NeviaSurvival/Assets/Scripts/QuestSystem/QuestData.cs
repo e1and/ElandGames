@@ -7,11 +7,13 @@ public class QuestData : ScriptableObject
 {
     public string questName;
     public string id;
+    public string Briefing;
     public QuestType questType;
     public QuestImageType questImageType;
     public QuestTargetPlace questTarget;
+    public int questUnits; // num of enemies / num of props / num of items / distance to explore..
     public int questAreaRadius;
-    public string Briefing;
+    
     [TextArea(10, 5)]
     public string Description;
     [Space]
@@ -26,16 +28,13 @@ public class QuestData : ScriptableObject
     [Space]
     [TextArea(10, 5)]
     public string FinalText;
-    [Space] 
-    public bool isTime;
-    public int days;
     [Space]
-    public bool isOpenDoor;
     public QuestDoor door;
     
-
     public EnemyType enemyType;
-    public int questUnits; // num of enemies / num of props / num of items / distance to explore..
+
+    public BuildingType buildingType;
+
     [Header("Фраза игрока для одиночного квеста")]
     public string playerCompleteQuestPhrase;
     [Space(20)]

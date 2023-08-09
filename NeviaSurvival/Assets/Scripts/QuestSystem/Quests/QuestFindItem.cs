@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class QuestFindItem : Quest
 {
-    CampHandler questCamp;
-
     public override void SetQuestUnitsNeed()
     {
         QuestUnitsNeed = questData.questUnits;

@@ -72,7 +72,7 @@ public class Player : MonoBehaviour
     public Vector3 deathPlace;
     public GameObject PlayerFollowCamera;
     public GameObject sleepCamera;
-    public string CharacterName;
+    public string CharacterName = "Эланд";
     public Sprite CharacterIcon;
 
     float deltaWarm;

@@ -82,7 +82,7 @@ public class MousePoint : MonoBehaviour
     [SerializeField] Image progressIndicator;
     public Coroutine openingCoroutine;
     public StarterAssetsInputs inputs;
-    Building building;
+    BuildingHandler _buildingHandler;
 
     [SerializeField] GameObject buildPlaceParent;
 
@@ -114,7 +114,7 @@ public class MousePoint : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         controller = GetComponent<CharacterController>();
         inputs = links.inputs;
-        building = GetComponent<Building>();
+        _buildingHandler = GetComponent<BuildingHandler>();
         player = links.player;
         questWindow = links.questWindow;
         questHandler = links.questHandler;
@@ -172,8 +172,8 @@ public class MousePoint : MonoBehaviour
                 // Точка строительства только на террейне или слое default
                 if (hit.collider.gameObject.layer == 12 || hit.collider.gameObject.layer == 15)
                 {
-                    building.buildingPlace = hit.point;
-                    building.buildingNormal = hit.normal;
+                    _buildingHandler.buildingPlace = hit.point;
+                    _buildingHandler.buildingNormal = hit.normal;
                 }
 
                 itemInfoPanel.SetActive(false);
@@ -337,7 +337,7 @@ public class MousePoint : MonoBehaviour
                                         {
                                             item.GetComponent<Campfire>().AddFireWood();
                                             player.Wood--;
-                                            links.building.SpendWood(1);
+                                            links.buildingHandler.SpendWood(1);
                                             Animator.SetTrigger("Use");
                                             inventoryWindow.Redraw();
                                         }
@@ -679,7 +679,6 @@ public class MousePoint : MonoBehaviour
         { 
             door.isLocked = false;
             door.OpenClose();
-            links.questWindow.QuestEventRecount();
         }
         player.PlayerControl(true);
         progressIndicator.fillAmount = 0;

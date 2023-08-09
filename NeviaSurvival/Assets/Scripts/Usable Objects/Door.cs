@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Door : MonoBehaviour
 {
@@ -26,6 +28,8 @@ public class Door : MonoBehaviour
     public GameObject miniMapIcon;
     public Material openedDoorMaterial;
     public Material closedDoorMaterial;
+    
+    public Action doorOpenedAction;
     
     Links links;
 
@@ -101,6 +105,7 @@ public class Door : MonoBehaviour
                 if (isLocked)
                 {
                     mousePoint.Comment("Ключ подошёл!");
+                    doorOpenedAction?.Invoke();
 
                     if (miniMapIcon != null) miniMapIcon.GetComponent<MeshRenderer>().material = openedDoorMaterial;
                     if (inventoryWindow.LeftHandItem == key)

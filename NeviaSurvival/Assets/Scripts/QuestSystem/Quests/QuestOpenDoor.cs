@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class QuestOpenDoor : Quest
 {
-    CampHandler questCamp;
+    Door questDoor;
 
     public override void SetQuestUnitsNeed()
     {
@@ -15,17 +15,17 @@ public class QuestOpenDoor : Quest
     public override void SetQuestTarget(GameObject target)
     {
         base.SetQuestTarget(target);
-        if (questTarget.TryGetComponent(out CampHandler camp)) questCamp = camp;
+        if (questTarget.TryGetComponent(out Door door)) questDoor = door;
     }
 
     public override void SubscribeToEvents()
     {
-        CheckQuestEnemies();
+        CheckDoorState();
     }
 
-    public void CheckQuestEnemies()
+    public void CheckDoorState()
     {
-        if (questCamp != null) questCamp.itemFoundAction += QuestUnitDone;
+        if (questDoor != null) questDoor.doorOpenedAction += QuestUnitDone;
     }
 
     public override void UpdateQuestUnits()
@@ -35,8 +35,7 @@ public class QuestOpenDoor : Quest
 
     private void OnDisable()
     {
-        if (questCamp != null && questData.questType == QuestType.Enemies)
-            questCamp.itemFoundAction -= QuestUnitDone;
+        if (questDoor != null) questDoor.doorOpenedAction -= QuestUnitDone;
     }
 
 }

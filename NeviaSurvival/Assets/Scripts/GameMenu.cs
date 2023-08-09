@@ -33,6 +33,7 @@ public class GameMenu : MonoBehaviour
         ui.statusPanel.SetActive(true);
         if (isRandomSpawnPoint) links.player.RandomSpawnPoint();
         links.player.Death();
+        links.questHandler.AddStartQuests();
 
     }
 

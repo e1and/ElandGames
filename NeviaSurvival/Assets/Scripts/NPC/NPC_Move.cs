@@ -201,7 +201,7 @@ public class NPC_Move : MonoBehaviour
         //}
 
         _distanceToTarget = Vector3.Distance(transform.position, Player.transform.position);
-        _heightToTarget = Mathf.Abs(transform.position.y - Game.Player.transform.position.y);
+        _heightToTarget = Mathf.Abs(transform.position.y - Player.transform.position.y);
         _distanceToWanderPoint = Vector3.Distance(transform.position, WanderPoint);
 
         // Страх огня
@@ -299,7 +299,7 @@ public class NPC_Move : MonoBehaviour
         // Ускоренный поворот к цели на ближней дистанции
         if (_distanceToTarget < _minFollowDistance + 0.5f && _heightToTarget < 1 && !isFire)
         {
-            RotateToTarget(Game.Player.gameObject);
+            RotateToTarget(Player.gameObject);
         }
     }
 

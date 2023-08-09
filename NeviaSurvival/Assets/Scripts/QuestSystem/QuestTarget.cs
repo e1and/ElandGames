@@ -8,6 +8,7 @@ public class QuestTarget : MonoBehaviour
     public QuestTargetPlace thisTargetPlace;
 
     public Action targetDestroyedAction;
+    
 
     private void OnDisable()
     {

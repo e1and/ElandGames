@@ -5,7 +5,7 @@ public class Links : MonoBehaviour
 {
     public Player player;
     public MousePoint mousePoint;
-    public Building building;
+    public BuildingHandler buildingHandler;
     public InventoryWindow inventoryWindow;
     public StorageWindow storageWindow;
     public Cooking cooking;
@@ -13,6 +13,7 @@ public class Links : MonoBehaviour
     public SaveObjects saveObjects;
     public QuestHandler questHandler;
     public QuestWindow questWindow;
+    public DialogueHandler dialogueHandler;
     public ItemSpawner itemSpawner;
     public ItemRandomizer itemRandomizer;
     public UILinks ui;

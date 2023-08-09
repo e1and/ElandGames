@@ -62,6 +62,13 @@ public class QuestGiver : MonoBehaviour
                 break;
             }
         }
+
+        QuestUpdateDelay();
+    }
+
+    async void QuestUpdateDelay()
+    {
+        await UniTask.DelayFrame(1);
         questHandler.links.questWindow.QuestUpdate();
     }
 
@@ -80,7 +87,7 @@ public class QuestGiver : MonoBehaviour
         questHandler.RewardVFX();
         questHandler.completedQuests.Add(quest.questData);
         questHandler.takenQuestList.Remove(quest.questData);
-        questHandler.links.questWindow.GetQuestBlockByQuestData(quest.questData).gameObject.SetActive(false);
+        questHandler.GetQuestByQuestData(quest.questData).questBlock.gameObject.SetActive(false);
 
         await UniTask.Delay(questHandler.questNotice.GetNoticeTime() * 500);
         questHandler.questNotice.CloseQuestRewardPanel();

@@ -72,10 +72,10 @@ public class PlayerSaveLoad : MonoBehaviour
 
         player.links.questWindow.QuestUpdate();
 
-        for (int i = 0; i < player.links.building.allBuildIcons.Count; i++)
+        for (int i = 0; i < player.links.buildingHandler.allBuildIcons.Count; i++)
         {
             if (data.buildIconsState.Count > i)
-                player.links.building.allBuildIcons[i].SetActive(data.buildIconsState[i]);
+                player.links.buildingHandler.allBuildIcons[i].SetActive(data.buildIconsState[i]);
         }
         
 
@@ -227,7 +227,7 @@ public class PlayerSaveLoad : MonoBehaviour
     BuildData BuildById(string id)
     {
         if (id == null) return null;
-        else return player.links.building.BuildList[id];
+        else return player.links.buildingHandler.BuildList[id];
     }
 
     QuestData QuestById(string id)
