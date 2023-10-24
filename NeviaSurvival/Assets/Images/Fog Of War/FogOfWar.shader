@@ -41,7 +41,7 @@ Shader "Custom/FogOfWar" {
 			half4 baseColor2 = tex2D (_MainTex, IN.uv_MainTex + float2(0, -_Blur));
 			half4 baseColor3 = tex2D (_MainTex, IN.uv_MainTex + float2(_Blur, 0));
 			half4 baseColor4 = tex2D (_MainTex, IN.uv_MainTex + float2(0, _Blur));
-			half4 baseColor = 0.25 * (baseColor1 + baseColor2 + baseColor3 + baseColor4);
+			half4 baseColor = 0.1 * (baseColor1 + baseColor2 + baseColor3 + baseColor4);
 			o.Albedo = _Color.rgb * baseColor.b;
 			o.Alpha = _Color.a - baseColor.g;
 		}

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,7 +22,17 @@ public class UILinks : MonoBehaviour
     public Slider BurningIndicator;
     public Image progressIndicator;
 
-    [Header("Окно статистики:")]
+    public Slider XPIndicator;
+
+    public TMP_Text areaTitle;
+    public TMP_Text locationTitle;
+
+    public List<string> locationTitles;
+
+    [Header("Окно статистики:")] 
+    public TMP_Text levelText;
+    public TMP_Text xpText;
+    public TMP_Text gainXPText;
     public TMP_Text statsTimeIndicator;
     public Text nightmaresIndicator;
     public Text newSkillPointsIndicator;
@@ -68,4 +80,81 @@ public class UILinks : MonoBehaviour
     public TMP_Text pressToDrop;
 
 
+    private List<Task> tasks = new List<Task>();
+
+    public async void ShowTextInARow(TMP_Text textBlock, TMP_Text textBlock2, string text, string text2)
+    {
+        Task previuosTask = null;
+        if (tasks.Count > 0) previuosTask = tasks[^1];
+        
+        Task task = ShowText(textBlock, textBlock2, text, text2, previuosTask);
+        
+        tasks.Add(task);
+        await task;
+        tasks.Remove(task);
+    }
+    
+    public async Task ShowText(TMP_Text textBlock, TMP_Text textBlock2, string text, string text2, Task task)
+    {
+        if (task != null) await task;
+        
+        Color tempColor = textBlock.color;
+        tempColor.a = 0;
+        textBlock.color = tempColor;
+        textBlock.text = text;
+
+        Color tempColor2 = Color.black;
+        if (textBlock2 != null)
+        {
+            tempColor2 = textBlock2.color;
+            tempColor2.a = 0;
+            textBlock2.color = tempColor2;
+            textBlock2.text = text2;
+        }
+        
+        while (tempColor.a < 1)
+        {
+            tempColor.a += 0.04f;
+            textBlock.color = tempColor;
+            if (textBlock2 != null)
+            {
+                tempColor2.a += 0.04f;
+                textBlock2.color = tempColor2;
+            }
+
+            await UniTask.DelayFrame(1);
+        }
+        
+        tempColor.a = 1;
+        textBlock.color = tempColor;
+        if (textBlock2 != null)
+        {
+            tempColor2.a = 1;
+            textBlock2.color = tempColor2;
+        }
+
+        await UniTask.Delay(2000);
+
+        while (tempColor.a > 0)
+        {
+            tempColor.a -= 0.04f;
+            textBlock.color = tempColor;
+
+            if (textBlock2 != null)
+            {
+                tempColor2.a -= 0.04f;
+                textBlock2.color = tempColor2;
+            }
+
+            await UniTask.DelayFrame(1);
+        }
+        tempColor.a = 0;
+        textBlock.color = tempColor;
+        
+        if (textBlock2 != null)
+        {
+            tempColor2.a = 0;
+            textBlock2.color = tempColor2;
+        }
+    }
 }

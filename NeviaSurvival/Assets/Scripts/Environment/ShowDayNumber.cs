@@ -27,7 +27,10 @@ public class ShowDayNumber : MonoBehaviour
     public Color dayColor;
     public IEnumerator ShowThisDayNumber()
     {
-        dayColor.a = 0;
+        links.ui.ShowTextInARow(links.dayNight.dayIndicator, null, "Δενό " + links.dayNight.thisDay, null);
+        yield return null;
+        
+        /*dayColor.a = 0;
 
         Debug.Log("Show day number " + links.dayNight.thisDay);
         yield return new WaitForSeconds(3);
@@ -56,6 +59,7 @@ public class ShowDayNumber : MonoBehaviour
             yield return null;
         }
         dayColor.a = 0;
-        links.dayNight.dayIndicator.text = "";
+        links.dayNight.dayIndicator.color = dayColor;
+        links.dayNight.dayIndicator.text = "";*/
     }
 }

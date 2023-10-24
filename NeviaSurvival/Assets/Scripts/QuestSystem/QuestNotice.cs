@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -15,19 +16,22 @@ public class QuestNotice : MonoBehaviour
     [SerializeField] TMP_Text rewardDescriptionText;
     [SerializeField] int noticeTime = 5;
     [SerializeField] QuestHandler questHandler;
-    
+    private Links links;
+
+    private void Awake()
+    {
+        links = questHandler.links;
+    }
+
     private void Start()
     {
-        questNoticePanel.SetActive(false);
         rewardNoticePanel.SetActive(false);
     }
 
     public void ShowQuestNotice(QuestData questData)
     {
         questText.text = questData.questName;
-        questDescriptionText.text = questData.Description;
-        questImage.sprite = questHandler.QuestImage(questData);
-        StartCoroutine(ShowQuestNoticePanel());
+        links.ui.ShowTextInARow(questText, questDescriptionText, questData.questName, questDescriptionText.text);
     }
 
     IEnumerator ShowQuestNoticePanel()

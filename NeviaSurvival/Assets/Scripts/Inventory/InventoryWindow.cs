@@ -590,7 +590,7 @@ public class InventoryWindow : MonoBehaviour
     public void WeaponRandomDamage(Weapon weapon)
     {
         weapon.GetComponent<ItemInfo>().durability -= Random.Range(0, 3);
-        Debug.LogError("weapon damage");
+        Debug.Log("weapon damage");
         if (weapon.GetComponent<ItemInfo>().durability <= 0)
         {
             weapon.gameObject.SetActive(false);

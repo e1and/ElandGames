@@ -427,8 +427,8 @@ public class MousePoint : MonoBehaviour
                 Description();
             }
 
-            if (Input.GetMouseButton(1) && pointedIcon != null && !pointedIcon.GetComponent<InventoryIcon>().isInInventory &&
-                !pointedIcon.GetComponent<InventoryIcon>().isEquiped)
+            if (Input.GetMouseButton(1) && pointedIcon != null && pointedIcon.TryGetComponent(out InventoryIcon icon2) && !icon2.isInInventory &&
+                !icon2.isEquiped)
             {
                 TryCollect(pointedIcon.GetComponent<ItemInfo>(), pointedIcon.GetComponent<InventoryIcon>().item3dObject);
             }

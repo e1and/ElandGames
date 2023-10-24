@@ -8,6 +8,7 @@ public class DescribeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 {
     public MousePoint mousePoint;
     public Links links;
+    public bool isSound;
 
     private void Start()
     {
@@ -17,6 +18,7 @@ public class DescribeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void OnPointerEnter(PointerEventData eventData)
     {
         EnterUI();
+        if (isSound) links.sounds.PointSound();
     }
     public void EnterUI()
     {

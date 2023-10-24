@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -44,6 +45,8 @@ public class Player : MonoBehaviour
     public int Stamina = 100;
     public int Oxygen = 100;
     public int Wood = 0;
+    public int XP = 0;
+    public int Level;
     [Header("Развиваемые параметры")]
     public int maxHealth = 100;
     public int maxCold = 100;
@@ -65,7 +68,9 @@ public class Player : MonoBehaviour
     [Space]
     public UILinks ui;
     public Links links;
-    [Space]
+    [Space] 
+    public Zone zone;
+    private Zone lastZone;
     public GameObject spawnPoint;
     public List<GameObject> spawnpoints;
     public GameObject sleepPlace;
@@ -914,6 +919,47 @@ public class Player : MonoBehaviour
         if (skillIndex == 3) maxEnergy++;
         survivalPoint--;
         UpdateSkillPoints();
+    }
+
+    public float zoneTitleTimer;
+    public async void ChangeZone(Zone newZone)
+    {
+        if (newZone == zone || newZone == lastZone || zoneTitleTimer > 0) return;
+
+        lastZone = zone;
+        zone = newZone;
+        zoneTitleTimer = 2;
+
+        newZone.Show();
+        
+        while (zoneTitleTimer > 0)
+        {
+            zoneTitleTimer -= 1;
+            await Task.Delay(1000);
+        }
+    }
+
+    public void ChangeXP(int xp)
+    {
+        XP += xp;
+
+        if (XP >= 100 * Level)
+        {
+            XP -= 100 * Level;
+            Level++;
+            ui.XPIndicator.maxValue = 100 * Level;
+            ui.levelText.text = "Уровень " + Level;
+            ui.XPIndicator.GetComponent<ItemInfo>().itemComment = ui.levelText.text;
+            links.sounds.LevelUpSound();
+        }
+        else
+        {
+            links.sounds.GainXPSound();
+        }
+        
+        ui.XPIndicator.value = XP;
+        ui.xpText.text = ((Level - 1) * 100 + XP).ToString();
+        ui.XPIndicator.GetComponent<ItemInfo>().itemDescription = XP + " / " + 100 * Level;
     }
 }
 
