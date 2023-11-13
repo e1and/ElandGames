@@ -37,6 +37,7 @@ public class Player : MonoBehaviour
     public bool isDead;
     public bool isControl;
     public bool isAttacking;
+    public bool isReading;
     [Header("Текущие параметры игрока")]
     public int Health = 100;
     public int Cold = 100;
@@ -62,7 +63,7 @@ public class Player : MonoBehaviour
     [Header("Скорость восстановления параментров")]
     public int restoreEnergy = 1;  // Скорость восстановления энергии
     [Header("Очки прокачки")]
-    public int survivalPoint;
+    public int skillPoint;
     [Header("Статистика")]
     public int nighmares = 0;
     [Space]
@@ -114,6 +115,8 @@ public class Player : MonoBehaviour
     public DayNight DayTime;
     public InventoryWindow inventoryWindow;
     public GameObject grassStack;
+    
+    public Action SleepForHourAction;
 
     private void Awake()
     {
@@ -278,7 +281,20 @@ public class Player : MonoBehaviour
             {
                 deltaWarm += Time.deltaTime * (feelingTemperature - DayTime.freezeTemperature) * 0.02f * gameMinute;
                 if (deltaWarm > 1)
-                { Cold++; deltaWarm = 0; }
+                {
+                    Cold++; deltaWarm = 0; 
+                    if (Cold < 50)
+                    {
+                        ui.freezingImageColor.a = (50 - Cold) * 0.01f;
+                        ui.freezingEffect.color = ui.freezingImageColor;
+                        if (Cold > 5) links.sounds.Freezing(false);
+                    }
+                    else if (ui.freezingImageColor.a != 0)
+                    {
+                        ui.freezingImageColor.a = 0;
+                        ui.freezingEffect.color = ui.freezingImageColor;
+                    }
+                }
             }
         }
         else
@@ -291,6 +307,12 @@ public class Player : MonoBehaviour
                 {
                     Cold--;
                     deltaWarm = 0;
+                    if (Cold < 50)
+                    {
+                        ui.freezingImageColor.a = (50 - Cold) * 0.01f;
+                        ui.freezingEffect.color = ui.freezingImageColor;
+                        if (Cold < 2) links.sounds.Freezing(true);
+                    }
                 }
             }
             else  // Потеря здоровья от замерзания
@@ -325,6 +347,14 @@ public class Player : MonoBehaviour
                 else animator.SetBool("isTired", false);
             }
         }
+        else if (Energy == 0 && !isOnBed)
+        {
+            // Потеря здоровья от усталости
+
+            deltaHealth -= Time.deltaTime * 10 * gameMinute * 0.02f;
+            if (deltaHealth < -1)
+            { Health--; deltaHealth = 0; }
+        }
         
         // Множители влияющие на скорость траты энергии
         if (mousePoint.isCarry) carryFactor = 1 + mousePoint.carryWeight * 10 / 100; else carryFactor = 1;
@@ -349,6 +379,7 @@ public class Player : MonoBehaviour
         if (Health <= 0)
         {
             Death();
+            links.sounds.DeathSound();
         }
 
         // Переключение иконок при состоянии замерзания/согревания
@@ -477,6 +508,7 @@ public class Player : MonoBehaviour
 
         float sleepTime = 0;
         float awakeTime = Random.Range(8f, 12f);
+        float sleepHour = 0;
 
         bool isGetUp = false;
 
@@ -488,6 +520,12 @@ public class Player : MonoBehaviour
             if (Food == 0) { links.mousePoint.Comment("Не могу нормально спать, когда в желудке так пусто!"); GetUp(); isGetUp = true; break; }
             if (Cold == 0) { links.mousePoint.Comment("Слишком холодно, чтобы дальше спать!"); GetUp(); isGetUp = true; break; }
             sleepTime += Time.deltaTime * links.time.timeFactor / 3600;
+            sleepHour += Time.deltaTime * links.time.timeFactor / 3600;
+            if (sleepHour > 1)
+            {
+                sleepHour = 0;
+                SleepForHourAction?.Invoke();
+            }
             if (sleepTime > awakeTime) { links.mousePoint.Comment($"Я выспался! Кажется я проспал часов {Mathf.Round(awakeTime)}!"); break; }
 
             // Восстановление здоровья во время сна при достаточной сытости
@@ -500,6 +538,9 @@ public class Player : MonoBehaviour
                     deltaHealth = 0;
                 }
             }
+            
+            
+            
             yield return null;
         }
 
@@ -639,6 +680,7 @@ public class Player : MonoBehaviour
             links.saveInventory.SaveContainers();
             isStart = false;
         }
+        
 
         time.Cycle.Hour = saveTime;
         time.Cycle.Day = saveDay;
@@ -652,7 +694,7 @@ public class Player : MonoBehaviour
         links.saveInventory.LoadItems();
         isDungeon = saveDungeon;
 
-        if (saveTime >= 6 && saveTime < 18) DayTime.Day(); else DayTime.Night();
+        if (saveTime is >= 6 and < 18) DayTime.Day(); else DayTime.Night();
 
         links.dayNight.ShowDay();
         Light();
@@ -672,6 +714,12 @@ public class Player : MonoBehaviour
         mousePoint.IconHighLight.SetActive(false);
 
         inventoryWindow.RecountWood();
+        
+        ui.freezingImageColor.a = 0;
+        ui.freezingEffect.color = ui.freezingImageColor;
+        links.sounds.Freezing(false);
+
+        links.dayNight.temperature = links.dayNight.hour is > 7 and < 19 ? 20 : 5;
 
         links.mousePoint.Comment("Приснится же такое!");
     }
@@ -790,19 +838,22 @@ public class Player : MonoBehaviour
         {
             mousePoint.Comment("Перекусить бы чего-нибудь");
             foodAmountForMessage = 15;
+            links.sounds.HungerSound(0);
         }
         if (Food == 15 && foodAmountForMessage == Food)
         {
             mousePoint.Comment("Как же хочется есть!");
             foodAmountForMessage = 0;
+            links.sounds.HungerSound(1);
         }
         if (Food == 0 && foodAmountForMessage == Food)
         {
             mousePoint.Comment("В животе совсем пусто! Я теряю силы!");
             foodAmountForMessage = 30;
+            links.sounds.HungerSound(2);
         }
     }
-
+    
     int warmAmountForMessage = 100;
     int coldAmountForMessage = 40;
     void ColdMessages()
@@ -812,26 +863,34 @@ public class Player : MonoBehaviour
             if (isCampfire) mousePoint.Comment("Я полностью согрелся!");
             warmAmountForMessage = 50;
         }
-        if (Cold == 50 && warmAmountForMessage == Cold)
+        else if (Cold == 50 && warmAmountForMessage == Cold)
         {
             mousePoint.Comment("Прохладно!");
             warmAmountForMessage = maxCold;
+            links.sounds.FreezingSound(0);
         }
 
-        if (Cold == 40 && coldAmountForMessage == Cold)
+        if (Cold == 60 && coldAmountForMessage == Cold)
+        {
+            coldAmountForMessage = 40;
+        }
+        else if (Cold == 40 && coldAmountForMessage == Cold)
         {
             mousePoint.Comment("Холодает!");
             coldAmountForMessage = 20;
+            links.sounds.FreezingSound(1);
         }
-        if (Cold == 20 && coldAmountForMessage == Cold)
+        else if (Cold == 20 && coldAmountForMessage == Cold)
         {
             mousePoint.Comment("Что-то холодновато! Надо бы согреться!");
             coldAmountForMessage = 0;
+            links.sounds.FreezingSound(2);
         }
-        if (Cold == 0 && coldAmountForMessage == Cold)
+        else if (Cold == 0 && coldAmountForMessage == Cold)
         {
             mousePoint.Comment("Я совсем замёрз! Холод забирает мои жизненные силы!");
-            coldAmountForMessage = 40;
+            coldAmountForMessage = 60;
+            links.sounds.FreezingSound(3);
         }
     }
 
@@ -842,21 +901,25 @@ public class Player : MonoBehaviour
         {
             mousePoint.Comment("Что-то я подустал! Неплохо бы найти место для отдыха!");
             energyAmountForMessage = 25;
+            links.sounds.TiredSound(0);
         }
         if (Energy == 25 && energyAmountForMessage == Energy)
         {
             mousePoint.Comment("Усталость меня одолевает!");
             energyAmountForMessage = 20;
+            links.sounds.TiredSound(1);
         }
         if (Energy == 20 && energyAmountForMessage == Energy)
         {
             mousePoint.Comment("Ноги уже еле держат!");
             energyAmountForMessage = 0;
+            links.sounds.TiredSound(2);
         }
         if (Energy == 0 && energyAmountForMessage == Energy)
         {
             mousePoint.Comment("Сил совсем нет! Готов упасть прямо здесь!");
             energyAmountForMessage = 30;
+            links.sounds.TiredSound(3);
         }
     }
 
@@ -903,11 +966,11 @@ public class Player : MonoBehaviour
 
     public void UpdateSkillPoints()
     {
-        ui.newSkillPointsIndicator.text = "" + survivalPoint;
-        if (survivalPoint > 0) ui.upgradeButtons.SetActive(true);
+        ui.newSkillPointsIndicator.text = "" + skillPoint;
+        if (skillPoint > 0) ui.upgradeButtons.SetActive(true);
         else ui.upgradeButtons.SetActive(false);
 
-        if (survivalPoint > 0) ui.newSkillPointsSign.SetActive(true);
+        if (skillPoint > 0) ui.newSkillPointsSign.SetActive(true);
         else ui.newSkillPointsSign.SetActive(false);
     }
 
@@ -917,13 +980,18 @@ public class Player : MonoBehaviour
         if (skillIndex == 1) maxCold++;
         if (skillIndex == 2) maxFood++;
         if (skillIndex == 3) maxEnergy++;
-        survivalPoint--;
+        if (skillIndex == 4) maxStamina++;
+        if (skillIndex == 5) maxOxygen++;
+        skillPoint--;
         UpdateSkillPoints();
     }
 
     public float zoneTitleTimer;
     public async void ChangeZone(Zone newZone)
     {
+        ui.mapAreaTitle.text = newZone.title;
+        ui.mapLocationTitle.text = links.ui.locationTitles[newZone.location];
+        
         if (newZone == zone || newZone == lastZone || zoneTitleTimer > 0) return;
 
         lastZone = zone;
@@ -931,7 +999,7 @@ public class Player : MonoBehaviour
         zoneTitleTimer = 2;
 
         newZone.Show();
-        
+
         while (zoneTitleTimer > 0)
         {
             zoneTitleTimer -= 1;
@@ -939,8 +1007,10 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void ChangeXP(int xp)
+    public void ChangeXP(int xp, string text)
     {
+        links.ui.ShowXpInARow(xp, text);
+        
         XP += xp;
 
         if (XP >= 100 * Level)
@@ -951,6 +1021,9 @@ public class Player : MonoBehaviour
             ui.levelText.text = "Уровень " + Level;
             ui.XPIndicator.GetComponent<ItemInfo>().itemComment = ui.levelText.text;
             links.sounds.LevelUpSound();
+            links.questHandler.PlayVFX(links.questHandler.levelUpVfx);
+            skillPoint += 5;
+            UpdateSkillPoints();
         }
         else
         {
@@ -960,6 +1033,11 @@ public class Player : MonoBehaviour
         ui.XPIndicator.value = XP;
         ui.xpText.text = ((Level - 1) * 100 + XP).ToString();
         ui.XPIndicator.GetComponent<ItemInfo>().itemDescription = XP + " / " + 100 * Level;
+    }
+
+    public void StopReading()
+    {
+        isReading = false;
     }
 }
 

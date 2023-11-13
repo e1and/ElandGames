@@ -15,7 +15,8 @@ public class Destructable : MonoBehaviour
     {
         if (other.TryGetComponent(out WeaponCollider weapon))
         {
-            health -= weapon.weapon.damage;
+            if (weapon.weapon.fragility < 2)
+                health -= weapon.weapon.damage;
             
             if (health <= 0)
             {

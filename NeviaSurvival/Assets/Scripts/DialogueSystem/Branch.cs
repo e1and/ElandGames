@@ -18,13 +18,17 @@ public class Branch : ScriptableObject
     [Space]
     [Header("Квест, который выдается на этой фразе")]
     public QuestData questData;
-    [Header("Ветка даилога к которой ведет выполнение квеста")]
-    public Branch nextQuestLink;
-    [Header("Ветка даилога если квест не готов")]
-    public Branch questNotReadyLink;
-    [Header("Ветка даилога если квест еще не выполнен")]
+    [Header("Ветка диалога к которой ведет выполнение квеста")]
+    public Branch questGoToLink;
+    [Header("Ветка диалога если квест еще не выполнен")]
     public Branch questNotCompleteLink;
+
+    [Space] [Header("Ветка диалога если квест не готов")]
+    public bool isRepeatable;
+    public Branch questNotReadyLink;
     [Space]
     public bool isSelectableQuest;
     public Branch LinkToGetQuest;
+    public bool isCloseDialogue;
+    public bool isEscort;
 }

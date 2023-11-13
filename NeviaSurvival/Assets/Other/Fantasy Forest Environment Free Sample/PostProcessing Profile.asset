@@ -60,6 +60,9 @@ MonoBehaviour:
   thicknessModifier:
     overrideState: 1
     value: 1.75
+  zBias:
+    overrideState: 0
+    value: 0.0001
   directLightingStrength:
     overrideState: 0
     value: 0
@@ -246,13 +249,13 @@ MonoBehaviour:
     value: 100
   lift:
     overrideState: 1
-    value: {x: 0.96247107, y: 0.9718533, z: 1, w: 0.055959605}
+    value: {x: 0.98240834, y: 0.9868063, z: 1, w: 0.055959605}
   gamma:
     overrideState: 1
-    value: {x: 1, y: 1, z: 1, w: 0.16734688}
+    value: {x: 1, y: 0.99335426, z: 0.9734169, w: 0.16734688}
   gain:
     overrideState: 1
-    value: {x: 1, y: 1, z: 1, w: 1}
+    value: {x: 1, y: 0.99257034, z: 0.98305655, w: 1}
   masterCurve:
     overrideState: 0
     value:

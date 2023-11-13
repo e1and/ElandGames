@@ -475,6 +475,7 @@ public class MousePoint : MonoBehaviour
                     scrollPanel.SetActive(true);
                     scrollTitle.text = scroll.title;
                     scrollText.text = scroll.text;
+                    player.isReading = true;
 
                     if (scroll.questData != null)
                     {

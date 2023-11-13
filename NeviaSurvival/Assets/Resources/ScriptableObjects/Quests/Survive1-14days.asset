@@ -16,7 +16,7 @@ MonoBehaviour:
   id: survive14
   Briefing: "\u041F\u0440\u043E\u0436\u0438\u0442\u044C \u0434\u0432\u0435 \u043D\u0435\u0434\u0435\u043B\u0438"
   questType: 6
-  questImageType: 0
+  questImageType: 4
   questTarget: {fileID: 0}
   questUnits: 14
   questAreaRadius: 0
@@ -34,6 +34,7 @@ MonoBehaviour:
   rewardNextQuestData: {fileID: 11400000, guid: c42513e9ae4e46d4b92cab43c549ccf9, type: 2}
   RewardItem: {fileID: 11400000, guid: ef67e86406b127f41b342f10391c3671, type: 2}
   RewardSkillPoint: 4
+  RewardXP: 240
   RewardNewBlueprint: 0
   FinalText: "\u0414\u0432\u0435 \u043D\u0435\u0434\u0435\u043B\u0438 \u044D\u0442\u043E
     \u0443\u0436\u0435 \u0441\u0435\u0440\u044C\u0435\u0437\u043D\u043E! \u0422\u0430\u043A
@@ -41,6 +42,7 @@ MonoBehaviour:
     \u0438 \u0434\u043E \u0437\u0438\u043C\u044B \u0434\u043E\u0442\u044F\u043D\u0435\u043C!"
   door: 0
   enemyType: 0
+  buildingType: 0
   playerCompleteQuestPhrase: 
   questChain: []
   playerCompleteQuestPhrases: []

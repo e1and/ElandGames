@@ -469,6 +469,8 @@ public class ThirdPersonController : MonoBehaviour
 			yield return null;
 		}
 
+
+
 		isLookLocked = false;
 	}
 
@@ -493,6 +495,12 @@ public class ThirdPersonController : MonoBehaviour
 		_player.isAbleJump = true;
 	}
 
+	float fallHeight;
+	float fallDamage;
+	public bool isFallDamage;
+	private float startFallY;
+	
+	
 	private void JumpAndGravity()
 	{
 		if (Grounded && !_player.isSwim)
@@ -513,6 +521,20 @@ public class ThirdPersonController : MonoBehaviour
 			if (_verticalVelocity < 0.0f)
 			{
 				_verticalVelocity = -2f;
+				if (isFallDamage)
+				{
+					fallDamage = startFallY - transform.position.y > 2.5f ? 2 * startFallY - transform.position.y : 0;
+					if (fallDamage > 0)
+					{
+						links.sounds.FallSound(1);
+						if (fallDamage > 10) links.sounds.FallDamageSound(1);
+						else links.sounds.FallDamageSound(0);
+					} 
+					else links.sounds.FallSound(0);
+					_player.Health -= (int)Mathf.Round(fallDamage);
+					fallDamage = 0;
+					isFallDamage = false;
+				}
 			}
 
 			// Jump
@@ -542,11 +564,13 @@ public class ThirdPersonController : MonoBehaviour
 		{
 			// reset the jump timeout timer
 			_jumpTimeoutDelta = JumpTimeout;
+			
 
 			// fall timeout
 			if (_fallTimeoutDelta >= 0.0f)
 			{
 				_fallTimeoutDelta -= Time.deltaTime;
+				startFallY = transform.position.y;
 			}
 			else
 			{
@@ -555,6 +579,8 @@ public class ThirdPersonController : MonoBehaviour
 				{
 					_animator.SetBool(_animIDFreeFall, true);
 				}
+
+				isFallDamage = true;
 			}
 
 			// if we are not grounded, do not jump

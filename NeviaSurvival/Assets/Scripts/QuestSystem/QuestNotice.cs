@@ -32,6 +32,7 @@ public class QuestNotice : MonoBehaviour
     {
         questText.text = questData.questName;
         links.ui.ShowTextInARow(questText, questDescriptionText, questData.questName, questDescriptionText.text);
+        links.sounds.NewQuestSound();
     }
 
     IEnumerator ShowQuestNoticePanel()

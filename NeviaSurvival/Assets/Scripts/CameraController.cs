@@ -35,6 +35,12 @@ namespace Cinemachine
             leftHandParentPositionFirstPerson = new Vector3(-0.2f, -0.62f, -0.2f);
 
             RotateCameraToPlayer(false);
+            
+            cinemachineVirtualCamera.m_Lens.FieldOfView = 60;
+            cinemachine.ShoulderOffset = new Vector3(0.7f, -0.4f, 0);
+            cinemachine.CameraDistance = 3f;
+            maxCameraDistance = 8f;
+            minCameraDistance = 2f;
         }
 
         public void RotateCameraToPlayer(bool isDeath)
@@ -82,7 +88,7 @@ namespace Cinemachine
         {
             cinemachine.ShoulderOffset = new Vector3(0f, 0f, 0);
             cinemachine.CameraDistance = 4f;
-            maxCameraDistance = 5f;
+            maxCameraDistance = 8f;
             minCameraDistance = 2f;
             links.PlayerMesh.SetActive(true);
             links.inventoryWindow.backpackParent.gameObject.SetActive(true);

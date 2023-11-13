@@ -17,6 +17,7 @@ public class Swimming : MonoBehaviour
     public void SwimmingStateSwitcher(bool swim)
     {
         player.isSwim = swim;
+        if (swim) player.links.personController.isFallDamage = false;
         animator.SetBool("isSwimming", swim);
     }
 

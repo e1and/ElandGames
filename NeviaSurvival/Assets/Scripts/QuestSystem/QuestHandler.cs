@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum QuestType { ExploreTarget, DestroyTarget, FindItem, OpenDoor, Enemies, DestroyObstacle, SurviveDays, Building }
-public enum QuestImageType { Explore, Destroy, FindItem, OpenDoor }
+public enum QuestType { ExploreTarget, DestroyTarget, FindItem, OpenDoor, Enemies, DestroyObstacle, SurviveDays, Building, Sleep, Escort, Bag }
+public enum QuestImageType { Explore, Destroy, FindItem, OpenDoor, Survive, Build, Sleep, Elf }
 public enum EnemyType { None, Spider, Skeleton, Bear }
 
 public class QuestHandler : MonoBehaviour
@@ -15,6 +15,7 @@ public class QuestHandler : MonoBehaviour
     public List<QuestData> completedQuests; 
     public List<QuestData> takenQuestList;
     public List<QuestData> startQuestList;
+    public QuestData surviveDaysQuest;
     public List<QuestTarget> targetList;
     public Quest activeQuest;
     public Player player;
@@ -24,8 +25,15 @@ public class QuestHandler : MonoBehaviour
 
     [SerializeField] Sprite DefaultQuestImage;
     [SerializeField] Sprite ExploreQuestImage;
+    [SerializeField] Sprite FindItemQuestImage;
+    [SerializeField] Sprite OpenDoorQuestImage;
+    [SerializeField] Sprite SurviveQuestImage;
+    [SerializeField] Sprite BuildQuestImage;
+    [SerializeField] Sprite SleepQuestImage;
+    [SerializeField] Sprite ElfImage;
 
-    public GameObject expirienceVfx;
+    public GameObject levelUpVfx;
+    public GameObject rewardVfx;
     public GameObject miniMapTarget;
     public GameObject miniMapArrow;
     public GameObject miniMapQuestArea;
@@ -81,6 +89,18 @@ public class QuestHandler : MonoBehaviour
             {
                 newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestBuilding>();
             }
+            else if (questData.questType == QuestType.Sleep)
+            {
+                newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestSleep>();
+            }
+            else if (questData.questType == QuestType.Escort)
+            {
+                newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestEscort>();
+            }
+            else if (questData.questType == QuestType.Bag)
+            {
+                newQuest = Instantiate(questPrefab, questBar).AddComponent<QuestBag>();
+            }
 
             newQuest.questHandler = this;
             newQuest.questWindow = questWindow;
@@ -133,7 +153,7 @@ public class QuestHandler : MonoBehaviour
     {
         miniMapArrow.SetActive(true);
 
-        if (!quest.isComplete && quest.questData.questType == QuestType.ExploreTarget || quest.isComplete)
+        if (!quest.isComplete && quest.questData.questType is QuestType.OpenDoor or QuestType.Escort || quest.isComplete)
         miniMapTarget.SetActive(true);
         else miniMapTarget.SetActive(false);
 
@@ -187,19 +207,19 @@ public class QuestHandler : MonoBehaviour
         }
     }
 
-    public void RewardVFX() => StartCoroutine(RewardVFXTimer());
+    public void PlayVFX(GameObject vfx) => StartCoroutine(RewardVFXTimer(vfx));
 
-    IEnumerator RewardVFXTimer()
+    IEnumerator RewardVFXTimer(GameObject vfx)
     {
         float timer = 0;
-        expirienceVfx.SetActive(true);
+        vfx.SetActive(true);
         while (timer < 3)
         { 
-            expirienceVfx.transform.position = player.transform.position;
+            levelUpVfx.transform.position = player.transform.position;
             yield return null;
             timer += Time.deltaTime;
         }
-        expirienceVfx.SetActive(false);
+        vfx.SetActive(false);
     }
 
     public QuestTarget FindQuestTarget(QuestTargetPlace targetPlace)
@@ -230,6 +250,18 @@ public class QuestHandler : MonoBehaviour
         {
             case QuestImageType.Explore:
                 return ExploreQuestImage;
+            case QuestImageType.FindItem:
+                return FindItemQuestImage;
+            case QuestImageType.OpenDoor:
+                return OpenDoorQuestImage;
+            case QuestImageType.Survive:
+                return SurviveQuestImage;
+            case QuestImageType.Build:
+                return BuildQuestImage;
+            case QuestImageType.Sleep:
+                return SleepQuestImage;
+            case QuestImageType.Elf:
+                return ElfImage;
 
             default:
                 return DefaultQuestImage;

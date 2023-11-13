@@ -116,6 +116,9 @@ public class DialogueHandler : MonoBehaviour
         dialoguePanel.SetActive(true);
         SetPhrase(playerPhrase);
         DialogueCameraPosition();
+        answer1.SetActive(false);
+        answer2.SetActive(false);
+        answer3.SetActive(false);
         StartCoroutine(AutoCloseCharacterPhrase());
     }
 
@@ -129,7 +132,8 @@ public class DialogueHandler : MonoBehaviour
     IEnumerator AutoCloseCharacterPhrase()
     {
         yield return new WaitForSeconds(4);
-        CloseCharacterPhrase();
+        if (activeDialogue == null) CloseCharacterPhrase();
+        questHandler.player.isControl = true;
     }
 }
 

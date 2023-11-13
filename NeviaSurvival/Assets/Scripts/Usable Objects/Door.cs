@@ -49,10 +49,14 @@ public class Door : MonoBehaviour
             else animator.SetTrigger("Opened");
             animator.SetBool("Open", true);
         }
-        
+
         if (miniMapIcon != null)
+        {
             if (isLocked) miniMapIcon.GetComponent<MeshRenderer>().material = closedDoorMaterial;
             else miniMapIcon.GetComponent<MeshRenderer>().material = openedDoorMaterial;
+            
+            miniMapIcon.SetActive(false);
+        }
     }
 
     void CheckSaveList()
@@ -87,6 +91,7 @@ public class Door : MonoBehaviour
 
     public bool SearchingKey()
     {
+        miniMapIcon.SetActive(true);
         if (key != null)
         {
             if (inventoryWindow.inventory != null)

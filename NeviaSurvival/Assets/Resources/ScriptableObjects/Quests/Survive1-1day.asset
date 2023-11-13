@@ -17,7 +17,7 @@ MonoBehaviour:
   Briefing: "\u0412\u044B\u0436\u0438\u0442\u044C \u0432 \u0442\u0435\u0447\u0435\u043D\u0438\u0438
     \u043E\u0434\u043D\u043E\u0433\u043E \u0434\u043D\u044F"
   questType: 6
-  questImageType: 0
+  questImageType: 4
   questTarget: {fileID: 0}
   questUnits: 1
   questAreaRadius: 0
@@ -41,6 +41,7 @@ MonoBehaviour:
   rewardNextQuestData: {fileID: 11400000, guid: b24dc0f54f6c81e4a9153ed8cafe72b0, type: 2}
   RewardItem: {fileID: 11400000, guid: 5540ad73f9ddcd94cb8b01afd512cf9e, type: 2}
   RewardSkillPoint: 2
+  RewardXP: 30
   RewardNewBlueprint: 0
   FinalText: "\u041F\u0435\u0440\u0432\u044B\u0439 \u043F\u0440\u043E\u0436\u0438\u0442\u044B\u0439
     \u0434\u0435\u043D\u044C \u0432 \u043C\u0438\u0440\u0435 \u041D\u044D\u0432\u0438\u0438
@@ -51,6 +52,7 @@ MonoBehaviour:
     \u0432 \u0448\u043B\u044F\u043F\u0435! \u041D\u0443 \u043F\u043E\u0447\u0442\u0438..."
   door: 0
   enemyType: 0
+  buildingType: 0
   playerCompleteQuestPhrase: 
   questChain: []
   playerCompleteQuestPhrases: []

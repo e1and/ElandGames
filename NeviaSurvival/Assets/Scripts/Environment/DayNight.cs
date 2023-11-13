@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -96,7 +97,6 @@ public class DayNight : MonoBehaviour
 
     public void Day()
     {
-        
         //sunLight.SetActive(true);
         //moonLight.SetActive(false);
         sunLight.GetComponent<Light>().intensity = 1.3f;
@@ -108,14 +108,27 @@ public class DayNight : MonoBehaviour
 
     public void Night()
     {
-        
-       //sunLight.SetActive(false);
+        //sunLight.SetActive(false);
         //moonLight.SetActive(true);
         moonLight.GetComponent<Light>().intensity = 1f;
         sunLight.GetComponent<Light>().intensity = 0f;
         RenderSettings.ambientSkyColor = nightAmbientColor;
         RenderSettings.ambientEquatorColor = nightAmbientColor2;
         RenderSettings.ambientGroundColor = nightAmbientColor3;
+    }
+
+    async void ChangeDaySoundDelay()
+    {
+        await UniTask.DelayFrame(10);
+        if (isDungeon) return;
+        if (hour > startDayTime && hour < startNightTime)
+        {
+            links.sounds.StartDaySound();
+        }
+        else
+        {
+            links.sounds.StartNightSound();
+        }
     }
 
     public void Dungeon()
@@ -196,6 +209,7 @@ public class DayNight : MonoBehaviour
     IEnumerator StartDay()
     {
         isDay = true;
+        if (!links.player.isStart) ChangeDaySoundDelay();
 
         if (links.music.music.clip != links.music.dayMusic && !links.music.isAreaMusic) links.music.DayMusic();
 
@@ -225,6 +239,8 @@ public class DayNight : MonoBehaviour
     IEnumerator StartNight()
     {
         isDay = false;
+        if (!links.player.isStart) ChangeDaySoundDelay();
+        if (!links.player.isStart) links.questHandler.AddQuest(links.questHandler.surviveDaysQuest);
 
         if (links.music.music.clip != links.music.nightMusic && !links.music.isAreaMusic) links.music.NightMusic();
 

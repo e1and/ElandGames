@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class NPC_Move : MonoBehaviour
 {
@@ -15,9 +17,10 @@ public class NPC_Move : MonoBehaviour
     public bool isNeutral;
     public DamageTrigger damageTrigger;
     public NPC_Attack attackTrigger;
+    public int giveXP = 20;
     public int maxHP = 30;
     public int currentHP = 30;
-    public int coolDown = 60;
+    public int coolDown = 300;
     float timer = 0;
     [SerializeField] bool _isDrawLines;
     public bool _isFearOfFire;
@@ -30,6 +33,8 @@ public class NPC_Move : MonoBehaviour
     [SerializeField] bool _isWander = false;
     [SerializeField] bool _isStay = false;
     [SerializeField] bool _isFollowing = false;
+    [SerializeField] private bool isEscort;
+    [SerializeField] private QuestEscortTarget escortTarget;
     [SerializeField] int activeNavMeshCoroutines;
     [SerializeField] int activeFollowCoroutines;
     [SerializeField] int activeEscapeCoroutines;
@@ -79,7 +84,7 @@ public class NPC_Move : MonoBehaviour
     public Vector3 newTargetPoint = Vector3.zero;
     InventoryWindow inventoryWindow;
 
-    [SerializeField] GameObject[] Waypoints;
+    [SerializeField] List<Transform> Waypoints;
     [SerializeField] GameObject[] EscapePoints;
 
     public Vector3 WanderPoint = Vector3.zero;
@@ -92,7 +97,7 @@ public class NPC_Move : MonoBehaviour
     public AudioClip followSound;
     public AudioClip awakeSound;
 
-
+    public Action EscortFinishedEvent;
 
     private void Start()
     {
@@ -130,6 +135,8 @@ public class NPC_Move : MonoBehaviour
     {
         audioSource.PlayOneShot(deathSound);
         damageTrigger.PlayFallSound();
+        
+        player.ChangeXP(giveXP, "Противник повержен:");
         
         damageTrigger.box.enabled = false;
 
@@ -176,9 +183,40 @@ public class NPC_Move : MonoBehaviour
         activeStayCoroutines = 0;
         activeWanderCoroutines = 0;
     }
+
+    public void Escort()
+    {
+        isEscort = true;
+        agent.SetDestination(player.transform.position);
+        agent.speed = 6;
+    }
+    
     void FixedUpdate()
     {
         Animator.SetFloat("Velocity", agent.velocity.magnitude);
+
+        if (isEscort)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, Player.transform.position);
+            
+            agent.speed = distanceToPlayer > 6 ? 6 : 2;
+
+            agent.SetDestination(distanceToPlayer > 2 ? player.transform.position : transform.position);
+
+            _distanceToTarget = Vector3.Distance(transform.position, escortTarget.transform.position);
+            
+            if (_distanceToTarget < 4)
+            {
+                isEscort = false;
+                Waypoints = escortTarget.NewWayPointList;
+                agent.speed = 2;
+                if (TryGetComponent(out DialogueInterractor dialogue)) dialogue.isEscort = false;
+                EscortFinishedEvent?.Invoke();
+                _isWalk = false;
+            }
+            
+            return;
+        }
 
         if (Input.GetKey(KeyCode.O))
         { 
@@ -315,7 +353,7 @@ public class NPC_Move : MonoBehaviour
 
     void NewWayPoint()
     {
-        WanderPoint = Waypoints[Random.Range(0, Waypoints.Length - 1)].transform.position;
+       WanderPoint = Waypoints[Random.Range(0, Waypoints.Count)].position;
     }
 
     void NewEscapePoint()
@@ -407,7 +445,7 @@ public class NPC_Move : MonoBehaviour
 
         if (!agent.CalculatePath(target, agent.path)) _isWalk = false;
 
-        while (Vector3.Distance(transform.position, target) > 1)
+        while (Vector3.Distance(transform.position, target) > 2)
         {
             Debug.Log("Walk111 " + agent.isOnNavMesh);
             yield return null;

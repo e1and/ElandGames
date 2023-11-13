@@ -48,6 +48,7 @@ public class QuestGiver : MonoBehaviour
         {
             if (quest.QuestData() == questDataData && quest.gameObject.activeSelf)
             {
+                quest.isQuestGiverToFinish = questDataData.isQuestGiverToFinish;
                 quest.ConfigureQuest(questHandler.FindQuestTarget(questDataData.questTarget).gameObject, this);
 
                 if (startQuestData != null) quest.SetRemainQuestChain(startQuestData);
@@ -83,11 +84,14 @@ public class QuestGiver : MonoBehaviour
         questHandler.questNotice.ShowQuestReward(quest.questData);
         quest.isRewarded = true;
         quest.gameObject.SetActive(false);
+        questHandler.GetQuestByQuestData(quest.questData).questBlock.gameObject.SetActive(false);
         questHandler.questList.Remove(quest);
-        questHandler.RewardVFX();
+        
+        questHandler.PlayVFX(questHandler.rewardVfx);
         questHandler.completedQuests.Add(quest.questData);
         questHandler.takenQuestList.Remove(quest.questData);
-        questHandler.GetQuestByQuestData(quest.questData).questBlock.gameObject.SetActive(false);
+        dialogueInterractor.givenQuest = null;
+        questHandler.links.questWindow.QuestUpdate();
 
         await UniTask.Delay(questHandler.questNotice.GetNoticeTime() * 500);
         questHandler.questNotice.CloseQuestRewardPanel();

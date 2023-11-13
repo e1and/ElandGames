@@ -32,7 +32,7 @@ public class PlayerSaveLoad : MonoBehaviour
         player.maxCarryWeight = data.maxCarryWeight;
 
         player.nighmares = data.nightmares;
-        player.survivalPoint = data.survivalPoint;
+        player.skillPoint = data.survivalPoint;
         player.UpdateSkillPoints();
 
         player.isCold = data.isCold;

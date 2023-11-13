@@ -86,8 +86,16 @@ public class GameMenu : MonoBehaviour
 
     public void InfoPanel()
     {
-        if (ui.infoPanel.activeSelf) { ui.infoPanel.SetActive(false); links.mousePoint.isPointUI = false; }
-        else ui.infoPanel.SetActive(true);
+        if (ui.infoPanel.activeSelf)
+        {
+            ui.infoPanel.SetActive(false); links.mousePoint.isPointUI = false;
+            links.PlayerInfoCamera.enabled = false;
+        }
+        else
+        {
+            ui.infoPanel.SetActive(true);
+            links.PlayerInfoCamera.enabled = true;
+        }
     }    
 
     public void QuestPanel()

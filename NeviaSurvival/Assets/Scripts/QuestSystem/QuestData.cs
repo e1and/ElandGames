@@ -18,12 +18,14 @@ public class QuestData : ScriptableObject
     public string Description;
     [Space]
     public Item QuestItem;
+    public bool QuestItemType;
     [Space]
-    [TextArea()]
+    public bool isQuestGiverToFinish;
     public string RewardText;
     public QuestData rewardNextQuestData;
     public Item RewardItem;
     public int RewardSkillPoint;
+    public int RewardXP;
     public Blueprint RewardNewBlueprint;
     [Space]
     [TextArea(10, 5)]

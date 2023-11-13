@@ -125,7 +125,7 @@ public class PlayerData
         maxCarryWeight = player.maxCarryWeight;
 
         nightmares = player.nighmares;
-        survivalPoint = player.survivalPoint;
+        survivalPoint = player.skillPoint;
 
         isCold = player.isCold;
         isCampfire = player.isCampfire;

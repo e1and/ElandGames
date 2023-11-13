@@ -328,7 +328,7 @@ public class SaveInventory : MonoBehaviour
         // Загрузка сохраненных положений всех предметов на уровне
         for (int i = 0; i < items.Count; i++)
         {
-            if (items[i].TryGetComponent(out ItemInfo info) && info.isMovable)
+            if (items[i] != null && items[i].TryGetComponent(out ItemInfo info) && info.isMovable)
             {
                 if (items[i].transform.position != info.savePosition)
                 items[i].transform.position = info.savePosition + new Vector3(0, 1, 0);

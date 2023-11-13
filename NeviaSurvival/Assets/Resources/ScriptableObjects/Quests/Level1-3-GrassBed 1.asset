@@ -17,7 +17,7 @@ MonoBehaviour:
   Briefing: "\u0421\u043E\u043E\u0440\u0443\u0434\u0438\u0442\u044C \u043D\u0430\u0441\u0442\u0438\u043B
     \u0438\u0437 \u0432\u0435\u0442\u043E\u043A \u0438 \u043B\u0438\u0441\u0442\u044C\u0435\u0432"
   questType: 7
-  questImageType: 0
+  questImageType: 5
   questTarget: {fileID: 0}
   questUnits: 1
   questAreaRadius: 0
@@ -42,9 +42,10 @@ MonoBehaviour:
   QuestItem: {fileID: 0}
   RewardText: "+1 \u043E\u0447\u043A\u0430 \u043D\u0430\u0432\u044B\u043A\u043E\u0432
     \u0438 +1 \u0432\u0435\u0442\u043A\u0430"
-  rewardNextQuestData: {fileID: 11400000}
+  rewardNextQuestData: {fileID: 11400000, guid: e0e76572e48393b46bd7a4f79e53431e, type: 2}
   RewardItem: {fileID: 11400000, guid: 524f6668e6bc9d842a2a76fa33018479, type: 2}
   RewardSkillPoint: 1
+  RewardXP: 10
   RewardNewBlueprint: 0
   FinalText: "\u041D\u0430\u0441\u0442\u0438\u043B \u0433\u043E\u0442\u043E\u0432,
     \u043C\u043E\u0436\u043D\u043E \u043D\u0430\u043A\u043E\u043D\u0435\u0446-\u0442\u043E

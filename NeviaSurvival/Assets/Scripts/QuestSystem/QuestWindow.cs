@@ -119,24 +119,54 @@ public class QuestWindow : MonoBehaviour
             if (questHandler.questList[i].questData.questType == QuestType.FindItem)
             {
                 questHandler.questList[i].QuestUnitsDone = 0;
-                
-                if (links.inventoryWindow.inventory != null)
-                    for (int j = 0; j < links.inventoryWindow.inventory.inventoryItems.Count; j++)
-                    {
-                        if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.inventory.inventoryItems[j])
+
+                if (questHandler.questList[i].questData.QuestItemType)
+                {
+                    if (links.inventoryWindow.inventory != null)
+                        for (int j = 0; j < links.inventoryWindow.inventory.inventoryItems.Count; j++)
                         {
-                            if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                            if (links.inventoryWindow.inventory.inventoryItems[j] != null && questHandler.takenQuestList[i].QuestItem.Type ==
+                                links.inventoryWindow.inventory.inventoryItems[j].Type)
+                            {
+                                if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                            }
                         }
+
+                    if (links.inventoryWindow.LeftHandItem != null && questHandler.takenQuestList[i].QuestItem.Type ==
+                        links.inventoryWindow.LeftHandItem.Type)
+                    {
+                        if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
                     }
 
-                if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.LeftHandItem)
-                {
-                    if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                    if (links.inventoryWindow.RightHandItem != null && questHandler.takenQuestList[i].QuestItem.Type ==
+                        links.inventoryWindow.RightHandItem.Type)
+                    {
+                        if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                    }
                 }
-
-                if (questHandler.takenQuestList[i].QuestItem == links.inventoryWindow.RightHandItem)
+                else
                 {
-                    if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                    if (links.inventoryWindow.inventory != null)
+                        for (int j = 0; j < links.inventoryWindow.inventory.inventoryItems.Count; j++)
+                        {
+                            if (links.inventoryWindow.inventory.inventoryItems[j] != null && questHandler.takenQuestList[i].QuestItem ==
+                                links.inventoryWindow.inventory.inventoryItems[j])
+                            {
+                                if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                            }
+                        }
+
+                    if (links.inventoryWindow.LeftHandItem != null && questHandler.takenQuestList[i].QuestItem ==
+                        links.inventoryWindow.LeftHandItem)
+                    {
+                        if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                    }
+
+                    if (links.inventoryWindow.RightHandItem != null && questHandler.takenQuestList[i].QuestItem ==
+                        links.inventoryWindow.RightHandItem)
+                    {
+                        if (questHandler.questList[i] != null) questHandler.questList[i].QuestUnitDone();
+                    }
                 }
             }
         }
@@ -156,7 +186,7 @@ public class QuestWindow : MonoBehaviour
 
     public void CompleteButtonActivator()
     {
-        if (OpenedQuest.isComplete) CompleteQuestButton.interactable = true;
+        if (OpenedQuest.isComplete && !OpenedQuest.isQuestGiverToFinish) CompleteQuestButton.interactable = true;
         else CompleteQuestButton.interactable = false;
     }    
 
@@ -245,12 +275,13 @@ public class QuestWindow : MonoBehaviour
             }
         }
 
-        // Получение очков навыков
-        links.player.survivalPoint += quest.questData.RewardSkillPoint;
+        // Получение очков навыков и опыта
+        links.player.skillPoint += quest.questData.RewardSkillPoint;
         links.player.UpdateSkillPoints();
+        links.player.ChangeXP(quest.questData.RewardXP, "Квест завершен:");
         
         // Получение нового квеста
-        if (quest.questData.rewardNextQuestData != null) questHandler.AddQuest(quest.questData.rewardNextQuestData);
+        if (quest.questData.rewardNextQuestData != null) NewQuestDelay(quest);
         
         // Получение нового чертежа
         if (quest.questData.RewardNewBlueprint != Blueprint.None) links.buildingHandler.LearningBlueprint(quest.questData.RewardNewBlueprint);
@@ -273,6 +304,12 @@ public class QuestWindow : MonoBehaviour
         Destroy(quest.gameObject);
         
         RedrawDelay();
+    }
+
+    async void NewQuestDelay(Quest quest)
+    {
+        await UniTask.Delay(3000);
+        questHandler.AddQuest(quest.questData.rewardNextQuestData);
     }
 
     async void RedrawDelay()

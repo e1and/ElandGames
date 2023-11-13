@@ -12,21 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08fa1ccbdfe53c64ca1e5eae46869233, type: 3}
   m_Name: Elf6
   m_EditorClassIdentifier: 
-  phrase: "\u0412\u043E\u0437\u043C\u043E\u0436\u043D\u043E \u0433\u0434\u0435-\u0442\u043E
-    \u0437\u0430\u0432\u0430\u043B\u044F\u043B\u0441\u044F \u0437\u0430\u043F\u0430\u0441\u043D\u043E\u0439
-    \u043A\u043B\u044E\u0447 \u043E\u0442 \u0432\u043E\u0440\u043E\u0442 \u043A\u043B\u0430\u0434\u0431\u0438\u0449\u0430.
-    \u042F \u0431\u044B\u043B \u0431\u044B \u0447\u0435\u0440\u0442\u043E\u0432\u0441\u043A\u0438
-    \u0440\u0430\u0434 \u0443\u0431\u0440\u0430\u0442\u044C\u0441\u044F \u043E\u0442\u0441\u044E\u0434\u0430
-    \u0438 \u043F\u043E\u0441\u043A\u043E\u0440\u0435\u0435!"
-  answer1: 
-  link1: {fileID: 0}
+  phrase: "\u041D\u0443\u0436\u043D\u043E \u043D\u0430\u0439\u0442\u0438 \u044D\u0442\u043E\u0442
+    \u043A\u043B\u044E\u0447!"
+  answer1: "\u041F\u043E\u043D\u044F\u043B, \u0431\u0443\u0434\u0435\u043C \u0438\u0441\u043A\u0430\u0442\u044C!"
+  link1: {fileID: 11400000, guid: 4968e39e5f92e724a97a3b519a1cc9a2, type: 2}
   answer2: 
   link2: {fileID: 0}
   answer3: 
   link3: {fileID: 0}
   questData: {fileID: 11400000, guid: 5bc3641d3f577074ba3c4a91e9bfc8c9, type: 2}
-  nextQuestLink: {fileID: 0}
-  questNotReadyLink: {fileID: 0}
+  questGoToLink: {fileID: 11400000, guid: 7723d37b80c41a44ba388a84688be873, type: 2}
   questNotCompleteLink: {fileID: 0}
+  isRepeatable: 0
+  questNotReadyLink: {fileID: 0}
   isSelectableQuest: 0
   LinkToGetQuest: {fileID: 0}
+  isCloseDialogue: 0

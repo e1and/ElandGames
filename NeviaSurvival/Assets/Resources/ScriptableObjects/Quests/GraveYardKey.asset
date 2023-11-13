@@ -14,26 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questName: "\u0417\u0430\u043F\u0430\u0441\u043D\u043E\u0439 \u043A\u043B\u044E\u0447"
   id: GraveYardKey
+  Briefing: "\u041D\u0430\u0439\u0442\u0438 \u043A\u043B\u044E\u0447 \u043E\u0442
+    \u0432\u0445\u043E\u0434\u043D\u043E\u0439 \u0434\u0432\u0435\u0440\u0438 \u043A\u0440\u0435\u043F\u043E\u0441\u0442\u0438"
   questType: 2
-  questImageType: 0
+  questImageType: 2
   questTarget: {fileID: 11400000, guid: 71fa19344f4b5cf4f8c2e5fef9b69400, type: 2}
+  questUnits: 1
   questAreaRadius: 0
-  Briefing: "\u041D\u0430\u0439\u0442\u0438 \u043A\u043B\u044E\u0447 \u0438 \u043E\u0442\u043A\u0440\u044B\u0442\u044C
-    \u0434\u0432\u0435\u0440\u044C \u043A\u043B\u0430\u0434\u0431\u0438\u0449\u0430"
   Description: 
   QuestItem: {fileID: 11400000, guid: 871a40b369e3be04da1c2139fd2fec5d, type: 2}
+  isQuestGiverToFinish: 1
   RewardText: 
   rewardNextQuestData: {fileID: 0}
   RewardItem: {fileID: 11400000, guid: 12fb018363b4faf4f9769a6985711f90, type: 2}
   RewardSkillPoint: 0
+  RewardXP: 10
   RewardNewBlueprint: 0
   FinalText: 
-  isTime: 0
-  days: 0
-  isOpenDoor: 0
   door: 0
   enemyType: 0
-  questUnits: 1
+  buildingType: 0
   playerCompleteQuestPhrase: "\u041C\u043E\u0436\u0435\u0442 \u0431\u044B\u0442\u044C
     \u044D\u0442\u043E\u0442?"
   questChain:

@@ -9,13 +9,15 @@ public class DialogueInterractor : MonoBehaviour
     public string NpcName { get => npcName; }
 
     bool isDialogue;
+    public bool isEscort;
 
     [SerializeField] Sprite npcAvatar;
     [SerializeField] DialogueHandler dialogueHandler;
     [SerializeField] QuestGiver questGiver;
     [SerializeField] Branch startBranch;
-    Branch currentBranch;
-    Branch nextQuestBranch;
+    public Branch currentBranch;
+    public Branch nextQuestBranch;
+    public QuestData givenQuest;
 
     public Branch gettingQuestBranch;
     public Branch selectableQuestBranch;
@@ -41,24 +43,15 @@ public class DialogueInterractor : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out Player _player) && !isDialogue && dialogueCooldown <= 0)
+        if (other.TryGetComponent(out Player _player) && !isDialogue && dialogueCooldown <= 0 && !isEscort && !player.isReading )
         {
-            Quest quest = questGiver.IsRewardForQuest();
-
-            if (quest != null)
+            RewardForQuest();
+            
+            if (nextQuestBranch != null && questGiver.questHandler.completedQuests.Contains(givenQuest))
             {
-                questGiver.GiveReward(quest);
-
-                if (quest.QuestData().isRepeatable)
-                {
-                    TimeToRepeat(quest.QuestData().timeToRepeat, quest.questData);
-                }
-
-                if (nextQuestBranch != null)
-                {
-                    SetNextBranch(nextQuestBranch);
-                }
+                SetNextBranch(nextQuestBranch);
             }
+            
             player = _player;
             isDialogue = true;
             OpenDialogue();
@@ -67,6 +60,21 @@ public class DialogueInterractor : MonoBehaviour
             player.transform.eulerAngles = new Vector3(0, player.transform.eulerAngles.y, 0);
             
             _ = RotateToPlayer(_player.transform);
+        }
+    }
+
+    void RewardForQuest()
+    {
+        Quest quest = questGiver.IsRewardForQuest();
+
+        if (quest != null)
+        {
+            questGiver.GiveReward(quest);
+
+            if (quest.QuestData().isRepeatable)
+            {
+                TimeToRepeat(quest.QuestData().timeToRepeat, quest.questData);
+            }
         }
     }
 
@@ -112,7 +120,7 @@ public class DialogueInterractor : MonoBehaviour
         dialogueHandler.npcNameText.text = npcName;
         dialogueHandler.npcImage.sprite = npcAvatar;
         dialogueHandler.dialoguePanel.SetActive(true);
-        dialogueHandler.SetPhrase(currentBranch.phrase);
+        SetNextBranch(currentBranch);
         dialogueHandler.DialogueCameraPosition();
         dialogueHandler.DialogueCameraToNPC(this);
         dialogueHandler._camera.enabled = false;
@@ -152,9 +160,29 @@ public class DialogueInterractor : MonoBehaviour
 
     public void SetNextBranch(Branch nextBranch)
     {
+        if (nextBranch.isCloseDialogue && (givenQuest == null || !questGiver.questHandler.GetQuestByQuestData(givenQuest).isComplete))
+        {
+            CloseDialogue();
+            currentBranch = nextBranch.link1;
+            return;
+        }
+        
+        if (nextBranch.isEscort)
+        {
+            CloseDialogue();
+            if (TryGetComponent(out NPC_Move npc))
+            {
+                npc.Escort();
+                isEscort = true;
+            }
+            return;
+        }
+        
+        // Если ветка диалога СОДЕРЖИТ КВЕСТ
         if (nextBranch.questData != null)
         {
-            if (!questGiver.questHandler.takenQuestList.Contains(nextBranch.questData))
+            // Если этот квест еще НЕ ВЗЯТ
+            if (!questGiver.questHandler.takenQuestList.Contains(nextBranch.questData) && !questGiver.questHandler.completedQuests.Contains(nextBranch.questData))
             {
                 if (!nextBranch.isSelectableQuest)
                 {
@@ -169,8 +197,9 @@ public class DialogueInterractor : MonoBehaviour
                             Debug.LogError("В ветке выбираемого ответа не нужно указывать квест, сработает тот, что указана в isSelectableQuest ветке");
                     }
 
+                    givenQuest = currentQuestData;
                     questGiver.GiveQuest(currentQuestData, null);
-                    nextQuestBranch = branch.nextQuestLink;
+                    nextQuestBranch = branch.questGoToLink;
                 }
                 else if (nextBranch.LinkToGetQuest != null && gettingQuestBranch == null)
                 {
@@ -181,15 +210,18 @@ public class DialogueInterractor : MonoBehaviour
                 currentBranch = nextBranch;
 
             }
+            // Если этот квест УЖЕ ВЗЯТ
             else
             {
                 Quest quest = questGiver.questHandler.GetQuestByQuestData(nextBranch.questData);
+                
+                // Если этот квест ЕЩЕ НЕ ЗАВЕРШЁН
                 if (quest != null && !quest.isComplete)
                 {
                     if (nextBranch.questNotCompleteLink != null)
                     {
-                        if (nextBranch.questNotCompleteLink.nextQuestLink != null)
-                            nextQuestBranch = nextBranch.questNotCompleteLink.nextQuestLink;
+                        if (nextBranch.questNotCompleteLink.questGoToLink != null)
+                            nextQuestBranch = nextBranch.questNotCompleteLink.questGoToLink;
 
                         currentBranch = nextBranch.questNotCompleteLink;
                     }
@@ -198,17 +230,27 @@ public class DialogueInterractor : MonoBehaviour
                         currentBranch = nextBranch;
                     }
                 }
+                // Если этот квест УЖЕ ВЫПОЛНЕН
                 else
                 {
-                    if (nextBranch.questNotReadyLink == null) 
-                        Debug.LogError("Для неготового повторяющегося квеста нужна альтернативная ветка диалога!");
-                    else if (nextBranch.questNotReadyLink.questData != null)
-                        questGiver.GiveQuest(nextBranch.questNotReadyLink.questData, null);
+                    if (nextBranch.isRepeatable)
+                    {
+                        if (nextBranch.questNotReadyLink == null)
+                            Debug.LogError("Для неготового повторяющегося квеста нужна альтернативная ветка диалога!");
+                        else if (nextBranch.questNotReadyLink.questData != null)
+                            questGiver.GiveQuest(nextBranch.questNotReadyLink.questData, null);
 
-                    if (nextBranch.questNotReadyLink.nextQuestLink != null)
-                        nextQuestBranch = nextBranch.questNotReadyLink.nextQuestLink;
+                        if (nextBranch.questNotReadyLink != null && nextBranch.questNotReadyLink.questGoToLink != null)
+                            nextQuestBranch = nextBranch.questNotReadyLink.questGoToLink;
 
-                    currentBranch = nextBranch.questNotReadyLink;
+                        if (nextBranch.questNotReadyLink != null) currentBranch = nextBranch.questNotReadyLink;
+                        else currentBranch = nextQuestBranch;
+                    }
+                    else
+                    {
+                        currentBranch = nextQuestBranch;
+                        RewardForQuest();
+                    }
                 }
             }
         }
@@ -217,7 +259,7 @@ public class DialogueInterractor : MonoBehaviour
             if (gettingQuestBranch != null && nextBranch == gettingQuestBranch)
             {
                 questGiver.GiveQuest(selectableQuestBranch.questData, null);
-                nextQuestBranch = selectableQuestBranch.nextQuestLink;
+                nextQuestBranch = selectableQuestBranch.questGoToLink;
             }
             currentBranch = nextBranch;
         }
@@ -232,7 +274,6 @@ public class DialogueInterractor : MonoBehaviour
 
         if (currentBranch.answer1.Length > 0)
         {
-            
             dialogueHandler.answer1.SetActive(true);
             dialogueHandler.answer1Text.text = currentBranch.answer1;
         }

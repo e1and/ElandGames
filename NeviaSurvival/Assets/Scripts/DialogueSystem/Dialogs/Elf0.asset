@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Elf0
   m_EditorClassIdentifier: 
   phrase: "\u041E\u0433\u043E, \u0442\u044B \u0436\u0438\u0432\u043E\u0439!"
-  answer1: 
+  answer1: "\u041F\u043E\u0445\u043E\u0436\u0435 \u043D\u0430 \u0442\u043E..."
   link1: {fileID: 11400000, guid: 3bf9ead112e73d446a5526db49f99edb, type: 2}
   answer2: 
   link2: {fileID: 0}

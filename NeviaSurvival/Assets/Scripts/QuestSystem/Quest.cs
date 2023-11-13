@@ -14,6 +14,7 @@ public class Quest : MonoBehaviour, IPointerClickHandler
     public QuestGiver questGiver;
     public bool isComplete;
     public bool isFollowing;
+    public bool isQuestGiverToFinish;
     public bool isPlayerInQuestArea;
     public bool isRewarded;
     public Item QuestItem;
@@ -169,8 +170,8 @@ public class Quest : MonoBehaviour, IPointerClickHandler
             questUI.questImage.sprite = questUI.questCompleteImage;
             questBlock.checkMarkImage.gameObject.SetActive(true);
             
-            if (questCompletePlayerPhrase != null)
-            questHandler.links.dialogueHandler.SpellCharacterPhrase(Game.Player, questCompletePlayerPhrase);
+            if (questCompletePlayerPhrase.Length > 0 && !questHandler.links.dialogueHandler.dialoguePanel.activeSelf) 
+                questHandler.links.dialogueHandler.SpellCharacterPhrase(Game.Player, questCompletePlayerPhrase);
 
             if (questGiver != null)
             {

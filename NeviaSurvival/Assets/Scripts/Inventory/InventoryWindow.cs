@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public enum ItemType 
 {
@@ -90,6 +92,8 @@ public class InventoryWindow : MonoBehaviour
     [SerializeField] Item itemToAdd;
 
     public List<GameObject> drawnIcons = new List<GameObject>();
+
+    public Action BagEquipedAction;
 
     Links links;
 
@@ -336,6 +340,8 @@ public class InventoryWindow : MonoBehaviour
         if (Backpack != null)
         {
             inventory = Backpack.GetComponent<Inventory>();
+            BagEquipedAction?.Invoke();
+            
             if (!links.saveInventory.bags.Contains(inventory))
             {
                 links.saveInventory.bags.Add(inventory);
@@ -589,7 +595,7 @@ public class InventoryWindow : MonoBehaviour
     
     public void WeaponRandomDamage(Weapon weapon)
     {
-        weapon.GetComponent<ItemInfo>().durability -= Random.Range(0, 3);
+        weapon.GetComponent<ItemInfo>().durability -= Random.Range(1, 4) * weapon.fragility;
         Debug.Log("weapon damage");
         if (weapon.GetComponent<ItemInfo>().durability <= 0)
         {
@@ -599,12 +605,16 @@ public class InventoryWindow : MonoBehaviour
                 rightHandWeapon = null;
                 if (rightHandSlot.childCount > 0) Destroy(rightHandSlot.GetChild(0).gameObject);
                 Destroy(RightHandObject);
+                RightHandItem = null;
+                RightHandObject = null;
             }
             else
             {
                 leftHandWeapon = null;
                 if (leftHandSlot.childCount > 0) Destroy(leftHandSlot.GetChild(0).gameObject);
                 Destroy(LeftHandObject);
+                LeftHandObject = null;
+                LeftHandItem = null;
             }
             links.mousePoint.Comment("Оружие сломалось!");
         }

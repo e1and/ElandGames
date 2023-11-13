@@ -28,11 +28,17 @@ public class UILinks : MonoBehaviour
     public TMP_Text locationTitle;
 
     public List<string> locationTitles;
+    
+    [Header("ќкно карты:")]
+    
+    public TMP_Text mapAreaTitle;
+    public TMP_Text mapLocationTitle;
 
     [Header("ќкно статистики:")] 
     public TMP_Text levelText;
     public TMP_Text xpText;
     public TMP_Text gainXPText;
+    public TMP_Text gainXPStringText;
     public TMP_Text statsTimeIndicator;
     public Text nightmaresIndicator;
     public Text newSkillPointsIndicator;
@@ -78,6 +84,9 @@ public class UILinks : MonoBehaviour
     public TMP_Text pressToWakeUp;
     public TMP_Text pressToGrabGrass;
     public TMP_Text pressToDrop;
+
+    [Header("Ёффекты")] public RawImage freezingEffect;
+    public Color freezingImageColor;
 
 
     private List<Task> tasks = new List<Task>();
@@ -133,7 +142,7 @@ public class UILinks : MonoBehaviour
             textBlock2.color = tempColor2;
         }
 
-        await UniTask.Delay(2000);
+        await UniTask.Delay(3000);
 
         while (tempColor.a > 0)
         {
@@ -156,5 +165,65 @@ public class UILinks : MonoBehaviour
             tempColor2.a = 0;
             textBlock2.color = tempColor2;
         }
+    }
+    
+    private List<Task> XPTasks = new List<Task>();
+
+    public async void ShowXpInARow(int XP, string text)
+    {
+        Task previuosTask = null;
+        if (XPTasks.Count > 0) previuosTask = XPTasks[^1];
+        
+        Task task = ShowXP(XP, text, previuosTask);
+        
+        XPTasks.Add(task);
+        await task;
+        XPTasks.Remove(task);
+    }
+    
+    public async Task ShowXP(int XP, string text, Task task)
+    {
+        if (task != null) await task;
+        
+        Color xpColor;
+        Color stringColor;
+
+        xpColor = gainXPText.color;
+        stringColor = gainXPStringText.color;
+        xpColor.a = 0;
+        stringColor.a = 0;
+        gainXPText.color = xpColor;
+        gainXPStringText.color = stringColor;
+
+        gainXPText.text = "+" + XP + " опыта";
+        gainXPStringText.text = text;
+        
+        while (xpColor.a < 1)
+        {
+            xpColor.a += 0.02f;
+            stringColor.a += 0.02f;
+            gainXPText.color = xpColor;
+            gainXPStringText.color = stringColor;
+            await UniTask.DelayFrame(1);
+        }
+        xpColor.a = 1;
+        stringColor.a = 1;
+        gainXPText.color = xpColor;
+        gainXPStringText.color = stringColor;
+
+        await UniTask.Delay(3000);
+
+        while (xpColor.a > 0)
+        {
+            xpColor.a -= 0.02f;
+            stringColor.a -= 0.02f;
+            gainXPText.color = xpColor;
+            gainXPStringText.color = stringColor;
+            await UniTask.DelayFrame(1);
+        }
+        xpColor.a = 0;
+        stringColor.a = 0;
+        gainXPText.color = xpColor;
+        gainXPStringText.color = stringColor;
     }
 }

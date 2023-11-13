@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class QuestOpenDoor : Quest
 {
-    Door questDoor;
+    public Door questDoor;
 
     public override void SetQuestUnitsNeed()
     {
@@ -23,9 +24,14 @@ public class QuestOpenDoor : Quest
         CheckDoorState();
     }
 
-    public void CheckDoorState()
+    public async void CheckDoorState()
     {
-        if (questDoor != null) questDoor.doorOpenedAction += QuestUnitDone;
+        await UniTask.DelayFrame(2);
+        if (questDoor != null)
+        {
+            questDoor.doorOpenedAction += QuestUnitDone;
+        }
+        else Debug.LogError("Не подписан на событие двери");
     }
 
     public override void UpdateQuestUnits()

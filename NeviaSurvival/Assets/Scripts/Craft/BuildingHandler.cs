@@ -244,6 +244,7 @@ public class BuildingHandler : MonoBehaviour
 		SpendWood(sticksNeedForCampfire);
 		links.inventoryWindow.Redraw();
 		BuildCampfireAction?.Invoke();
+		player.ChangeXP(5, "Костёр построен:");
 	}
 
 	public void SpendWood(int amount)

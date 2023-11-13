@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class Zone : MonoBehaviour
@@ -30,14 +31,13 @@ public class Zone : MonoBehaviour
         {
             if (!isExplored)
             {
-                areaFog.SetActive(false);
-                miniMapAreaFog.SetActive(false);
+                if (areaFog != null) areaFog.SetActive(false);
+                if (miniMapAreaFog != null) miniMapAreaFog.SetActive(false);
 
                 if (exploreXP > 0)
                 {
-                    player.ChangeXP(exploreXP);
-                    links.ui.ShowTextInARow(links.ui.gainXPText, null,
-                        "Открыта новая территория: +" + exploreXP + " опыта", "");
+                    player.ChangeXP(exploreXP, "Открыта новая территория:");
+                    links.sounds.ExploreSound();
                 }
 
                 isExplored = true;
@@ -58,44 +58,5 @@ public class Zone : MonoBehaviour
     {
         links.ui.ShowTextInARow(links.ui.areaTitle, links.ui.locationTitle, title, links.ui.locationTitles[location]);
         yield return null;
-
-        /*titleColor.a = 0;
-        
-        titleColor = links.ui.areaTitle.color;
-        locationColor = links.ui.locationTitle.color;
-        titleColor.a = 0;
-        locationColor.a = 0;
-        links.ui.areaTitle.color = titleColor;
-        links.ui.locationTitle.color = locationColor;
-
-        links.ui.areaTitle.text = title;
-        links.ui.locationTitle.text = links.ui.locationTitles[location];
-        while (titleColor.a < 1)
-        {
-            titleColor.a += 0.02f;
-            locationColor.a += 0.02f;
-            links.ui.areaTitle.color = titleColor;
-            links.ui.locationTitle.color = locationColor;
-            yield return null;
-        }
-        titleColor.a = 1;
-        locationColor.a = 1;
-        links.ui.areaTitle.color = titleColor;
-        links.ui.locationTitle.color = locationColor;
-
-        yield return new WaitForSeconds(2);
-
-        while (titleColor.a > 0)
-        {
-            titleColor.a -= 0.02f;
-            locationColor.a -= 0.02f;
-            links.ui.areaTitle.color = titleColor;
-            links.ui.locationTitle.color = locationColor;
-            yield return null;
-        }
-        titleColor.a = 0;
-        locationColor.a = 0;
-        links.ui.areaTitle.color = titleColor;
-        links.ui.locationTitle.color = locationColor;*/
     }
 }

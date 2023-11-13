@@ -7,7 +7,7 @@ public class DialogueBox : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (dialogue.CurrentBranch().answer1.Length == 0 && dialogue.CurrentBranch().link1 != null)
+        if (dialogue.activeDialogue != null && dialogue.CurrentBranch().answer1.Length == 0 && dialogue.CurrentBranch().link1 != null)
             dialogue.GoToLink1();
     }
 }
